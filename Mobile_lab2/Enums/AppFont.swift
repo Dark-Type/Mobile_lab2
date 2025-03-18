@@ -1,0 +1,79 @@
+//
+//  AppFont.swift
+//  Mobile_lab2
+//
+//  Created by dark type on 18.03.2025.
+//
+
+import SwiftUI
+
+enum AppFont {
+    case title
+    case h1
+    case h2
+    case body
+    case bodySmall
+    case footnote
+    case text
+    case quote
+
+    var name: String {
+        switch self {
+        case .title, .h1, .h2:
+            return "AlumniSans-Bold"
+        case .body, .bodySmall, .footnote:
+            return "VelaSans"
+        case .text, .quote:
+            return "Georgia" 
+        }
+    }
+
+    var size: CGFloat {
+        switch self {
+        case .title:
+            return 96
+        case .h1:
+            return 48
+        case .h2:
+            return 24
+        case .body:
+            return 16
+        case .bodySmall:
+            return 14
+        case .footnote:
+            return 10
+        case .text:
+            return 14
+        case .quote:
+            return 16
+        }
+    }
+
+    var lineHeightMultiplier: CGFloat {
+        switch self {
+        case .title:
+            return 0.8
+        case .h1:
+            return 1.0
+        case .h2:
+            return 1.0
+        case .body:
+            return 1.3
+        case .bodySmall:
+            return 1.3
+        case .footnote:
+            return 1.3
+        case .text:
+            return 1.5
+        case .quote:
+            return 1.3
+        }
+    }
+}
+
+extension View {
+    func appFont(_ style: AppFont) -> some View {
+        self.font(.custom(style.name, size: style.size))
+            .lineSpacing(style.size * (style.lineHeightMultiplier - 1))
+    }
+}

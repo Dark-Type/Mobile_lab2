@@ -1,0 +1,44 @@
+/* 
+  Localizable.strings
+  Mobile_lab2
+
+  Created by dark type on 18.03.2025.
+  
+*/
+/* Login Screen */
+"login.title.first" = "открой для себя";
+"login.title.second" = "книжный";
+"login.title.third" = "мир";
+"login.password" = "Пароль";
+"login.email" = "Почта";
+"invalid_credentials" = "Неверный пароль или почта";
+"login.button" = "Войти";
+
+/* Library Screen */
+"library.title" = "Библиотека";
+"library.new" = "Новинки";
+"library.popular" = "Популярные книги";
+
+/* Search Screen */
+"search.searchview.text" = "Поиск по книгам";
+"search.recent" = "Недавние запросы";
+"search.genres" = "Жанры";
+"search.authors" = "Авторы";
+
+
+/* Bookmarks Screen */
+"bookmarks.title" = "Закладки";
+"bookmarks.current" = "Читаете сейчас";
+"bookmarks.favorite" = "Избранные книги";
+"bookmarks.quotes" = "Цитаты";
+
+/* BookDetail Screen */
+"book.read" = "Читать";
+"book.favorites" = "В избранное";
+"book.progress" = "Прочитано";
+"book.contents" = "Оглавление";
+"book.go.back" = "Назад";
+"book.settings.title" = "Настройки";
+"book.settings.font" = "Размер шрифта";
+"book.settings.measure" = "пт";
+"book.settings.padding" = "Расстояние между строками";

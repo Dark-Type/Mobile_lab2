@@ -1,0 +1,45 @@
+/* 
+  Localizable.strings
+  Mobile_lab2
+
+  Created by dark type on 18.03.2025.
+  
+*/
+
+/* Login Screen */
+"login.title.first" = "discover";
+"login.title.second" = "book";
+"login.title.third" = "world";
+"login.password" = "Password";
+"login.email" = "Email";
+"invalid_credentials" = "Invalid password or email";
+"login.button" = "Sign In";
+
+/* Library Screen */
+"library.title" = "Library";
+"library.new" = "New Releases";
+"library.popular" = "Popular Books";
+
+/* Search Screen */
+"search.searchview.text" = "Search books";
+"search.recent" = "Recent searches";
+"search.genres" = "Genres";
+"search.authors" = "Authors";
+
+/* Bookmarks Screen */
+"bookmarks.title" = "Bookmarks";
+"bookmarks.current" = "Currently Reading";
+"bookmarks.favorite" = "Favorite Books";
+"bookmarks.quotes" = "Quotes";
+
+
+/* BookDetail Screen */
+"book.read" = "Read";
+"book.favorites" = "Add to Favorites";
+"book.progress" = "Read";
+"book.contents" = "Contents";
+"book.go.back" = "Back";
+"book.settings.title" = "Settings";
+"book.settings.font" = "Font Size";
+"book.settings.measure" = "pt";
+"book.settings.padding" = "Line Spacing";
