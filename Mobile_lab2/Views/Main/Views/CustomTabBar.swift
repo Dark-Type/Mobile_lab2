@@ -9,15 +9,14 @@ import SwiftUI
 
 struct CustomTabBar: View {
     @Binding var selectedTab: Int
+    var readingAction: () -> Void
     var logoutAction: () -> Void
     
     // MARK: - Properties
-
     private let tabBarHeight: CGFloat = 64
     private let middleButtonSize: CGFloat = 80
     
     // MARK: - View
-
     var body: some View {
         ZStack {
             HStack(spacing: 0) {
@@ -31,7 +30,7 @@ struct CustomTabBar: View {
                     .frame(width: middleButtonSize + 10)
                 
                 HStack(spacing: 0) {
-                    tabButton(icon: .bookmarks, index: 3)
+                    tabButton(icon: .bookmarks, index: 2)
                     
                     Button(action: logoutAction) {
                         AppIcons.logout.image
@@ -54,12 +53,11 @@ struct CustomTabBar: View {
             .padding(.horizontal)
             .padding(.bottom, 20)
             
-            Button(action: { selectedTab = 2 }) {
+            Button(action: { readingAction() }) {
                 ZStack {
                     Circle()
                         .fill(AppColors.secondary.color)
                         .frame(width: middleButtonSize, height: middleButtonSize)
-                        .shadow(color: AppColors.secondary.color.opacity(0.3), radius: 8, x: 0, y: 4)
                     
                     AppIcons.play.image
                         .resizable()
@@ -68,12 +66,12 @@ struct CustomTabBar: View {
                         .foregroundColor(.white)
                 }
             }
+            .buttonStyle(NoFadeButtonStyle())
             .offset(y: -10)
         }
     }
     
     // MARK: - Helper Views
-
     private func tabButton(icon: AppIcons, index: Int) -> some View {
         Button(action: {
             selectedTab = index
@@ -87,5 +85,11 @@ struct CustomTabBar: View {
                 .padding()
         }
         .frame(maxWidth: .infinity)
+    }
+}
+
+struct NoFadeButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
     }
 }

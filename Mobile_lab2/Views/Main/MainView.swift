@@ -11,31 +11,39 @@ import SwiftUI
 struct MainView: View {
     // MARK: - State
     @State private var selectedTab = 0
+    @State private var isReadingScreenPresented = false
     @AppStorage("isLoggedIn") private var isLoggedIn = true
     
     // MARK: - View
     var body: some View {
-        TabView(selection: $selectedTab) {
-            LibraryScreen()
-                .tag(0)
-            
-            SearchScreen()
-                .tag(1)
-            
-            ReadingScreen()
-                .tag(2)
-            
-            BookmarksScreen()
-                .tag(3)
+        ZStack {
+            TabView(selection: $selectedTab) {
+                LibraryScreen()
+                    .tag(0)
+                
+                SearchScreen()
+                    .tag(1)
+                
+                BookmarksScreen()
+                    .tag(2)
+            }
+            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+            .background(AppColors.background.color)
+            .safeAreaInset(edge: .bottom) {
+                CustomTabBar(
+                    selectedTab: $selectedTab,
+                    readingAction: { isReadingScreenPresented = true },
+                    logoutAction: performLogout
+                )
+            }
         }
-        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-        .safeAreaInset(edge: .bottom) {
-            CustomTabBar(
-                selectedTab: $selectedTab,
-                logoutAction: performLogout
-            )
+
+        .fullScreenCover(isPresented: $isReadingScreenPresented) {
+            NavigationStack {
+                ReadingScreen(book: MockData.books[0])
+                    .toolbarBackground(Color.clear, for: .navigationBar)
+            }
         }
-        .background(AppColors.background.color)
     }
     
     // MARK: - Actions
@@ -45,7 +53,6 @@ struct MainView: View {
         }
     }
 }
-
 
 // MARK: - Preview
 #Preview {

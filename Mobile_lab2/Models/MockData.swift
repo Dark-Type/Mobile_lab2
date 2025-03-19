@@ -22,13 +22,20 @@ enum MockData {
     длинный ствол в отверстие между железными прутьями и прицелился в куратора.
     """
     
-
     static func createSampleChapters(count: Int) -> [Chapter] {
         var chapters: [Chapter] = []
         
         chapters.append(Chapter(
-            title: "Prologue",
+            title: "Факты",
             number: 0,
+            content: sampleChapterContent,
+            isStarted: true,
+            isFinished: true
+        ))
+        
+        chapters.append(Chapter(
+            title: "Пролог",
+            number: 1,
             content: sampleChapterContent,
             isStarted: true,
             isFinished: true
@@ -36,7 +43,7 @@ enum MockData {
         
         for i in 1 ... count {
             chapters.append(Chapter(
-                title: "Chapter \(i)",
+                title: "Глава \(i)",
                 number: i,
                 content: sampleChapterContent,
                 isStarted: i < 3,
@@ -51,7 +58,7 @@ enum MockData {
         Book(
             title: "Код да Винчи",
             author: [Author("Дэн Браун", MockBooks.book1.image)],
-            description: "Секретный код скрыт в работах Леонардо да Винчи... Только он поможет найти христианские святыни, дающие немыслимые власть и могущество... Ключ к величайшей тайне, над которой человечество билось веками, наконец может быть найден...",
+            description: "Секретный код скрыт в работах Леонардо да Винчи...\nТолько он поможет найти христианские святыни, дающие немыслимые власть и могущество...\nКлюч к величайшей тайне, над которой человечество билось веками, наконец может быть найден...",
             coverImage: MockBooks.book1.image,
             posterImage: MockBooks.book1.image,
             genres: ["Mystery", "Thriller"],
@@ -60,8 +67,7 @@ enum MockData {
                 bookId: UUID(),
                 currentChapter: 0,
                 currentPosition: 0.3,
-                overallProgress: 0.1,
-                lastReadDate: Date()
+                overallProgress: 0.1
             ),
             isFavorite: true
         ),
@@ -105,8 +111,7 @@ enum MockData {
                 bookId: UUID(),
                 currentChapter: 4,
                 currentPosition: 0.6,
-                overallProgress: 0.33,
-                lastReadDate: Date().addingTimeInterval(-86400)
+                overallProgress: 0.33
             )
         ),
         Book(
@@ -121,8 +126,7 @@ enum MockData {
                 bookId: UUID(),
                 currentChapter: 1,
                 currentPosition: 0.1,
-                overallProgress: 0.05,
-                lastReadDate: Date().addingTimeInterval(-172800)
+                overallProgress: 0.05
             )
         )
     ]
@@ -150,5 +154,5 @@ enum MockData {
     
     static let genres = ["Adventure", "Biography", "Contemporary", "Fantasy", "Historical Fiction", "Horror", "Mystery", "Romance", "Science Fiction", "Thriller", "Young Adult"]
     
-    static let authors = [Author("Дэн Браун", MockBooks.book1.image), Author("Marcus Webb", MockBooks.book1.image), Author("Eleanor Hughes", MockBooks.book1.image), Author("Jonathan Blake", MockBooks.book1.image), Author("Sarah Chen", MockBooks.book1.image), Author("Thomas Wilson", MockBooks.book1.image) ]
+    static let authors = [Author("Дэн Браун", MockBooks.book1.image), Author("Marcus Webb", MockBooks.book1.image), Author("Eleanor Hughes", MockBooks.book1.image), Author("Jonathan Blake", MockBooks.book1.image), Author("Sarah Chen", MockBooks.book1.image), Author("Thomas Wilson", MockBooks.book1.image)]
 }

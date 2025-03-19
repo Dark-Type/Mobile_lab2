@@ -13,5 +13,4 @@ struct ReadingProgress {
     var currentChapter: Int
     var currentPosition: Double 
     var overallProgress: Double
-    var lastReadDate: Date
 }
