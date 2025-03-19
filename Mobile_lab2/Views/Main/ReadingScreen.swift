@@ -17,16 +17,24 @@ struct ReadingScreen: View {
     // MARK: - View
 
     var body: some View {
-        ScrollView(.vertical, showsIndicators: true) {
+        ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 book.coverImage
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(height: 300)
+                    .aspectRatio(contentMode: .fill)
+                    .overlay(
+                        LinearGradient(
+                            gradient: Gradient(stops: [
+                                .init(color: AppColors.background.color
+                                    .opacity(0), location: 0),
+                                .init(color: AppColors.background.color.opacity(1), location: 1)
+                            ]),
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+                    )
                     .cornerRadius(12)
-                    .shadow(color: Color.black.opacity(0.2), radius: 8, x: 0, y: 4)
-                    .padding(.horizontal)
-                
+                    
                 HStack(alignment: .center, spacing: 10) {
                     Button {
                         // TODO: add a reading action
@@ -63,6 +71,7 @@ struct ReadingScreen: View {
                     }
                 }
                 .padding(.horizontal)
+                .padding(.top, -45)
                 .frame(maxWidth: .infinity)
                 
                 VStack(alignment: .leading, spacing: 8) {
@@ -96,13 +105,10 @@ struct ReadingScreen: View {
                         .appFont(.h2)
                         .foregroundStyle(.accentDark)
                     
-                    
                     ForEach(book.chapters) { chapter in
                         ChapterListItem(chapter: chapter) {
                             // TODO: manage opening
                         }
-                        
-
                     }
                 }
                 .padding(.horizontal)

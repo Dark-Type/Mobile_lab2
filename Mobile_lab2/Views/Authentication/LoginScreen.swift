@@ -32,7 +32,7 @@ struct LoginScreen: View {
             let verticalSpacing = layout.verticalSpacing(totalHeight: geometry.size.height)
             let horizontalPadding = layout.horizontalPadding(totalHeight: geometry.size.height)
               
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 ZStack(alignment: .top) {
                     carouselView
                         .frame(maxWidth: .infinity)

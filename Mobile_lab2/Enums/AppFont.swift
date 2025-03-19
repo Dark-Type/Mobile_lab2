@@ -77,3 +77,30 @@ extension View {
             .lineSpacing(style.size * (style.lineHeightMultiplier - 1))
     }
 }
+extension AppFont {
+    func withReadingSettings(fontSize: CGFloat, lineSpacing: CGFloat) -> ReadingFont {
+        return ReadingFont(
+            baseFontStyle: self,
+            fontSize: fontSize,
+            lineSpacing: lineSpacing
+        )
+    }
+}
+
+struct ReadingFont {
+    let baseFontStyle: AppFont
+    let fontSize: CGFloat
+    let lineSpacing: CGFloat
+    
+    var name: String {
+        return baseFontStyle.name
+    }
+}
+
+extension View {
+    func readingFont(_ readingFont: ReadingFont) -> some View {
+        self
+            .font(.custom(readingFont.name, size: readingFont.fontSize))
+            .lineSpacing(readingFont.lineSpacing)
+    }
+}
