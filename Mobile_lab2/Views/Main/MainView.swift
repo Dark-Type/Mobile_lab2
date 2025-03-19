@@ -16,16 +16,16 @@ struct MainView: View {
     // MARK: - View
     var body: some View {
         TabView(selection: $selectedTab) {
-            LibraryView()
+            LibraryScreen()
                 .tag(0)
             
-            SearchView()
+            SearchScreen()
                 .tag(1)
             
-            ReadingView()
+            ReadingScreen()
                 .tag(2)
             
-            BookmarksView()
+            BookmarksScreen()
                 .tag(3)
         }
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))

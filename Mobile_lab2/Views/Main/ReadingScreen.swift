@@ -1,5 +1,5 @@
 //
-//  SearchView.swift
+//  PlayerView.swift
 //  Mobile_lab2
 //
 //  Created by dark type on 18.03.2025.
@@ -7,12 +7,12 @@
 
 import SwiftUI
 
-struct SearchView: View {
+struct ReadingScreen: View {
     var body: some View {
-        Text("Search")
+        Text("Reading")
     }
 }
 
 #Preview {
-    SearchView()
+    ReadingScreen()
 }

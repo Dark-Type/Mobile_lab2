@@ -1,18 +1,21 @@
 //
-//  BookmarksView.swift
+//  LibraryView.swift
 //  Mobile_lab2
 //
 //  Created by dark type on 18.03.2025.
 //
 
+
 import SwiftUI
 
-struct BookmarksView: View {
+struct LibraryScreen: View {
     var body: some View {
-        Text("Bookmarks")
+       
+            Text("Library")
+        
     }
 }
 
 #Preview {
-    BookmarksView()
+    LibraryScreen()
 }

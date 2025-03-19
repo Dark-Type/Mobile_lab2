@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct LoginView: View {
+struct LoginScreen: View {
     // MARK: - State
 
     @State private var email = ""
@@ -317,6 +317,6 @@ extension View {
 
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
-        LoginView()
+        LoginScreen()
     }
 }

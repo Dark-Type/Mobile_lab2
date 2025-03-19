@@ -17,7 +17,7 @@ struct Mobile_lab2App: App {
                 MainView()
                     .fullScreenBackground(AppColors.background.color)
             } else {
-                LoginView()
+                LoginScreen()
                     .fullScreenBackground(AppColors.accentDark.color)
             }
         }
