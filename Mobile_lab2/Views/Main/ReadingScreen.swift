@@ -19,7 +19,7 @@ struct ReadingScreen: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
-                book.coverImage
+                book.posterImage
                     .resizable()
                     .aspectRatio(contentMode: .fill)
                     .overlay(
@@ -34,6 +34,7 @@ struct ReadingScreen: View {
                         )
                     )
                     .cornerRadius(12)
+                
                     
                 HStack(alignment: .center, spacing: 10) {
                     Button {

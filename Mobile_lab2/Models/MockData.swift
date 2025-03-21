@@ -13,7 +13,7 @@ enum MockData {
     Знаменитый куратор Жак Соньер, пошатываясь, прошел под сводчатой аркой Большой галереи и устремился к первой попавшейся ему
     на глаза картине, полотну Караваджо. Ухватился руками за позолоченную раму и стал тянуть
     ее на себя, пока шедевр не сорвался со стены и
-    не рухнул на семидесятилетнего старика Соньера, погребя его под собой.
+    не рухнул на семидесятилетнего старика Соньера, погребя его под собой.\n
     Как и предполагал Соньер, неподалеку с грохотом опустилась металлическая решетка, преграждающая доступ в этот зал. Паркетный пол содрогнулся. Где-то завыла сирена сигнализации.Несколько секунд куратор лежал неподвижно, хватая ртом воздух и пытаясь сообразить, на каком свете находится. Я все еще жив. Потом он выполз из-под полотна
     и начал судорожно озираться в поисках места, где можно спрятаться.
     Голос прозвучал неожиданно близко: — Не двигаться. Стоявший на четвереньках куратор похолодел,
@@ -60,7 +60,7 @@ enum MockData {
             author: [Author("Дэн Браун", MockBooks.book1.image)],
             description: "Секретный код скрыт в работах Леонардо да Винчи...\nТолько он поможет найти христианские святыни, дающие немыслимые власть и могущество...\nКлюч к величайшей тайне, над которой человечество билось веками, наконец может быть найден...",
             coverImage: MockBooks.book1.image,
-            posterImage: MockBooks.book1.image,
+            posterImage: MockPosters.poster1.image,
             genres: ["Mystery", "Thriller"],
             chapters: createSampleChapters(count: 15),
             userProgress: ReadingProgress(
@@ -76,7 +76,7 @@ enum MockData {
             author: [Author("Marcus Webb", MockBooks.book1.image)],
             description: "An epic space adventure following the crew of the starship Horizon as they venture into uncharted territories of the galaxy.",
             coverImage: MockBooks.book1.image,
-            posterImage: MockBooks.book1.image,
+            posterImage: MockPosters.poster4.image,
             genres: ["Science Fiction", "Adventure"],
             chapters: createSampleChapters(count: 12)
         ),
@@ -85,7 +85,7 @@ enum MockData {
             author: [Author("Eleanor Hughes", MockBooks.book1.image)],
             description: "A magical tale about a young girl who discovers a garden with mysterious powers that change with the seasons.",
             coverImage: MockBooks.book1.image,
-            posterImage: MockBooks.book1.image,
+            posterImage:  MockPosters.poster4.image,
             genres: ["Fantasy", "Young Adult"],
             chapters: createSampleChapters(count: 18),
             isFavorite: true
@@ -95,7 +95,7 @@ enum MockData {
             author: [Author("Jonathan Blake", MockBooks.book1.image)],
             description: "Dark fantasy epic set in a world where night lasts for months and dangerous creatures roam the shadows.",
             coverImage: MockBooks.book1.image,
-            posterImage: MockBooks.book1.image,
+            posterImage:  MockPosters.poster4.image,
             genres: ["Fantasy", "Horror"],
             chapters: createSampleChapters(count: 20)
         ),
@@ -104,7 +104,7 @@ enum MockData {
             author: [Author("Sarah Chen", MockBooks.book1.image)],
             description: "A touching coming-of-age story about friendship, love, and saying goodbye set during one unforgettable summer.",
             coverImage: MockBooks.book1.image,
-            posterImage: MockBooks.book1.image,
+            posterImage:  MockPosters.poster4.image,
             genres: ["Contemporary", "Romance"],
             chapters: createSampleChapters(count: 14),
             userProgress: ReadingProgress(
@@ -119,7 +119,7 @@ enum MockData {
             author: [Author("Thomas Wilson", MockBooks.book1.image)],
             description: "Historical fiction following multiple generations of a family through pivotal moments in history.",
             coverImage: MockBooks.book1.image,
-            posterImage: MockBooks.book1.image,
+            posterImage: MockPosters.poster4.image,
             genres: ["Historical Fiction", "Drama"],
             chapters: createSampleChapters(count: 22),
             userProgress: ReadingProgress(

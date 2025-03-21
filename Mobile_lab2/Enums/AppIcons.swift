@@ -39,3 +39,10 @@ enum MockBooks: String {
         Image(self.rawValue)
     }
 }
+enum MockPosters: String {
+    case poster1 = "Poster_1"
+    case poster4 = "Poster_4"
+    var image : Image {
+        Image(self.rawValue)
+    }
+}
