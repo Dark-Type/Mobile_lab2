@@ -9,6 +9,7 @@ import SwiftUI
 
 struct LastRequestItemCard: View {
     let request: String
+    var onDelete: () -> Void
 
     var body: some View {
         HStack {
@@ -17,8 +18,11 @@ struct LastRequestItemCard: View {
             Text(request)
                 .appFont(.body)
             Spacer()
-            AppIcons.close.image
-                .renderingMode(.template)
+            Button(action: onDelete) {
+                AppIcons.close.image
+                    .renderingMode(.template)
+            }
+            .buttonStyle(PlainButtonStyle())
         }
         .foregroundStyle(.accentDark)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -29,5 +33,5 @@ struct LastRequestItemCard: View {
 }
 
 #Preview {
-    LastRequestItemCard(request: "Android")
+    LastRequestItemCard(request: "Android", onDelete: {})
 }

@@ -13,9 +13,13 @@ struct GenreCard: View {
     var body: some View {
         Text(genre)
             .appFont(.body)
-            .frame(maxWidth: .infinity, alignment: .leading)
             .foregroundColor(.accentDark)
-            .padding(32)
+            .lineLimit(2)
+            .multilineTextAlignment(.leading)
+            .padding(.vertical, 16)
+            .padding(.horizontal, 20)
+            .frame(height: 60)
+            .frame(maxWidth: .infinity, alignment: .leading)
             .background(.accentLight)
             .cornerRadius(12)
     }

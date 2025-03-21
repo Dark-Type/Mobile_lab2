@@ -67,7 +67,6 @@ struct LibraryScreen: View {
                 .scrollContentBackground(.hidden)
                 .background(AppColors.background.color)
                 .onChange(of: showingBookDetail) { newValue in
-                   
                     if newValue == false {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                             selectedBook = nil
@@ -86,6 +85,13 @@ struct LibraryScreen: View {
         }
     }
     
+    // MARK: - Helper Methods
+    
+    private func openBookDetail(_ book: Book) {
+        selectedBook = book
+        showingBookDetail = true
+    }
+    
     private func carouselView(screenHeight: CGFloat) -> some View {
         let itemWidth = UIScreen.main.bounds.width * 0.7
         let itemHeight = itemWidth
@@ -98,8 +104,7 @@ struct LibraryScreen: View {
                     ForEach(itemKeys, id: \.self) { key in
                         if let book = carouselItems[key] {
                             CarouselItemView(book: book) {
-                                selectedBook = book
-                                showingBookDetail = true
+                                openBookDetail(book)
                             }
                             .id(key)
                             .frame(width: itemWidth, height: itemHeight)
@@ -121,8 +126,27 @@ struct LibraryScreen: View {
                 }
             )
         }
-
         .frame(height: itemHeight + 16)
+    }
+    
+    private func booksGridView(screenWidth: CGFloat) -> some View {
+        LazyVGrid(
+            columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 3),
+            spacing: 20
+        ) {
+            ForEach(MockData.books) { book in
+                BookCard(
+                    book: book,
+                    width: (screenWidth - 64) / 3,
+                    height: 220,
+                    action: {
+                        openBookDetail(book)
+                    }
+                )
+            }
+        }
+        .background(Color.clear)
+        .padding(.horizontal)
     }
     
     private func handleScrollChange(minX: CGFloat) {
@@ -164,27 +188,6 @@ struct LibraryScreen: View {
         
         carouselItems.merge(newItems) { _, new in new }
         itemKeys.append(contentsOf: newKeys)
-    }
-    
-    private func booksGridView(screenWidth: CGFloat) -> some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 3),
-            spacing: 20
-        ) {
-            ForEach(MockData.books) { book in
-                BookCard(
-                    book: book,
-                    width: (screenWidth - 64) / 3,
-                    height: 220,
-                    action: {
-                        selectedBook = book
-                        showingBookDetail = true
-                    }
-                )
-            }
-        }
-        .background(Color.clear)
-        .padding(.horizontal)
     }
 }
 

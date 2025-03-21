@@ -85,7 +85,7 @@ enum MockData {
             author: [Author("Eleanor Hughes", MockBooks.book1.image)],
             description: "A magical tale about a young girl who discovers a garden with mysterious powers that change with the seasons.",
             coverImage: MockBooks.book1.image,
-            posterImage:  MockPosters.poster4.image,
+            posterImage: MockPosters.poster4.image,
             genres: ["Fantasy", "Young Adult"],
             chapters: createSampleChapters(count: 18),
             isFavorite: true
@@ -95,7 +95,7 @@ enum MockData {
             author: [Author("Jonathan Blake", MockBooks.book1.image)],
             description: "Dark fantasy epic set in a world where night lasts for months and dangerous creatures roam the shadows.",
             coverImage: MockBooks.book1.image,
-            posterImage:  MockPosters.poster4.image,
+            posterImage: MockPosters.poster4.image,
             genres: ["Fantasy", "Horror"],
             chapters: createSampleChapters(count: 20)
         ),
@@ -104,7 +104,7 @@ enum MockData {
             author: [Author("Sarah Chen", MockBooks.book1.image)],
             description: "A touching coming-of-age story about friendship, love, and saying goodbye set during one unforgettable summer.",
             coverImage: MockBooks.book1.image,
-            posterImage:  MockPosters.poster4.image,
+            posterImage: MockPosters.poster4.image,
             genres: ["Contemporary", "Romance"],
             chapters: createSampleChapters(count: 14),
             userProgress: ReadingProgress(
@@ -152,7 +152,7 @@ enum MockData {
         )
     ]
     
-    static let genres = ["Adventure", "Biography", "Contemporary", "Fantasy", "Historical Fiction", "Horror", "Mystery", "Romance", "Science Fiction", "Thriller", "Young Adult"]
+    static let genres = ["Классика", "Фэнтези", "Фантастика", "Детектив", "Триллер", "Исторический роман", "Любовный роман", "Приключения", "Поэзия", "Биография", "Для детей", "Для подростков"]
     
     static let authors = [Author("Дэн Браун", MockBooks.book1.image), Author("Marcus Webb", MockBooks.book1.image), Author("Eleanor Hughes", MockBooks.book1.image), Author("Jonathan Blake", MockBooks.book1.image), Author("Sarah Chen", MockBooks.book1.image), Author("Thomas Wilson", MockBooks.book1.image)]
 }

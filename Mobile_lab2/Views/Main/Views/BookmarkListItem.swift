@@ -25,19 +25,22 @@ struct BookmarkListItem: View {
                 
                 VStack(alignment: .leading, spacing: 8) {
                     Text(book.title)
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.primary)
+                        .appFont(.h1)
+                        .foregroundColor(.accentDark)
                         .lineLimit(2)
+                        .multilineTextAlignment(.leading)
                     
-                    Text(isCurrent ? book.chapters[book.userProgress?.currentChapter ?? 0].title  : book.author.map { $0.name }.joined(separator: ", "))
-                        .font(.system(size: 14))
-                        .foregroundColor(.secondary)
+                    Text(isCurrent ? book.chapters[book.userProgress?.currentChapter ?? 0].title : book.author.map { $0.name }.joined(separator: ", "))
+                        .appFont(.body)
+                        .foregroundColor(.accentDark)
                     if isCurrent, let progress = book.userProgress {
                         ProgressBar(progress: progress.overallProgress)
                     }
                 }
+                
                 .padding(.vertical, 8)
             }
+            
             .padding(.horizontal)
             .buttonStyle(PlainButtonStyle())
         }
