@@ -13,6 +13,7 @@ struct ChapterReadingView: View {
     // MARK: - Properties
     
     let book: Book
+    let setCurrentBook: (Book) -> Void
     let chapter: Chapter
     @Environment(\.dismiss) private var dismiss
     @State private var showChapters: Bool = false
@@ -58,6 +59,8 @@ struct ChapterReadingView: View {
             if self.showQuoteOverlay {
                 self.quoteSelectionOverlay
             }
+        }.onAppear {
+            setCurrentBook(book)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -518,7 +521,9 @@ struct RoundedCorner: Shape {
     NavigationStack {
         ChapterReadingView(
             book: MockData.books[0],
+            setCurrentBook: { _ in } ,
             chapter: MockData.books[0].chapters[1]
+            
         )
     }
 }

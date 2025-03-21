@@ -10,14 +10,19 @@ import SwiftUI
 struct LibraryScreen: View {
     private let featuredBooks = MockData.books
     private var initialItems: [Book] = []
+    let isFavorite: (Book) -> Bool
+    let setCurrentBook: (Book) -> Void
+    let toggleFavorite: (Book) -> Void
     
     @State private var carouselItems: [UUID: Book] = [:]
     @State private var itemKeys: [UUID] = []
     @State private var currentIndex: Int = 0
     @State private var selectedBook: Book? = nil
-    @State private var showingBookDetail = false
     
-    init() {
+    init(isFavorite: @escaping (Book) -> Bool, setCurrentBook: @escaping (Book) -> Void = { _ in }, toggleFavorite: @escaping (Book) -> Void = { _ in }) {
+        self.isFavorite = isFavorite
+        self.setCurrentBook = setCurrentBook
+        self.toggleFavorite = toggleFavorite
         var initialCarouselItems: [UUID: Book] = [:]
         var initialKeys: [UUID] = []
         
@@ -35,7 +40,6 @@ struct LibraryScreen: View {
     
     var body: some View {
         GeometryReader { screenGeometry in
-    
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text(L10n.Library.title.uppercased())
@@ -68,8 +72,13 @@ struct LibraryScreen: View {
             .background(AppColors.background.color)
             .fullScreenCover(item: $selectedBook) { book in
                 NavigationStack {
-                    ReadingScreen(book: book)
-                        .toolbarBackground(Color.clear, for: .navigationBar)
+                    ReadingScreen(
+                        book: book,
+                        setCurrentBook: setCurrentBook,
+                        isFavorite: isFavorite(book),
+                        toggleFavorite: { toggleFavorite(book) }
+                    )
+                    .toolbarBackground(Color.clear, for: .navigationBar)
                 }
             }
         }
@@ -181,5 +190,7 @@ struct LibraryScreen: View {
 }
 
 #Preview {
-    LibraryScreen()
+    LibraryScreen(
+        isFavorite: { _ in false }
+    )
 }

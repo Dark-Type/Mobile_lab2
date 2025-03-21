@@ -11,6 +11,9 @@ struct ReadingScreen: View {
     // MARK: - Properties
 
     let book: Book
+    let setCurrentBook: (Book) -> Void
+    let isFavorite: Bool
+    let toggleFavorite: () -> Void
     @Environment(\.dismiss) private var dismiss
     @State private var showChapters: Bool = false
     @State private var selectedChapter: Chapter? = nil
@@ -57,19 +60,19 @@ struct ReadingScreen: View {
                     }
                     
                     Button {
-                        // TODO: add adding to favorites
+                        toggleFavorite()
                     } label: {
                         HStack {
                             AppIcons.bookmarks.image
                                 .renderingMode(.template)
-                            Text(L10n.Book.favorites)
+                            Text(isFavorite ? "Убрать из избранного" : L10n.Book.favorites)
                         }
                         .appFont(.body).bold()
                         .foregroundColor(.accentDark)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 12)
                         .frame(maxWidth: .infinity)
-                        .background(.accentLight)
+                        .background(isFavorite ? .secondaryRed : .accentLight)
                         .cornerRadius(10)
                     }
                 }
@@ -136,7 +139,7 @@ struct ReadingScreen: View {
         .ignoresSafeArea(.all)
         .fullScreenCover(item: $selectedChapter) { chapter in
             NavigationStack {
-                ChapterReadingView(book: book, chapter: chapter)
+                ChapterReadingView(book: book, setCurrentBook: setCurrentBook, chapter: chapter)
                     .toolbarBackground(Color.clear, for: .navigationBar)
             }
         }
@@ -145,12 +148,18 @@ struct ReadingScreen: View {
     // MARK: - Helper Methods
     
     private func openChapter(_ chapter: Chapter) {
+        setCurrentBook(book)
         selectedChapter = chapter
     }
 }
 
 #Preview {
     NavigationStack {
-        ReadingScreen(book: MockData.books[0])
+        ReadingScreen(
+            book: MockData.books[0],
+            setCurrentBook: { _ in },
+            isFavorite: false,
+            toggleFavorite: {}
+        )
     }
 }

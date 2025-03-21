@@ -19,32 +19,52 @@ struct SearchScreen: View {
     private let genres = MockData.genres
     private let authors = MockData.authors
     
-    var body: some View {
-          ScrollView {
-              VStack(alignment: .leading, spacing: 24) {
-                  self.customSearchBar
-                       
-                  if self.searchText.isEmpty {
-                      self.recentSearchesSection
-                      self.genresGridSection
-                      self.authorsSection
-                  } else {
-                      self.searchResultsSection
-                  }
-              }
-              .padding(.top, 16)
-              .padding(.horizontal)
-          }
-          .scrollContentBackground(.hidden)
-          .background(AppColors.background.color)
+    // MARK: - Properties
 
-          .fullScreenCover(item: $selectedBook) { book in
-              NavigationStack {
-                  ReadingScreen(book: book)
-                      .toolbarBackground(Color.clear, for: .navigationBar)
-              }
-          }
-      }
+    let isFavorite: (Book) -> Bool
+    let setCurrentBook: (Book) -> Void
+    let toggleFavorite: (Book) -> Void
+    
+    // MARK: - Initializer
+
+    init(isFavorite: @escaping (Book) -> Bool = { _ in false }, setCurrentBook: @escaping (Book) -> Void = { _ in },
+         toggleFavorite: @escaping (Book) -> Void = { _ in })
+    {
+        self.isFavorite = isFavorite
+        self.setCurrentBook = setCurrentBook
+        self.toggleFavorite = toggleFavorite
+    }
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                self.customSearchBar
+                       
+                if self.searchText.isEmpty {
+                    self.recentSearchesSection
+                    self.genresGridSection
+                    self.authorsSection
+                } else {
+                    self.searchResultsSection
+                }
+            }
+            .padding(.top, 16)
+            .padding(.horizontal)
+        }
+        .scrollContentBackground(.hidden)
+        .background(AppColors.background.color)
+        .fullScreenCover(item: self.$selectedBook) { book in
+            NavigationStack {
+                ReadingScreen(
+                    book: book,
+                    setCurrentBook: self.setCurrentBook,
+                    isFavorite: self.isFavorite(book),
+                    toggleFavorite: { self.toggleFavorite(book) }
+                )
+                .toolbarBackground(Color.clear, for: .navigationBar)
+            }
+        }
+    }
          
     // MARK: - UI Components
     
