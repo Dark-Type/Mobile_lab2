@@ -20,42 +20,32 @@ struct SearchScreen: View {
     private let authors = MockData.authors
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    self.customSearchBar
-                      
-                    if self.searchText.isEmpty {
-                        self.recentSearchesSection
-                        self.genresGridSection
-                        self.authorsSection
-                    } else {
-                        self.searchResultsSection
-                    }
-                }
-                .padding(.top, 16)
-                .padding(.horizontal)
-            }
-            .scrollContentBackground(.hidden)
-            .background(AppColors.background.color)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.hidden, for: .navigationBar)
-            .onChange(of: self.showingBookDetail) { newValue in
-                if newValue == false {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                        self.selectedBook = nil
-                    }
-                }
-            }
-            .navigationDestination(isPresented: self.$showingBookDetail) {
-                if let book = selectedBook {
-                    ReadingScreen(book: book)
-                        .navigationBarBackButtonHidden(true)
-                }
-            }
-        }
-    }
-      
+          ScrollView {
+              VStack(alignment: .leading, spacing: 24) {
+                  self.customSearchBar
+                       
+                  if self.searchText.isEmpty {
+                      self.recentSearchesSection
+                      self.genresGridSection
+                      self.authorsSection
+                  } else {
+                      self.searchResultsSection
+                  }
+              }
+              .padding(.top, 16)
+              .padding(.horizontal)
+          }
+          .scrollContentBackground(.hidden)
+          .background(AppColors.background.color)
+
+          .fullScreenCover(item: $selectedBook) { book in
+              NavigationStack {
+                  ReadingScreen(book: book)
+                      .toolbarBackground(Color.clear, for: .navigationBar)
+              }
+          }
+      }
+         
     // MARK: - UI Components
     
     private var customSearchBar: some View {
@@ -178,7 +168,7 @@ struct SearchScreen: View {
 
     private func openBookDetail(_ book: Book) {
         self.selectedBook = book
-        self.showingBookDetail = true
+        self.isReadingScreenPresented = true
     }
 }
 

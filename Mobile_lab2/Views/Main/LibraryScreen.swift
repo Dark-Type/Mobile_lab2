@@ -35,51 +35,41 @@ struct LibraryScreen: View {
     
     var body: some View {
         GeometryReader { screenGeometry in
-            NavigationStack {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 24) {
-                        Text(L10n.Library.title.uppercased())
-                            .appFont(.h1)
-                            .foregroundColor(.secondaryRed)
+    
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    Text(L10n.Library.title.uppercased())
+                        .appFont(.h1)
+                        .foregroundColor(.secondaryRed)
+                        .padding(.horizontal)
+                     
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(L10n.Library.new.uppercased())
+                            .appFont(.h2)
+                            .foregroundColor(.accentDark)
                             .padding(.horizontal)
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(L10n.Library.new.uppercased())
-                                .appFont(.h2)
-                                .foregroundColor(.accentDark)
-                                .padding(.horizontal)
-                            
-                            carouselView(screenHeight: screenGeometry.size.height)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text(L10n.Library.popular.uppercased())
-                                .appFont(.h2)
-                                .foregroundColor(.accentDark)
-                                .padding(.horizontal)
-                            
-                            booksGridView(screenWidth: screenGeometry.size.width)
-                        }
-                        .padding(.bottom, 24)
+                         
+                        carouselView(screenHeight: screenGeometry.size.height)
                     }
-                    .padding(.top, 16)
+                     
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text(L10n.Library.popular.uppercased())
+                            .appFont(.h2)
+                            .foregroundColor(.accentDark)
+                            .padding(.horizontal)
+                         
+                        booksGridView(screenWidth: screenGeometry.size.width)
+                    }
+                    .padding(.bottom, 24)
                 }
-                .scrollContentBackground(.hidden)
-                .background(AppColors.background.color)
-                .onChange(of: showingBookDetail) { newValue in
-                    if newValue == false {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            selectedBook = nil
-                        }
-                    }
-                }
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbarBackground(.hidden, for: .navigationBar)
-                .navigationDestination(isPresented: $showingBookDetail) {
-                    if let book = selectedBook {
-                        ReadingScreen(book: book)
-                            .navigationBarBackButtonHidden(true)
-                    }
+                .padding(.top, 16)
+            }
+            .scrollContentBackground(.hidden)
+            .background(AppColors.background.color)
+            .fullScreenCover(item: $selectedBook) { book in
+                NavigationStack {
+                    ReadingScreen(book: book)
+                        .toolbarBackground(Color.clear, for: .navigationBar)
                 }
             }
         }
@@ -89,7 +79,6 @@ struct LibraryScreen: View {
     
     private func openBookDetail(_ book: Book) {
         selectedBook = book
-        showingBookDetail = true
     }
     
     private func carouselView(screenHeight: CGFloat) -> some View {

@@ -13,6 +13,7 @@ struct ReadingScreen: View {
     let book: Book
     @Environment(\.dismiss) private var dismiss
     @State private var showChapters: Bool = false
+    @State private var selectedChapter: Chapter? = nil
     
     // MARK: - View
 
@@ -34,11 +35,12 @@ struct ReadingScreen: View {
                         )
                     )
                     .cornerRadius(12)
-                
                     
                 HStack(alignment: .center, spacing: 10) {
                     Button {
-                        // TODO: add a reading action
+                        if let firstChapter = book.chapters.first {
+                            openChapter(firstChapter)
+                        }
                     } label: {
                         HStack {
                             AppIcons.play.image
@@ -108,7 +110,7 @@ struct ReadingScreen: View {
                     
                     ForEach(book.chapters) { chapter in
                         ChapterListItem(chapter: chapter) {
-                            // TODO: manage opening
+                            openChapter(chapter)
                         }
                     }
                 }
@@ -130,7 +132,20 @@ struct ReadingScreen: View {
                 }
             }
         }
-        .toolbarBackground(.hidden, for: .navigationBar).ignoresSafeArea(.all)
+        .toolbarBackground(.hidden, for: .navigationBar)
+        .ignoresSafeArea(.all)
+        .fullScreenCover(item: $selectedChapter) { chapter in
+            NavigationStack {
+                ChapterReadingView(book: book, chapter: chapter)
+                    .toolbarBackground(Color.clear, for: .navigationBar)
+            }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func openChapter(_ chapter: Chapter) {
+        selectedChapter = chapter
     }
 }
 
