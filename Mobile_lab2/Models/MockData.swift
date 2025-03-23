@@ -65,11 +65,11 @@ enum MockData {
             chapters: createSampleChapters(count: 15),
             userProgress: ReadingProgress(
                 bookId: UUID(),
+                totalChapters: 15,
                 currentChapter: 0,
-                currentPosition: 0.3,
-                overallProgress: 0.1
+                currentPosition: 0.3
             ),
-            isFavorite: true
+            isFavorite: false
         ),
         Book(
             title: "Stellar Horizons",
@@ -88,10 +88,10 @@ enum MockData {
             posterImage: MockPosters.poster4.image,
             genres: ["Fantasy", "Young Adult"],
             chapters: createSampleChapters(count: 18),
-            isFavorite: true
+            isFavorite: false
         ),
         Book(
-            title: "Midnight Chronicles",
+            title: "Swift. Карманный справочник: программирование в среде iOS и ОS X",
             author: [Author("Jonathan Blake", MockBooks.book1.image)],
             description: "Dark fantasy epic set in a world where night lasts for months and dangerous creatures roam the shadows.",
             coverImage: MockBooks.book1.image,
@@ -106,13 +106,7 @@ enum MockData {
             coverImage: MockBooks.book1.image,
             posterImage: MockPosters.poster4.image,
             genres: ["Contemporary", "Romance"],
-            chapters: createSampleChapters(count: 14),
-            userProgress: ReadingProgress(
-                bookId: UUID(),
-                currentChapter: 4,
-                currentPosition: 0.6,
-                overallProgress: 0.33
-            )
+            chapters: createSampleChapters(count: 14)
         ),
         Book(
             title: "Whispers of the Past",
@@ -121,13 +115,7 @@ enum MockData {
             coverImage: MockBooks.book1.image,
             posterImage: MockPosters.poster4.image,
             genres: ["Historical Fiction", "Drama"],
-            chapters: createSampleChapters(count: 22),
-            userProgress: ReadingProgress(
-                bookId: UUID(),
-                currentChapter: 1,
-                currentPosition: 0.1,
-                overallProgress: 0.05
-            )
+            chapters: createSampleChapters(count: 22)
         )
     ]
     

@@ -5,10 +5,18 @@
 //  Created by dark type on 18.03.2025.
 //
 
-
 import SwiftUI
 
 struct ProgressBar: View {
+    // MARK: - Constants
+    
+    private enum ViewMetrics {
+        static let defaultHeight: CGFloat = 5
+        static let cornerRadiusFactor: CGFloat = 0.5
+    }
+    
+    // MARK: - Properties
+    
     let progress: Double
     let height: CGFloat
     let backgroundColor: Color
@@ -16,7 +24,7 @@ struct ProgressBar: View {
     
     init(
         progress: Double,
-        height: CGFloat = 5,
+        height: CGFloat = ViewMetrics.defaultHeight,
         backgroundColor: Color = AppColors.accentMedium.color,
         foregroundColor: Color = AppColors.accentDark.color
     ) {
@@ -31,12 +39,12 @@ struct ProgressBar: View {
             ZStack(alignment: .leading) {
                 Rectangle()
                     .fill(backgroundColor)
-                    .cornerRadius(height / 2)
+                    .cornerRadius(height * ViewMetrics.cornerRadiusFactor)
                 
                 Rectangle()
                     .fill(foregroundColor)
                     .frame(width: geometry.size.width * CGFloat(progress))
-                    .cornerRadius(height / 2)
+                    .cornerRadius(height * ViewMetrics.cornerRadiusFactor)
             }
         }
         .frame(height: height)
@@ -50,5 +58,4 @@ struct ProgressBar: View {
         ProgressBar(progress: 0.75)
     }
     .padding()
-  
 }

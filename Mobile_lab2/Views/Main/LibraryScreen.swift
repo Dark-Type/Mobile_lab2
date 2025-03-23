@@ -8,6 +8,27 @@
 import SwiftUI
 
 struct LibraryScreen: View {
+    // MARK: - Constants
+    
+    private enum ViewMetrics {
+        static let verticalSpacing: CGFloat = 24
+        static let sectionSpacing: CGFloat = 12
+        static let horizontalPadding: CGFloat = 16
+        static let topPadding: CGFloat = 16
+        static let bottomPadding: CGFloat = 24
+        static let gridSpacing: CGFloat = 20
+        static let gridItemSpacing: CGFloat = 16
+        static let gridColumnsCount: Int = 3
+        static let carouselItemScale: CGFloat = 0.7
+        static let carouselSideItemScale: CGFloat = 0.12
+        static let carouselSpacing: CGFloat = 20
+        static let carouselHeightPadding: CGFloat = 16
+        static let scrollThresholdMultiplier: CGFloat = 1.5
+        static let scrollThresholdEndMultiplier: CGFloat = 3
+    }
+    
+    // MARK: - Properties
+    
     private let featuredBooks = MockData.books
     private var initialItems: [Book] = []
     let isFavorite: (Book) -> Bool
@@ -19,10 +40,18 @@ struct LibraryScreen: View {
     @State private var currentIndex: Int = 0
     @State private var selectedBook: Book? = nil
     
-    init(isFavorite: @escaping (Book) -> Bool, setCurrentBook: @escaping (Book) -> Void = { _ in }, toggleFavorite: @escaping (Book) -> Void = { _ in }) {
+    // MARK: - Initialization
+    
+    init(
+        isFavorite: @escaping (Book) -> Bool,
+        setCurrentBook: @escaping (Book) -> Void = { _ in },
+        toggleFavorite: @escaping (Book) -> Void = { _ in }
+    ) {
         self.isFavorite = isFavorite
         self.setCurrentBook = setCurrentBook
         self.toggleFavorite = toggleFavorite
+        
+        // Initialize carousel with repeated books
         var initialCarouselItems: [UUID: Book] = [:]
         var initialKeys: [UUID] = []
         
@@ -38,35 +67,17 @@ struct LibraryScreen: View {
         _itemKeys = State(initialValue: initialKeys)
     }
     
+    // MARK: - Body
+    
     var body: some View {
         GeometryReader { screenGeometry in
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
-                    Text(L10n.Library.title.uppercased())
-                        .appFont(.h1)
-                        .foregroundColor(.secondaryRed)
-                        .padding(.horizontal)
-                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(L10n.Library.new.uppercased())
-                            .appFont(.h2)
-                            .foregroundColor(.accentDark)
-                            .padding(.horizontal)
-                         
-                        carouselView(screenHeight: screenGeometry.size.height)
-                    }
-                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text(L10n.Library.popular.uppercased())
-                            .appFont(.h2)
-                            .foregroundColor(.accentDark)
-                            .padding(.horizontal)
-                         
-                        booksGridView(screenWidth: screenGeometry.size.width)
-                    }
-                    .padding(.bottom, 24)
+                VStack(alignment: .leading, spacing: ViewMetrics.verticalSpacing) {
+                    headerView
+                    newBooksSection(screenHeight: screenGeometry.size.height)
+                    popularBooksSection(screenWidth: screenGeometry.size.width)
                 }
-                .padding(.top, 16)
+                .padding(.top, ViewMetrics.topPadding)
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background.color)
@@ -84,21 +95,46 @@ struct LibraryScreen: View {
         }
     }
     
-    // MARK: - Helper Methods
+    // MARK: - View Components
     
-    private func openBookDetail(_ book: Book) {
-        selectedBook = book
+    private var headerView: some View {
+        Text(L10n.Library.title.uppercased())
+            .appFont(.h1)
+            .foregroundColor(.secondaryRed)
+            .padding(.horizontal, ViewMetrics.horizontalPadding)
+    }
+    
+    private func newBooksSection(screenHeight: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
+            Text(L10n.Library.new.uppercased())
+                .appFont(.h2)
+                .foregroundColor(.accentDark)
+                .padding(.horizontal, ViewMetrics.horizontalPadding)
+            
+            carouselView(screenHeight: screenHeight)
+        }
+    }
+    
+    private func popularBooksSection(screenWidth: CGFloat) -> some View {
+        VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
+            Text(L10n.Library.popular.uppercased())
+                .appFont(.h2)
+                .foregroundColor(.accentDark)
+                .padding(.horizontal, ViewMetrics.horizontalPadding)
+            
+            booksGridView(screenWidth: screenWidth)
+        }
+        .padding(.bottom, ViewMetrics.bottomPadding)
     }
     
     private func carouselView(screenHeight: CGFloat) -> some View {
-        let itemWidth = UIScreen.main.bounds.width * 0.7
+        let itemWidth = UIScreen.main.bounds.width * ViewMetrics.carouselItemScale
         let itemHeight = itemWidth
-        let sideItemWidth = UIScreen.main.bounds.width * 0.12
-        let spacing: CGFloat = 20
+        let sideItemWidth = UIScreen.main.bounds.width * ViewMetrics.carouselSideItemScale
         
         return ScrollViewReader { scrollView in
             ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: spacing) {
+                HStack(spacing: ViewMetrics.carouselSpacing) {
                     ForEach(itemKeys, id: \.self) { key in
                         if let book = carouselItems[key] {
                             CarouselItemView(book: book) {
@@ -124,19 +160,23 @@ struct LibraryScreen: View {
                 }
             )
         }
-        .frame(height: itemHeight + 16)
+        .frame(height: itemHeight + ViewMetrics.carouselHeightPadding)
     }
     
     private func booksGridView(screenWidth: CGFloat) -> some View {
-        LazyVGrid(
-            columns: Array(repeating: GridItem(.flexible(), spacing: 16), count: 3),
-            spacing: 20
-        ) {
+        let columns = Array(
+            repeating: GridItem(.flexible(), spacing: ViewMetrics.gridItemSpacing),
+            count: ViewMetrics.gridColumnsCount
+        )
+        
+        return LazyVGrid(columns: columns, spacing: ViewMetrics.gridSpacing) {
             ForEach(MockData.books) { book in
                 BookCard(
                     book: book,
-                    width: (screenWidth - 64) / 3,
-                    height: 220,
+                    width: (screenWidth - (ViewMetrics.horizontalPadding * 2) -
+                        (ViewMetrics.gridItemSpacing * CGFloat(ViewMetrics.gridColumnsCount - 1))) /
+                        CGFloat(ViewMetrics.gridColumnsCount),
+                    height: 270,
                     action: {
                         openBookDetail(book)
                     }
@@ -144,18 +184,26 @@ struct LibraryScreen: View {
             }
         }
         .background(Color.clear)
-        .padding(.horizontal)
+        .padding(.horizontal, ViewMetrics.horizontalPadding)
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func openBookDetail(_ book: Book) {
+        selectedBook = book
     }
     
     private func handleScrollChange(minX: CGFloat) {
-        let threshold: CGFloat = UIScreen.main.bounds.width * 1.5
+        let threshold: CGFloat = UIScreen.main.bounds.width * ViewMetrics.scrollThresholdMultiplier
         
         if minX > -threshold && currentIndex > 0 {
             insertItemsAtStart()
             currentIndex -= MockData.books.count
         }
         
-        if minX < -threshold * 3 && currentIndex < itemKeys.count - MockData.books.count {
+        if minX < -threshold * ViewMetrics.scrollThresholdEndMultiplier &&
+            currentIndex < itemKeys.count - MockData.books.count
+        {
             appendItemsAtEnd()
         }
     }

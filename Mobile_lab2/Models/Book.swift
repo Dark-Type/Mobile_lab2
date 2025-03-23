@@ -16,9 +16,9 @@ struct Book: Identifiable {
     let posterImage: Image
     let genres: [String]
     let chapters: [Chapter]
-    var userProgress: ReadingProgress? 
+    var userProgress: ReadingProgress
     var isFavorite: Bool = false
-    
+
     init(id: UUID = UUID(), title: String, author: [Author], description: String, coverImage: Image, posterImage: Image, genres: [String], chapters: [Chapter], userProgress: ReadingProgress? = nil, isFavorite: Bool = false) {
         self.id = id
         self.title = title
@@ -28,7 +28,12 @@ struct Book: Identifiable {
         self.posterImage = posterImage
         self.genres = genres
         self.chapters = chapters
-        self.userProgress = userProgress
+        self.userProgress = userProgress ?? ReadingProgress(
+            bookId: id,
+            totalChapters: chapters.count,
+            currentChapter: 0,
+            currentPosition: 0.0
+        )
         self.isFavorite = isFavorite
     }
 }

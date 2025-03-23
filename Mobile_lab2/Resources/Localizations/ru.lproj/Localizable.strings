@@ -7,7 +7,7 @@
 */
 /* Login Screen */
 "login.title.first" = "открой для себя";
-"login.title.second" = "книжный";
+"login.title.second" = "книжный мир";
 "login.title.third" = "мир";
 "login.password" = "Пароль";
 "login.email" = "Почта";

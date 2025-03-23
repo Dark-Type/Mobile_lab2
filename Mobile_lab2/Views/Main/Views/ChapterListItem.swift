@@ -8,55 +8,84 @@
 import SwiftUI
 
 struct ChapterListItem: View {
+    // MARK: - Properties
+
     let chapter: Chapter
     let action: () -> Void
     
+    // MARK: - Constants
+
+    private enum ViewMetrics {
+        static let verticalSpacing: CGFloat = 4
+        static let verticalPadding: CGFloat = 12
+    }
+    
+    // MARK: - Body
+
     var body: some View {
         Button(action: action) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(chapter.title)
-                        .appFont(statusFont)
-                        .foregroundColor(.accentDark)
-                        
-                }
-                
-                Spacer()
-                
-                statusIcon?
+            itemContent
+        }
+        .buttonStyle(.plain)
+    }
+    
+    // MARK: - Private Views
+
+    private var itemContent: some View {
+        HStack {
+            chapterTitle
+            Spacer()
+            chapterStatusIcon
+        }
+        .padding(.vertical, ViewMetrics.verticalPadding)
+    }
+    
+    private var chapterTitle: some View {
+        VStack(alignment: .leading, spacing: ViewMetrics.verticalSpacing) {
+            Text(chapter.title)
+                .appFont(statusFont)
+                .foregroundColor(.accentDark)
+        }
+    }
+    
+    private var chapterStatusIcon: some View {
+        Group {
+            if let icon = statusIcon {
+                icon
                     .renderingMode(.template)
                     .foregroundColor(statusColor)
             }
-            .padding(.vertical, 12)
         }
-        .buttonStyle(PlainButtonStyle())
     }
     
+    // MARK: - Computed Properties
+
     private var statusIcon: Image? {
-        if chapter.isFinished {
+        switch (chapter.isFinished, chapter.isStarted) {
+        case (true, _):
             return AppIcons.read.image
-        } else if chapter.isStarted {
+        case (false, true):
             return AppIcons.readingNow.image
-        } else {
+        default:
             return nil
         }
     }
+
     private var statusFont: AppFont {
         if chapter.isStarted && !chapter.isFinished {
-            return AppFont.body
-        }
-        else {
-            return AppFont.bodySmall
+            return .body
+        } else {
+            return .bodySmall
         }
     }
 
-    
     private var statusColor: Color {
-        if chapter.isFinished {
+        switch (chapter.isFinished, chapter.isStarted) {
+        case (true, _):
             return AppColors.accentMedium.color
-        } else if chapter.isStarted {
+        case (false, true):
             return AppColors.accentDark.color
-        } else {
+        default:
             return .clear
         }
     }

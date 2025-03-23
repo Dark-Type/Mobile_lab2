@@ -68,6 +68,7 @@ struct ChapterReadingView: View {
             self.principalToolbarItem
         }
         .toolbarBackground(AppColors.background.color, for: .navigationBar)
+        .toolbarBackground(AppColors.background.color, for: .automatic)
         .toolbar(self.showChapters || self.showSettings || self.showQuoteOverlay ? .hidden : .automatic, for: .navigationBar)
         .background(AppColors.background.color)
     }

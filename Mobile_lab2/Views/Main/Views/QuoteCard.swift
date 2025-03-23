@@ -7,26 +7,40 @@
 
 import SwiftUI
 
+import SwiftUI
+
 struct QuoteCard: View {
+    // MARK: - Constants
+
+    private enum ViewMetrics {
+        static let spacing: CGFloat = 12
+        static let padding: CGFloat = 16
+        static let cornerRadius: CGFloat = 12
+        static let lineSpacing: CGFloat = 6
+        static let quoteBottomPadding: CGFloat = 4
+    }
+
+    // MARK: - Properties
+
     let quote: Quote
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: ViewMetrics.spacing) {
             Text(quote.content)
                 .appFont(.quote).italic(true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundColor(AppColors.black.color)
-                .lineSpacing(6)
-                .padding(.bottom, 4)
+                .lineSpacing(ViewMetrics.lineSpacing)
+                .padding(.bottom, ViewMetrics.quoteBottomPadding)
 
             Text(quote.bookTitle + " • " + quote.author.map { $0.name }.joined(separator: ", "))
                 .appFont(.bodySmall)
                 .foregroundColor(.accentDark)
         }
-        .padding(16)
+        .padding(ViewMetrics.padding)
         .frame(maxWidth: .infinity)
         .background(.accentLight)
-        .cornerRadius(12)
+        .cornerRadius(ViewMetrics.cornerRadius)
     }
 }
 

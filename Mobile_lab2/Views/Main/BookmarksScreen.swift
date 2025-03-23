@@ -165,9 +165,9 @@ struct BookmarksScreen: View {
     }
 
     private func continueReading() {
-        if let book = currentBook,
-           let progress = book.userProgress
-        {
+        if let book = currentBook {
+            let progress = book.userProgress
+        
             setCurrentBook(book)
             let chapterIndex = min(progress.currentChapter, book.chapters.count - 1)
             selectedChapter = book.chapters[chapterIndex]
@@ -178,7 +178,7 @@ struct BookmarksScreen: View {
 #Preview {
     BookmarksScreen(
         currentBook: MockData.books[0],
-        favoriteBooks: [MockData.books[1], MockData.books[2]],
+        favoriteBooks: [MockData.books[1], MockData.books[3]],
         setCurrentBook: { _ in },
         toggleFavorite: { _ in }
     )

@@ -5,30 +5,58 @@
 //  Created by dark type on 19.03.2025.
 //
 
-
 import SwiftUI
 
 struct AuthorCard: View {
+    // MARK: - Properties
+
     let author: Author
 
+    // MARK: - Constants
+
+    private enum ViewMetrics {
+        static let imageSize: CGFloat = 64
+        static let imageCornerRadius: CGFloat = 45
+        static let textLeadingPadding: CGFloat = 16
+        static let cardPadding: CGFloat = 16
+        static let cardCornerRadius: CGFloat = 12
+    }
+
+    // MARK: - Body
+
     var body: some View {
+        cardContent
+    }
+
+    // MARK: - Private Views
+
+    private var cardContent: some View {
         HStack {
-            author.image
-                .resizable()
-                .frame(width: 64, height: 64)
-                .cornerRadius(45)
-                .clipped(antialiased: true)
-            
-            Text(author.name)
-                .appFont(.body)
-                .foregroundColor(.accentDark)
-                .padding(.leading, 16)
-                
+            authorImage
+            authorName
         }
         .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(16)
+        .padding(ViewMetrics.cardPadding)
         .background(.accentLight)
-        .cornerRadius(12)
+        .cornerRadius(ViewMetrics.cardCornerRadius)
+    }
+
+    private var authorImage: some View {
+        author.image
+            .resizable()
+            .frame(
+                width: ViewMetrics.imageSize,
+                height: ViewMetrics.imageSize
+            )
+            .cornerRadius(ViewMetrics.imageCornerRadius)
+            .clipped(antialiased: true)
+    }
+
+    private var authorName: some View {
+        Text(author.name)
+            .appFont(.body)
+            .foregroundColor(.accentDark)
+            .padding(.leading, ViewMetrics.textLeadingPadding)
     }
 }
 

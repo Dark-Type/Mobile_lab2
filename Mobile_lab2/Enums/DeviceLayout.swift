@@ -15,15 +15,15 @@ enum DeviceLayout {
     }
 
     func topPadding(safeAreaTop: CGFloat) -> CGFloat {
-        safeAreaTop + (self == .small ? 20 : 30)
+        safeAreaTop + (self == .small ? 10 : -40)
     }
 
     func carouselHeight(totalHeight: CGFloat) -> CGFloat {
-        totalHeight * (self == .small ? 0.15 : 0.25)
+        self == .small ? 200 :  300
     }
 
     func verticalSpacing(totalHeight: CGFloat) -> CGFloat {
-        totalHeight * (self == .small ? 0.0 : 0.025)
+        totalHeight * (self == .small ? 0.04 : 0.05)
     }
 
     func horizontalPadding(totalHeight: CGFloat) -> CGFloat {

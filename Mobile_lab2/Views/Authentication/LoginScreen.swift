@@ -14,6 +14,7 @@ struct LoginScreen: View {
     @State private var password = ""
     @State private var isPasswordVisible = false
     @State private var selectedCarouselIndex = 0
+    @State private var keyboardHeight: CGFloat = 0
     @AppStorage("isLoggedIn") private var isLoggedIn = false
     
     // MARK: - Computed Properties
@@ -37,23 +38,32 @@ struct LoginScreen: View {
                     carouselView
                         .frame(maxWidth: .infinity)
                         .frame(height: carouselHeight)
-                        .padding(.top, topPadding)
+                        .padding(.top)
                         .ignoresSafeArea(edges: .horizontal)
                       
-                    VStack(spacing: verticalSpacing) {
+                    VStack(spacing: 0) {
                         Spacer()
-                            .frame(height: geometry.size.height * 0.3 + geometry.safeAreaInsets.top + 20)
-                          
+                            .frame(height: carouselHeight + verticalSpacing)
+                        
                         titleSection
-                            .padding(.top)
+                            .padding(.top, topPadding)
                           
                         loginForm
                           
                         loginButton
-                            .padding(.top)
+                            .padding(.top, verticalSpacing)
+                            .padding(.bottom, verticalSpacing)
                     }
                     .padding(.horizontal, horizontalPadding)
                     .ignoresSafeArea(edges: .horizontal)
+                    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillShowNotification)) { notification in
+                        if let keyboardFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+                            keyboardHeight = keyboardFrame.height
+                        }
+                    }
+                    .onReceive(NotificationCenter.default.publisher(for: UIResponder.keyboardWillHideNotification)) { _ in
+                        keyboardHeight = 0
+                    }
                 }
             }
         }
@@ -69,7 +79,13 @@ struct LoginScreen: View {
             
             let totalWidth = CGFloat(images.count) * (itemWidth + spacing)
             
-            ZStack {
+            TimelineView(.animation) { timeline in
+                let time = timeline.date.timeIntervalSinceReferenceDate
+                let duration: Double = 10
+                let phase = time.truncatingRemainder(dividingBy: duration) / duration
+                
+                let offset = totalWidth * phase
+                
                 HStack(spacing: spacing) {
                     ForEach(0..<3) { _ in
                         ForEach(0..<images.count, id: \.self) { index in
@@ -82,11 +98,7 @@ struct LoginScreen: View {
                         }
                     }
                 }
-              
-                .modifier(ContinuousScrollModifier(
-                    itemWidth: itemWidth + spacing,
-                    totalWidth: totalWidth
-                ))
+                .offset(x: -offset)
             }
             .frame(width: geometry.size.width)
             .clipped()
@@ -96,18 +108,30 @@ struct LoginScreen: View {
 
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            CustomTextLabel()
-                .text("Открой для себя".uppercased())
-                .appFont(AppFont.h1)
-                .foregroundColor(AppColors.accentLight.color)
-                .lineHeightMultiple(1.0)
-                .padding(.bottom, 8)
+            GeometryReader { geometry in
+                CustomTextLabel()
+                    .text(L10n.Login.Title.first.uppercased())
+                    .appFont(AppFont.h1)
+                    .foregroundColor(AppColors.accentLight.color)
+                    .lineHeightMultiple(1.0)
+                    .lineLimit(1)
+                    .maxWidth(geometry.size.width)
+                    .truncationMode(.byTruncatingTail)
+            }
+            .frame(height: AppFont.h1.size * 1.2)
+            .padding(.bottom, 8)
             
-            CustomTextLabel()
-                .text("Книжный\nмир".uppercased())
-                .appFont(AppFont.title)
-                .foregroundColor(AppColors.secondary.color)
-                .lineHeightMultiple(0.7)
+            GeometryReader { geometry in
+                CustomTextLabel()
+                    .text(L10n.Login.Title.second.uppercased())
+                    .appFont(AppFont.title)
+                    .foregroundColor(AppColors.secondary.color)
+                    .lineHeightMultiple(0.7)
+                    .lineLimit(2)
+                    .maxWidth(geometry.size.width)
+                    .truncationMode(.byTruncatingTail)
+            }
+            .frame(height: AppFont.title.size * 2)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -271,15 +295,27 @@ private struct ContinuousScrollModifier: ViewModifier {
     let totalWidth: CGFloat
     
     @State private var offset: CGFloat = 0
+    @State private var isAnimating: Bool = false
     
     func body(content: Content) -> some View {
         content
             .offset(x: -offset)
             .onAppear {
-                withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
-                    offset = totalWidth
+                startAnimation()
+            }
+            .onChange(of: isAnimating) { isAnimating in
+                if !isAnimating {
+                    startAnimation()
                 }
             }
+    }
+    
+    private func startAnimation() {
+        isAnimating = true
+       
+        withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
+            offset = totalWidth
+        }
     }
 }
 
@@ -306,95 +342,7 @@ extension View {
     }
 }
 
-// MARK: - Preview
 
-struct LoginView_Previews: PreviewProvider {
-    static var previews: some View {
-        LoginScreen()
-    }
-}
-
-struct CustomTextLabel: UIViewRepresentable {
-    private var text: String
-    private var font: UIFont
-    private var color: UIColor
-    private var lineHeightMultiple: CGFloat
-    private var alignment: NSTextAlignment
-    
-    init(text: String = "") {
-        self.text = text
-        self.font = .systemFont(ofSize: 14)
-        self.color = .label
-        self.lineHeightMultiple = 1.0
-        self.alignment = .left
-    }
-    
-    func makeUIView(context: Context) -> UILabel {
-        let label = UILabel()
-        label.numberOfLines = 0
-        
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = lineHeightMultiple
-        paragraphStyle.alignment = alignment
-        
-        let attributedString = NSAttributedString(
-            string: text,
-            attributes: [
-                .font: font,
-                .foregroundColor: color,
-                .paragraphStyle: paragraphStyle
-            ]
-        )
-        
-        label.attributedText = attributedString
-        return label
-    }
-    
-    func updateUIView(_ uiView: UILabel, context: Context) {
-      
-    }
-}
-
-extension CustomTextLabel {
-    func text(_ text: String) -> CustomTextLabel {
-        var view = self
-        view.text = text
-        return view
-    }
-    
-    func font(_ font: UIFont) -> CustomTextLabel {
-        var view = self
-        view.font = font
-        return view
-    }
-    
-    func foregroundColor(_ color: UIColor) -> CustomTextLabel {
-        var view = self
-        view.color = color
-        return view
-    }
-    
-    func lineHeightMultiple(_ value: CGFloat) -> CustomTextLabel {
-        var view = self
-        view.lineHeightMultiple = value
-        return view
-    }
-    
-    func textAlignment(_ alignment: NSTextAlignment) -> CustomTextLabel {
-        var view = self
-        view.alignment = alignment
-        return view
-    }
-    
-    func foregroundColor(_ color: Color) -> CustomTextLabel {
-        foregroundColor(UIColor(color))
-    }
-    
-    func appFont(_ appFont: AppFont) -> CustomTextLabel {
-        if let uiFont = UIFont(name: appFont.name, size: appFont.size) {
-            return font(uiFont)
-        } else {
-            return font(UIFont.systemFont(ofSize: appFont.size))
-        }
-    }
+#Preview{
+    LoginScreen()
 }
