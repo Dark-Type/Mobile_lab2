@@ -127,7 +127,6 @@ struct MainView: View {
         }
     }
 
-
     func toggleFavorite(_ book: Book) {
         let bookID = book.id.uuidString
         var ids = favoriteBookIDs

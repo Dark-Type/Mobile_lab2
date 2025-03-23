@@ -45,11 +45,12 @@ struct LoginScreen: View {
                             .frame(height: geometry.size.height * 0.3 + geometry.safeAreaInsets.top + 20)
                           
                         titleSection
+                            .padding(.top)
                           
                         loginForm
                           
                         loginButton
-                            .padding(.top, layout.loginButtonTopPadding)
+                            .padding(.top)
                     }
                     .padding(.horizontal, horizontalPadding)
                     .ignoresSafeArea(edges: .horizontal)
@@ -95,30 +96,22 @@ struct LoginScreen: View {
 
     private var titleSection: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Text(L10n.Login.Title.first.uppercased())
+            CustomTextLabel()
+                .text("Открой для себя".uppercased())
                 .appFont(AppFont.h1)
-                .foregroundStyle(AppColors.accentLight)
-                .lineSpacing(1)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.bottom, -10)
-
-            Text(L10n.Login.Title.second.uppercased())
-                .font(.custom(AppFont.title.name, size: AppFont.title.size))
-                .foregroundStyle(AppColors.secondary)
-                .lineSpacing(1)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.bottom, -20)
-
-            Text(L10n.Login.Title.third.uppercased())
-                .font(.custom(AppFont.title.name, size: AppFont.title.size))
-                .foregroundStyle(AppColors.secondary)
-                .lineSpacing(1)
-                .fixedSize(horizontal: false, vertical: true)
-                .padding(.top, -20)
+                .foregroundColor(AppColors.accentLight.color)
+                .lineHeightMultiple(1.0)
+                .padding(.bottom, 8)
+            
+            CustomTextLabel()
+                .text("Книжный\nмир".uppercased())
+                .appFont(AppFont.title)
+                .foregroundColor(AppColors.secondary.color)
+                .lineHeightMultiple(0.7)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
-    
+
     private var loginForm: some View {
         VStack(spacing: 0) {
             enhancedTextField(
@@ -318,5 +311,90 @@ extension View {
 struct LoginView_Previews: PreviewProvider {
     static var previews: some View {
         LoginScreen()
+    }
+}
+
+struct CustomTextLabel: UIViewRepresentable {
+    private var text: String
+    private var font: UIFont
+    private var color: UIColor
+    private var lineHeightMultiple: CGFloat
+    private var alignment: NSTextAlignment
+    
+    init(text: String = "") {
+        self.text = text
+        self.font = .systemFont(ofSize: 14)
+        self.color = .label
+        self.lineHeightMultiple = 1.0
+        self.alignment = .left
+    }
+    
+    func makeUIView(context: Context) -> UILabel {
+        let label = UILabel()
+        label.numberOfLines = 0
+        
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.lineHeightMultiple = lineHeightMultiple
+        paragraphStyle.alignment = alignment
+        
+        let attributedString = NSAttributedString(
+            string: text,
+            attributes: [
+                .font: font,
+                .foregroundColor: color,
+                .paragraphStyle: paragraphStyle
+            ]
+        )
+        
+        label.attributedText = attributedString
+        return label
+    }
+    
+    func updateUIView(_ uiView: UILabel, context: Context) {
+      
+    }
+}
+
+extension CustomTextLabel {
+    func text(_ text: String) -> CustomTextLabel {
+        var view = self
+        view.text = text
+        return view
+    }
+    
+    func font(_ font: UIFont) -> CustomTextLabel {
+        var view = self
+        view.font = font
+        return view
+    }
+    
+    func foregroundColor(_ color: UIColor) -> CustomTextLabel {
+        var view = self
+        view.color = color
+        return view
+    }
+    
+    func lineHeightMultiple(_ value: CGFloat) -> CustomTextLabel {
+        var view = self
+        view.lineHeightMultiple = value
+        return view
+    }
+    
+    func textAlignment(_ alignment: NSTextAlignment) -> CustomTextLabel {
+        var view = self
+        view.alignment = alignment
+        return view
+    }
+    
+    func foregroundColor(_ color: Color) -> CustomTextLabel {
+        foregroundColor(UIColor(color))
+    }
+    
+    func appFont(_ appFont: AppFont) -> CustomTextLabel {
+        if let uiFont = UIFont(name: appFont.name, size: appFont.size) {
+            return font(uiFont)
+        } else {
+            return font(UIFont.systemFont(ofSize: appFont.size))
+        }
     }
 }

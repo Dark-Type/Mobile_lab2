@@ -60,7 +60,7 @@ struct ChapterReadingView: View {
                 self.quoteSelectionOverlay
             }
         }.onAppear {
-            setCurrentBook(book)
+            self.setCurrentBook(self.book)
         }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
@@ -521,9 +521,8 @@ struct RoundedCorner: Shape {
     NavigationStack {
         ChapterReadingView(
             book: MockData.books[0],
-            setCurrentBook: { _ in } ,
+            setCurrentBook: { _ in },
             chapter: MockData.books[0].chapters[1]
-            
         )
     }
 }
