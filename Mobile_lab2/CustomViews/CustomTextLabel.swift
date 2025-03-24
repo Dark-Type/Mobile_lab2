@@ -139,7 +139,6 @@ extension CustomTextLabel {
     func lineLimit(_ limit: Int?) -> CustomTextLabel {
         var view = self
         view.lineLimit = limit
-        // Automatically set truncation mode for single-line text
         if let limit = limit, limit == 1 {
             view.truncationMode = .byTruncatingTail
         }

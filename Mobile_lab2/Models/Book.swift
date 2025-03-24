@@ -15,7 +15,7 @@ struct Book: Identifiable {
     let coverImage: Image
     let posterImage: Image
     let genres: [String]
-    let chapters: [Chapter]
+    var chapters: [Chapter]
     var userProgress: ReadingProgress
     var isFavorite: Bool = false
 
