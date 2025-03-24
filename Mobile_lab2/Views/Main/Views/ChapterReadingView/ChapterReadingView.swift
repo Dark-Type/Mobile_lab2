@@ -840,7 +840,7 @@ extension ChapterReadingView {
                     ChapterListItem(chapter: chapter) {
                         withAnimation {
                             self.showChapters = false
-                            currentChapter = book.chapters[chapter.number + 1]
+                            currentChapter = book.chapters[chapter.number]
                         }
                     }
                 }

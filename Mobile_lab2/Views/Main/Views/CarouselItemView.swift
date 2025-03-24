@@ -38,8 +38,10 @@ struct CarouselItemView: View {
             bookImage
             
             gradientOverlay
+                .frame(width: imageWidth, height: imageWidth)
             
             textOverlay
+                .frame(width: imageWidth, height: imageWidth, alignment: .bottom)
         }
         .cornerRadius(ViewMetrics.cornerRadius)
         .padding(.horizontal)
@@ -79,6 +81,7 @@ struct CarouselItemView: View {
                 .lineLimit(2)
                 .padding(.bottom, ViewMetrics.bottomPadding)
         }
+        .padding(.horizontal)
     }
     
     // MARK: - Helper Methods

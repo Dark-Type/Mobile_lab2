@@ -16,6 +16,7 @@ enum AppFont {
     case footnote
     case text
     case quote
+    case bold
 
     var name: String {
         switch self {
@@ -24,7 +25,9 @@ enum AppFont {
         case .body, .bodySmall, .footnote:
             return "VelaSans"
         case .text, .quote:
-            return "Georgia" 
+            return "Georgia"
+        case .bold:
+            return "VelaSans-Bold"
         }
     }
 
@@ -45,6 +48,8 @@ enum AppFont {
         case .text:
             return 14
         case .quote:
+            return 16
+        case .bold:
             return 16
         }
     }
@@ -67,7 +72,10 @@ enum AppFont {
             return 1.5
         case .quote:
             return 1.3
+        case .bold:
+            return 1.0
         }
+    
     }
 }
 

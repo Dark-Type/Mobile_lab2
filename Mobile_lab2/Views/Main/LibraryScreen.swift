@@ -51,16 +51,13 @@ struct LibraryScreen: View {
         self.setCurrentBook = setCurrentBook
         self.toggleFavorite = toggleFavorite
         
-        // Initialize carousel with repeated books
         var initialCarouselItems: [UUID: Book] = [:]
         var initialKeys: [UUID] = []
         
-        for _ in 0 ..< 4 {
-            for book in MockData.books {
-                let id = UUID()
-                initialCarouselItems[id] = book
-                initialKeys.append(id)
-            }
+        for book in MockData.books.prefix(3) {
+            let id = UUID()
+            initialCarouselItems[id] = book
+            initialKeys.append(id)
         }
         
         _carouselItems = State(initialValue: initialCarouselItems)

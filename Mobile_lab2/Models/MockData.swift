@@ -32,9 +32,9 @@ enum MockData {
             isFinished: true
         ))
         
-        for i in 1 ... count {
+        for i in 2 ... count {
             chapters.append(Chapter(
-                title: "Глава \(i)",
+                title: "Глава \(i-1)",
                 number: i,
                 content: sampleChapterContent,
                 isStarted: i < 3,

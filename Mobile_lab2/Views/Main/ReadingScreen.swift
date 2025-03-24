@@ -51,7 +51,10 @@ struct ReadingScreen: View {
                 posterView
                 actionButtons
                 bookInfoSection
-                readingProgressSection
+                if book.userProgress.currentChapter != 0 {
+                    readingProgressSection
+                }
+                
                 chaptersSection
             }
             .padding(.bottom, ViewMetrics.bottomPadding)
@@ -178,9 +181,7 @@ struct ReadingScreen: View {
                 .foregroundStyle(.accentDark)
             
             ForEach(book.chapters) { chapter in
-                ChapterListItem(chapter: chapter) {
-                    openChapter(chapter)
-                }
+                ChapterListItem(chapter: chapter, action: { openChapter(chapter) }, showStatusIcon: true)
             }
         }
         .padding(.horizontal, ViewMetrics.horizontalPadding)

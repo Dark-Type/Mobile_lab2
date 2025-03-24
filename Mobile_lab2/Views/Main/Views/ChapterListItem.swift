@@ -12,6 +12,13 @@ struct ChapterListItem: View {
 
     let chapter: Chapter
     let action: () -> Void
+    let showStatusIcon: Bool
+    
+    init(chapter: Chapter, action: @escaping () -> Void, showStatusIcon: Bool = false) {
+        self.chapter = chapter
+        self.action = action
+        self.showStatusIcon = showStatusIcon
+    }
     
     // MARK: - Constants
 
@@ -35,7 +42,9 @@ struct ChapterListItem: View {
         HStack {
             chapterTitle
             Spacer()
-            chapterStatusIcon
+            if showStatusIcon {
+                chapterStatusIcon
+            }
         }
         .padding(.vertical, ViewMetrics.verticalPadding)
     }
@@ -45,6 +54,7 @@ struct ChapterListItem: View {
             Text(chapter.title)
                 .appFont(statusFont)
                 .foregroundColor(.accentDark)
+                
         }
     }
     
@@ -73,7 +83,7 @@ struct ChapterListItem: View {
 
     private var statusFont: AppFont {
         if chapter.isStarted && !chapter.isFinished {
-            return .body
+            return .bold
         } else {
             return .bodySmall
         }
@@ -123,7 +133,9 @@ struct ChapterListItem: View {
                 isStarted: true,
                 isFinished: true
             ),
-            action: {}
+            action: {},
+            showStatusIcon: true
+            
         )
     }
     .padding()
