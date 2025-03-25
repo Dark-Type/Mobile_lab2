@@ -25,7 +25,7 @@ struct SearchScreen: View {
     // MARK: - State
     
     @State private var searchText = ""
-    @State private var recentSearches = ["Android", "Чистый код", "Чистая Архитектура", "Advanced Swift", "iOS"]
+    @State private var recentSearches = isEmptyStateTest ? [] : ["Android", "Чистый код", "Чистая Архитектура", "Advanced Swift", "iOS"]
     @State private var selectedBook: Book? = nil
     @State private var isReadingScreenPresented = false
     
@@ -36,6 +36,10 @@ struct SearchScreen: View {
     let isFavorite: (Book) -> Bool
     let setCurrentBook: (Book) -> Void
     let toggleFavorite: (Book) -> Void
+    
+    static var isEmptyStateTest: Bool {
+        ProcessInfo.processInfo.arguments.contains("-empty-state-test")
+    }
     
     // MARK: - Initializer
     
@@ -52,7 +56,7 @@ struct SearchScreen: View {
     // MARK: - Body
     
     var body: some View {
-        ScrollView {
+        ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: ViewMetrics.mainSpacing) {
                 searchBar
                 
@@ -94,6 +98,7 @@ struct SearchScreen: View {
                 TextField("", text: $searchText)
                     .appFont(.body)
                     .foregroundStyle(.accentDark)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.searchTextField.rawValue)
                     .placeholder(when: searchText.isEmpty) {
                         Text(L10n.Search.searchViewText)
                             .appFont(.body)
@@ -110,6 +115,7 @@ struct SearchScreen: View {
                 RoundedRectangle(cornerRadius: ViewMetrics.cornerRadius)
                     .stroke(AppColors.accentMedium.color, lineWidth: ViewMetrics.strokeWidth)
             )
+
             .cornerRadius(ViewMetrics.cornerRadius)
         }
     }
@@ -122,12 +128,13 @@ struct SearchScreen: View {
                 .renderingMode(.template)
                 .foregroundColor(.accentDark)
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.searchClearButton.rawValue)
     }
     
     private var recentSearchesSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             sectionTitle(L10n.Search.recent)
-            
+                .accessibilityIdentifier(AccessibilityIdentifiers.recentSearchesTitle.rawValue)
             VStack(spacing: ViewMetrics.itemSpacing) {
                 ForEach(recentSearches.indices, id: \.self) { index in
                     LastRequestItemCard(
@@ -136,6 +143,7 @@ struct SearchScreen: View {
                             recentSearches.remove(at: index)
                         }
                     )
+                    .accessibilityIdentifier("\(AccessibilityIdentifiers.recentSearchItem.rawValue)_\(index)")
                     .onTapGesture {
                         searchText = recentSearches[index]
                     }
@@ -143,38 +151,50 @@ struct SearchScreen: View {
             }
         }
     }
-    
+
     private var genresGridSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.itemSpacing) {
             sectionTitle(L10n.Search.genres)
-            
-            LazyVGrid(
-                columns: [
-                    GridItem(.flexible(minimum: ViewMetrics.gridMinimumItemWidth), spacing: ViewMetrics.gridSpacing),
-                    GridItem(.flexible(minimum: ViewMetrics.gridMinimumItemWidth), spacing: ViewMetrics.gridSpacing)
-                ],
-                spacing: ViewMetrics.gridSpacing
-            ) {
-                ForEach(genres, id: \.self) { genre in
-                    GenreCard(genre: genre)
-                        .onTapGesture {
-                            searchText += "жанр: \(genre)"
-                        }
+                .accessibilityIdentifier(AccessibilityIdentifiers.genresSectionTitle.rawValue)
+                
+            if genres.isEmpty {
+                emptyGenresView
+            } else {
+                LazyVGrid(
+                    columns: [
+                        GridItem(.flexible(minimum: ViewMetrics.gridMinimumItemWidth), spacing: ViewMetrics.gridSpacing),
+                        GridItem(.flexible(minimum: ViewMetrics.gridMinimumItemWidth), spacing: ViewMetrics.gridSpacing)
+                    ],
+                    spacing: ViewMetrics.gridSpacing
+                ) {
+                    ForEach(genres, id: \.self) { genre in
+                        GenreCard(genre: genre)
+                            .accessibilityIdentifier("\(AccessibilityIdentifiers.genreCard.rawValue)_\(genre.lowercased().replacingOccurrences(of: " ", with: "_"))")
+                            .onTapGesture {
+                                searchText += "жанр: \(genre)"
+                            }
+                    }
                 }
             }
         }
     }
-    
+        
     private var authorsSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             sectionTitle(L10n.Search.authors)
-            
-            VStack(spacing: ViewMetrics.itemSpacing) {
-                ForEach(authors) { author in
-                    AuthorCard(author: author)
-                        .onTapGesture {
-                            searchText += "автор: \(author.name)"
-                        }
+                .accessibilityIdentifier(AccessibilityIdentifiers.authorsSectionTitle.rawValue)
+              
+            if authors.isEmpty {
+                emptyAuthorsView
+            } else {
+                VStack(spacing: ViewMetrics.itemSpacing) {
+                    ForEach(authors) { author in
+                        AuthorCard(author: author)
+                            .accessibilityIdentifier("\(AccessibilityIdentifiers.authorCard.rawValue)_\(author.id)")
+                            .onTapGesture {
+                                searchText += "автор: \(author.name)"
+                            }
+                    }
                 }
             }
         }
@@ -183,21 +203,78 @@ struct SearchScreen: View {
     private var searchResultsSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             VStack(spacing: ViewMetrics.sectionSpacing) {
-                ForEach(MockData.books) { book in
-                    BookmarkListItem(
-                        book: book,
-                        isCurrent: false,
-                        startReadingAction: {
-                            openBookDetail(book)
-                        },
-                        openBookDetailsAction: {
-                            openBookDetail(book)
-                        }
-                    )
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                if MockData.books.isEmpty {
+                    emptySearchResultsView
+                } else {
+                    ForEach(MockData.books) { book in
+                        BookmarkListItem(
+                            book: book,
+                            isCurrent: false,
+                            startReadingAction: {
+                                openBookDetail(book)
+                            },
+                            openBookDetailsAction: {
+                                openBookDetail(book)
+                            }
+                        )
+                        .accessibilityIdentifier("\(AccessibilityIdentifiers.searchResultItem.rawValue)_\(book.id)")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    }
                 }
             }
         }
+    }
+
+    // MARK: Empty states
+
+    private var emptyGenresView: some View {
+        VStack {
+            Text("Жанры недоступны")
+                .appFont(.body)
+                .foregroundColor(.accentMedium)
+                .multilineTextAlignment(.center)
+                .padding(.vertical, 24)
+        }
+        .frame(maxWidth: .infinity)
+        .background(AppColors.white.color.opacity(0.5))
+        .cornerRadius(ViewMetrics.cornerRadius)
+        .accessibilityIdentifier(AccessibilityIdentifiers.emptyGenresView.rawValue)
+    }
+       
+    private var emptyAuthorsView: some View {
+        VStack {
+            Text("Авторы недоступны")
+                .appFont(.body)
+                .foregroundColor(.accentMedium)
+                .multilineTextAlignment(.center)
+                .padding(.vertical, 24)
+        }
+        .frame(maxWidth: .infinity)
+        .background(AppColors.white.color.opacity(0.5))
+        .cornerRadius(ViewMetrics.cornerRadius)
+        .accessibilityIdentifier(AccessibilityIdentifiers.emptyAuthorsView.rawValue)
+    }
+
+    private var emptySearchResultsView: some View {
+        VStack(spacing: 20) {
+            Image("empty_search")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .frame(width: 120, height: 120)
+            
+            Text("Ничего не найдено")
+                .appFont(.h2)
+                .foregroundColor(.accentDark)
+                .multilineTextAlignment(.center)
+            
+            Text("Попробуйте другие запросы")
+                .appFont(.body)
+                .foregroundColor(.accentMedium)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.top, 50)
+        .accessibilityIdentifier(AccessibilityIdentifiers.emptySearchResultsView.rawValue)
     }
     
     // MARK: - Helper Methods

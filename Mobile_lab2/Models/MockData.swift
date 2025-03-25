@@ -8,7 +8,14 @@
 import Foundation
 
 enum MockData {
-    static let sampleChapterContent = """
+    static var isEmptyStateTest: Bool {
+        ProcessInfo.processInfo.arguments.contains("-empty-state-test")
+    }
+    static var isTestMode: Bool {
+            ProcessInfo.processInfo.arguments.contains("-UITestMode")
+        }
+    
+    static let sampleChapterContent = isEmptyStateTest ? "" : """
     Париж, Лувр 21.46
     Знаменитый куратор Жак Соньер, пошатываясь, прошел под сводчатой аркой Большой галереи и устремился к первой попавшейся ему на глаза картине, полотну Караваджо. Ухватился руками за позолоченную раму и стал тянуть ее на себя, пока шедевр не сорвался со стены и не рухнул на семидесятилетнего старика Соньера, погребя его под собой.\nКак и предполагал Соньер, неподалеку с грохотом опустилась металлическая решетка, преграждающая доступ в этот зал. Паркетный пол содрогнулся. Где-то завыла сирена сигнализации.\nНесколько секунд куратор лежал неподвижно, хватая ртом воздух и пытаясь сообразить, на каком свете находится. Я все еще жив. Потом он выполз из-под полотна и начал судорожно озираться в поисках места, где можно спрятаться.\n Голос прозвучал неожиданно близко:\n — Не двигаться.\n Стоявший на четвереньках куратор похолодел, потом медленно обернулся. Всего в пятнадцати футах от него, за решеткой, высилась внушительная и грозная фигура его преследователя. Высокий, широкоплечий, с мертвенно-бледной кожей и редкими белыми волосами. Белки розовые, а зрачки угрожающего темнокрасного цвета. Альбинос достал из кармана пистолет, сунул длинный ствол в отверстие между железными прутьями и прицелился в куратора.\n— Ты не должен бежать, — произнес он с трудно определимым акцентом. — А теперь говори: где оно?\n— Но я ведь уже сказал, — запинаясь пробормотал куратор, по-прежнему беспомощно стоявший на четвереньках. — Понятия не имею, о чем вы говорите.\n— Ложь! — Мужчина был неподвижен и смотрел на него немигающим взором страшных глаз, в которых поблескивали красные искорки. — У тебя и твоих братьев есть кое-что, принадлежащее отнюдь не вам. Куратор содрогнулся. Откуда он может знать?\n— И сегодня этот предмет обретет своих настоящих владельцев. Так что скажи, где он, и останешься жив. — Мужчина опустил ствол чуть ниже, теперь он был направлен прямо в голову куратора. — Или это тайна, ради которой ты готов умереть?
     """
@@ -34,7 +41,7 @@ enum MockData {
         
         for i in 2 ... count {
             chapters.append(Chapter(
-                title: "Глава \(i-1)",
+                title: "Глава \(i - 1)",
                 number: i,
                 content: sampleChapterContent,
                 isStarted: i < 3,
@@ -45,7 +52,7 @@ enum MockData {
         return chapters
     }
     
-    static let books: [Book] = [
+    static let books: [Book] = isEmptyStateTest ? [] : [
         Book(
             title: "Код да Винчи",
             author: [Author("Дэн Браун", MockBooks.book1.image)],
@@ -110,7 +117,7 @@ enum MockData {
         )
     ]
     
-    static let quotes: [Quote] = [
+    static let quotes: [Quote] = isEmptyStateTest ? [] : [
         Quote(
             content: "Я все еще жив",
             bookId: books[0].id,
@@ -130,8 +137,21 @@ enum MockData {
             author: books[2].author
         )
     ]
+    static var testCurrentBook: Book? {
+          if isTestMode && !isEmptyStateTest {
+              return books.first
+          }
+          return nil
+      }
+      
+      static var testFavoriteBooks: [Book]? {
+          if isTestMode && !isEmptyStateTest {
+             
+              return [books[1], books[2]]
+          }
+          return []
+      }
+    static let genres = isEmptyStateTest ? [] : ["Классика", "Фэнтези", "Фантастика", "Детектив", "Триллер", "Исторический роман", "Любовный роман", "Приключения", "Поэзия", "Биография", "Для детей", "Для подростков"]
     
-    static let genres = ["Классика", "Фэнтези", "Фантастика", "Детектив", "Триллер", "Исторический роман", "Любовный роман", "Приключения", "Поэзия", "Биография", "Для детей", "Для подростков"]
-    
-    static let authors = [Author("Дэн Браун", MockBooks.book1.image), Author("Marcus Webb", MockBooks.book1.image), Author("Eleanor Hughes", MockBooks.book1.image), Author("Jonathan Blake", MockBooks.book1.image), Author("Sarah Chen", MockBooks.book1.image), Author("Thomas Wilson", MockBooks.book1.image)]
+    static let authors = isEmptyStateTest ? [] : [Author("Дэн Браун", MockBooks.book1.image), Author("Marcus Webb", MockBooks.book1.image), Author("Eleanor Hughes", MockBooks.book1.image), Author("Jonathan Blake", MockBooks.book1.image), Author("Sarah Chen", MockBooks.book1.image), Author("Thomas Wilson", MockBooks.book1.image)]
 }

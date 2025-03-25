@@ -33,6 +33,7 @@ struct CustomTabBar: View {
             tabBarBackground
             middleButton
         }
+        .background(Color.clear)
     }
     
     // MARK: - Private Views
@@ -40,9 +41,7 @@ struct CustomTabBar: View {
     private var tabBarBackground: some View {
         HStack(spacing: 0) {
             leftTabButtons
-            
             middleButtonSpace
-            
             rightTabButtons
         }
         .frame(height: ViewMetrics.tabBarHeight)
@@ -81,10 +80,7 @@ struct CustomTabBar: View {
                 .resizable()
                 .renderingMode(.template)
                 .aspectRatio(contentMode: .fit)
-                .frame(
-                    width: ViewMetrics.iconSize,
-                    height: ViewMetrics.iconSize
-                )
+                .frame(width: ViewMetrics.iconSize, height: ViewMetrics.iconSize)
                 .foregroundColor(AppColors.accentMedium.color)
                 .padding()
         }
@@ -96,18 +92,11 @@ struct CustomTabBar: View {
             ZStack {
                 Circle()
                     .fill(AppColors.secondary.color)
-                    .frame(
-                        width: ViewMetrics.middleButtonSize,
-                        height: ViewMetrics.middleButtonSize
-                    )
-                
+                    .frame(width: ViewMetrics.middleButtonSize, height: ViewMetrics.middleButtonSize)
                 AppIcons.play.image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(
-                        width: ViewMetrics.iconSize,
-                        height: ViewMetrics.iconSize
-                    )
+                    .frame(width: ViewMetrics.iconSize, height: ViewMetrics.iconSize)
                     .foregroundColor(.white)
             }
         }
@@ -116,20 +105,30 @@ struct CustomTabBar: View {
     }
     
     private func tabButton(icon: AppIcons, index: Int) -> some View {
-        Button(action: {
+        let identifierName: String
+        switch index {
+        case 0:
+            identifierName = AccessibilityIdentifiers.libraryTabButton.rawValue
+        case 1:
+            identifierName = AccessibilityIdentifiers.searchTabButton.rawValue
+        case 2:
+            identifierName = AccessibilityIdentifiers.bookmarksTabButton.rawValue
+        default:
+            identifierName = "tab_button_\(index)"
+        }
+        
+        return Button(action: {
             selectedTab = index
         }) {
             icon.image
                 .resizable()
                 .renderingMode(.template)
                 .aspectRatio(contentMode: .fit)
-                .frame(
-                    width: ViewMetrics.iconSize,
-                    height: ViewMetrics.iconSize
-                )
+                .frame(width: ViewMetrics.iconSize, height: ViewMetrics.iconSize)
                 .foregroundColor(tabIconColor(for: index))
                 .padding()
         }
+        .accessibilityIdentifier(identifierName)
         .frame(maxWidth: .infinity)
     }
     

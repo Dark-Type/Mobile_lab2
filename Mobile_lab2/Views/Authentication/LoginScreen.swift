@@ -95,6 +95,7 @@ struct LoginScreen: View {
                                 .frame(width: itemWidth, height: geometry.size.height)
                                 .clipped()
                                 .cornerRadius(10)
+                                .accessibilityIdentifier("\(AccessibilityIdentifiers.carouselImage.rawValue)\(index)")
                         }
                     }
                 }
@@ -103,6 +104,7 @@ struct LoginScreen: View {
             .frame(width: geometry.size.width)
             .clipped()
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.carouselView.rawValue)
         .frame(height: 300)
     }
 
@@ -117,6 +119,7 @@ struct LoginScreen: View {
                     .lineLimit(1)
                     .maxWidth(geometry.size.width)
                     .truncationMode(.byTruncatingTail)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.titleFirstLine.rawValue)
             }
             .frame(height: AppFont.h1.size * 1.2)
             .padding(.bottom, 8)
@@ -130,6 +133,7 @@ struct LoginScreen: View {
                     .lineLimit(2)
                     .maxWidth(geometry.size.width)
                     .truncationMode(.byTruncatingTail)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.titleSecondLine.rawValue)
             }
             .frame(height: AppFont.title.size * 2)
         }
@@ -171,7 +175,7 @@ struct LoginScreen: View {
                 .padding(.vertical, 16)
                 
             TextField("", text: text)
-                
+                .accessibilityIdentifier(AccessibilityIdentifiers.emailTextField.rawValue)
                 .foregroundColor(AppColors.accentLight.color)
                 .appFont(.bodySmall)
                     
@@ -214,11 +218,13 @@ struct LoginScreen: View {
                 Group {
                     if isVisible.wrappedValue {
                         TextField("", text: text)
+                            .accessibilityIdentifier(AccessibilityIdentifiers.passwordTextField.rawValue)
                             .foregroundStyle(.accentLight)
                             .appFont(AppFont.bodySmall)
                             
                     } else {
                         SecureField("", text: text)
+                            .accessibilityIdentifier(AccessibilityIdentifiers.passwordTextField.rawValue)
                             .foregroundStyle(.accentLight)
                             .appFont(.bodySmall)
                     }
@@ -253,6 +259,7 @@ struct LoginScreen: View {
                 .foregroundColor(isFormValid ? AppColors.accentDark.color : AppColors.white.color)
                 .cornerRadius(10)
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.loginButton.rawValue)
         .disabled(!isFormValid)
     }
     
@@ -342,7 +349,6 @@ extension View {
     }
 }
 
-
-#Preview{
+#Preview {
     LoginScreen()
 }

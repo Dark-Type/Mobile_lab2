@@ -10,7 +10,7 @@ import SwiftUI
 struct BookmarksScreen: View {
     // MARK: - State
 
-    @State private var selectedBook: Book? = nil
+    @State private var selectedBook: Book?
     @State private var selectedChapter: Chapter? = nil
     
     // MARK: - Properties
@@ -19,7 +19,12 @@ struct BookmarksScreen: View {
     let favoriteBooks: [Book]
     let setCurrentBook: (Book) -> Void
     let toggleFavorite: (Book) -> Void
-    
+    let quotes = MockData.quotes
+
+    static var isTestMode: Bool {
+        ProcessInfo.processInfo.arguments.contains("-UITestMode")
+    }
+
     // MARK: - Body
 
     var body: some View {
@@ -27,16 +32,31 @@ struct BookmarksScreen: View {
             VStack(alignment: .leading, spacing: 24) {
                 titleView
                    
-                if let book = currentBook {
-                    currentlyReadingSection(book: book)
+                if BookmarksScreen.isTestMode {
+                    if let book = MockData.testCurrentBook {
+                        currentlyReadingSection(book: book)
+                    }
+                    if !MockData.isEmptyStateTest {
+                        favoriteBooksSection
+                    } else {
+                        emptyFavoriteBooksView
+                    }
+                } else {
+                    if let book = currentBook {
+                        currentlyReadingSection(book: book)
+                    }
+                    if !favoriteBooks.isEmpty {
+                        favoriteBooksSection
+                    } else {
+                        emptyFavoriteBooksView
+                    }
                 }
-                   
-                if !favoriteBooks.isEmpty {
-                    favoriteBooksSection
-                }
-                   
-                if !MockData.quotes.isEmpty {
+                               
+                if !quotes.isEmpty {
                     quotesSection
+                                    
+                } else {
+                    emptyQuotesView
                 }
             }
             .padding(.top, 16)
@@ -72,6 +92,7 @@ struct BookmarksScreen: View {
             .appFont(.h1)
             .foregroundColor(.secondaryRed)
             .padding(.horizontal)
+            .accessibilityIdentifier(AccessibilityIdentifiers.bookmarksTitle.rawValue)
     }
      
     private func currentlyReadingSection(book: Book) -> some View {
@@ -80,7 +101,7 @@ struct BookmarksScreen: View {
                 Text(L10n.Bookmarks.current.uppercased())
                     .appFont(.h2)
                     .foregroundColor(.accentDark)
-                      
+                    .accessibilityIdentifier(AccessibilityIdentifiers.currentReadingSectionTitle.rawValue)
                 Spacer()
                    
                 continueReadingButton
@@ -93,6 +114,7 @@ struct BookmarksScreen: View {
                 startReadingAction: { openBookDetail(book) },
                 openBookDetailsAction: { openBookDetail(book) }
             )
+            .accessibilityIdentifier(AccessibilityIdentifiers.currentReadingBookItem.rawValue)
         }
     }
     
@@ -112,6 +134,7 @@ struct BookmarksScreen: View {
             }
         }
         .buttonStyle(PlainButtonStyle())
+        .accessibilityIdentifier(AccessibilityIdentifiers.continueReadingButton.rawValue)
     }
      
     private var favoriteBooksSection: some View {
@@ -120,6 +143,7 @@ struct BookmarksScreen: View {
                 .appFont(.h2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal)
+                .accessibilityIdentifier(AccessibilityIdentifiers.favoriteBooksSectionTitle.rawValue)
             
             favoriteBooksList
         }
@@ -127,13 +151,14 @@ struct BookmarksScreen: View {
     
     private var favoriteBooksList: some View {
         VStack(spacing: 16) {
-            ForEach(favoriteBooks) { book in
+            ForEach(BookmarksScreen.isTestMode ? MockData.testFavoriteBooks! : favoriteBooks) { book in
                 BookmarkListItem(
                     book: book,
                     isCurrent: false,
                     startReadingAction: { openBookDetail(book) },
                     openBookDetailsAction: { openBookDetail(book) }
                 )
+                .accessibilityIdentifier("\(AccessibilityIdentifiers.favoriteBookItem.rawValue)_\(book.id)")
             }
         }
     }
@@ -144,6 +169,7 @@ struct BookmarksScreen: View {
                 .appFont(.h2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal)
+                .accessibilityIdentifier(AccessibilityIdentifiers.quotesSectionTitle.rawValue)
             
             quotesList
         }
@@ -154,14 +180,67 @@ struct BookmarksScreen: View {
             ForEach(MockData.quotes) { quote in
                 QuoteCard(quote: quote)
                     .padding(.horizontal)
+                    .accessibilityIdentifier("\(AccessibilityIdentifiers.quoteItem.rawValue)_\(quote.id)")
             }
         }
     }
-    
+
+    private var emptyFavoriteBooksView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(L10n.Bookmarks.favorite.uppercased())
+                .appFont(.h2)
+                .foregroundColor(.accentDark)
+                .padding(.horizontal)
+                .accessibilityIdentifier(AccessibilityIdentifiers.favoriteBooksSectionTitle.rawValue)
+                
+            emptyStateCard(
+                message: "У вас нет избранных книг",
+                description: "Добавляйте книги в избранное, чтобы быстро находить их здесь"
+            )
+            .accessibilityIdentifier(AccessibilityIdentifiers.emptyFavoriteBooksView.rawValue)
+        }
+    }
+        
+    private var emptyQuotesView: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Text(L10n.Bookmarks.quotes.uppercased())
+                .appFont(.h2)
+                .foregroundColor(.accentDark)
+                .padding(.horizontal)
+                .accessibilityIdentifier(AccessibilityIdentifiers.quotesSectionTitle.rawValue)
+                
+            emptyStateCard(
+                message: "У вас нет сохраненных цитат",
+                description: "Сохраняйте понравившиеся цитаты во время чтения"
+            )
+            .accessibilityIdentifier(AccessibilityIdentifiers.emptyQuotesView.rawValue)
+        }
+    }
+        
+    private func emptyStateCard(message: String, description: String) -> some View {
+        VStack(spacing: 8) {
+            Text(message)
+                .appFont(.body)
+                .foregroundColor(.accentDark)
+                .multilineTextAlignment(.center)
+                
+            Text(description)
+                .appFont(.h2)
+                .foregroundColor(.accentMedium)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 24)
+        .padding(.horizontal, 16)
+        .background(AppColors.white.color.opacity(0.5))
+        .cornerRadius(12)
+        .padding(.horizontal)
+    }
+        
     // MARK: - Actions
 
     private func openBookDetail(_ book: Book) {
-        selectedBook = book
+        selectedBook = BookmarksScreen.isTestMode ? MockData.testCurrentBook : book
     }
 
     private func continueReading() {

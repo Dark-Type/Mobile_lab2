@@ -31,15 +31,16 @@ struct MainView: View {
 
     var favoriteBooks: [Book] {
         let ids = favoriteBookIDs
-        return MockData.books.filter { book in
-            ids.contains(book.id.uuidString)
-        }
+        return MockData.books.filter { book in ids.contains(book.id.uuidString) }
     }
 
     // MARK: - View
 
     var body: some View {
         ZStack {
+            AppColors.background.color
+                .ignoresSafeArea()
+
             TabView(selection: $selectedTab) {
                 LibraryScreen(
                     isFavorite: isFavorite(_:),
@@ -47,6 +48,7 @@ struct MainView: View {
                     toggleFavorite: toggleFavorite
                 )
                 .tag(0)
+                .toolbarBackground(.hidden, for: .tabBar)
 
                 SearchScreen(
                     isFavorite: isFavorite(_:),
@@ -54,6 +56,7 @@ struct MainView: View {
                     toggleFavorite: toggleFavorite
                 )
                 .tag(1)
+                .toolbarBackground(.hidden, for: .tabBar)
 
                 BookmarksScreen(
                     currentBook: currentBook,
@@ -62,9 +65,9 @@ struct MainView: View {
                     toggleFavorite: toggleFavorite
                 )
                 .tag(2)
+                .toolbarBackground(.hidden, for: .tabBar)
             }
-            .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-            .background(AppColors.background.color)
+            .ignoresSafeArea(.container, edges: .bottom)
             .safeAreaInset(edge: .bottom) {
                 CustomTabBar(
                     selectedTab: $selectedTab,
@@ -82,7 +85,7 @@ struct MainView: View {
                         isFavorite: isFavorite(book),
                         toggleFavorite: { toggleFavorite(book) }
                     )
-                    .toolbarBackground(Color.clear, for: .navigationBar)
+                    .toolbarBackground(.clear, for: .navigationBar)
                 }
             }
         }
@@ -94,7 +97,7 @@ struct MainView: View {
                     isFavorite: isFavorite(book),
                     toggleFavorite: { toggleFavorite(book) }
                 )
-                .toolbarBackground(Color.clear, for: .navigationBar)
+                .toolbarBackground(.clear, for: .navigationBar)
             }
         }
         .alert("No Book Selected", isPresented: $showNoBookAlert) {
@@ -105,6 +108,7 @@ struct MainView: View {
         .onChange(of: favoriteBookIDsString) { newValue in
             print("Favorite books updated: \(newValue)")
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.mainView.rawValue)
     }
 
     // MARK: - Actions
@@ -136,7 +140,6 @@ struct MainView: View {
         } else {
             ids.append(bookID)
         }
-
         favoriteBookIDsString = ids.joined(separator: ",")
         print("Toggled favorite for \(book.title), favoriteBookIDsString now: \(favoriteBookIDsString)")
     }

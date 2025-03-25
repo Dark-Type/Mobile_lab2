@@ -68,7 +68,7 @@ struct LibraryScreen: View {
     
     var body: some View {
         GeometryReader { screenGeometry in
-            ScrollView {
+            ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: ViewMetrics.verticalSpacing) {
                     headerView
                     newBooksSection(screenHeight: screenGeometry.size.height)
@@ -78,6 +78,7 @@ struct LibraryScreen: View {
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background.color)
+            .accessibilityIdentifier(AccessibilityIdentifiers.libraryScreenView.rawValue)
             .fullScreenCover(item: $selectedBook) { book in
                 NavigationStack {
                     ReadingScreen(
@@ -86,12 +87,13 @@ struct LibraryScreen: View {
                         isFavorite: isFavorite(book),
                         toggleFavorite: { toggleFavorite(book) }
                     )
+                    .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
                     .toolbarBackground(Color.clear, for: .navigationBar)
                 }
             }
         }
     }
-    
+
     // MARK: - View Components
     
     private var headerView: some View {
@@ -99,6 +101,7 @@ struct LibraryScreen: View {
             .appFont(.h1)
             .foregroundColor(.secondaryRed)
             .padding(.horizontal, ViewMetrics.horizontalPadding)
+            .accessibilityIdentifier(AccessibilityIdentifiers.libraryTitle.rawValue)
     }
     
     private func newBooksSection(screenHeight: CGFloat) -> some View {
@@ -107,57 +110,73 @@ struct LibraryScreen: View {
                 .appFont(.h2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal, ViewMetrics.horizontalPadding)
+                .accessibilityIdentifier(AccessibilityIdentifiers.newBooksTitle.rawValue)
             
             carouselView(screenHeight: screenHeight)
         }
     }
-    
+
     private func popularBooksSection(screenWidth: CGFloat) -> some View {
-        VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
+        VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing * 2) {
             Text(L10n.Library.popular.uppercased())
                 .appFont(.h2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal, ViewMetrics.horizontalPadding)
-            
+                .accessibilityIdentifier(AccessibilityIdentifiers.popularBooksTitle.rawValue)
+                
             booksGridView(screenWidth: screenWidth)
         }
         .padding(.bottom, ViewMetrics.bottomPadding)
     }
-    
+
     private func carouselView(screenHeight: CGFloat) -> some View {
         let itemWidth = UIScreen.main.bounds.width * ViewMetrics.carouselItemScale
         let itemHeight = itemWidth
         let sideItemWidth = UIScreen.main.bounds.width * ViewMetrics.carouselSideItemScale
-        
-        return ScrollViewReader { scrollView in
-            ScrollView(.horizontal, showsIndicators: false) {
-                HStack(spacing: ViewMetrics.carouselSpacing) {
-                    ForEach(itemKeys, id: \.self) { key in
-                        if let book = carouselItems[key] {
-                            CarouselItemView(book: book) {
-                                openBookDetail(book)
+        if MockData.books.isEmpty {
+            return AnyView(
+                Text("Нет доступных книг")
+                    .appFont(.h2)
+                    .foregroundColor(.accentDark)
+                    .frame(height: 300)
+                    .frame(maxWidth: .infinity)
+                    .background(Color.clear)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.emptyCarouselMessage.rawValue)
+            )
+        } else {
+            return AnyView(ScrollViewReader { scrollView in
+                ScrollView(.horizontal, showsIndicators: false) {
+                    HStack(spacing: ViewMetrics.carouselSpacing) {
+                        ForEach(itemKeys, id: \.self) { key in
+                            if let book = carouselItems[key] {
+                                CarouselItemView(book: book) {
+                                    openBookDetail(book)
+                                }
+                                .id(key)
+                                .frame(width: itemWidth, height: itemHeight)
+                                .accessibilityIdentifier("\(AccessibilityIdentifiers.carouselItem.rawValue)\(book.id)")
                             }
-                            .id(key)
-                            .frame(width: itemWidth, height: itemHeight)
                         }
                     }
+                    .padding(.horizontal, sideItemWidth)
                 }
-                .padding(.horizontal, sideItemWidth)
-            }
-            .onAppear {
-                scrollView.scrollTo(itemKeys[itemKeys.count / 2], anchor: .center)
-            }
-            .background(
-                GeometryReader { geometry -> Color in
-                    let minX = geometry.frame(in: .global).minX
-                    DispatchQueue.main.async {
-                        handleScrollChange(minX: minX)
+                .accessibilityIdentifier(AccessibilityIdentifiers.booksCarousel.rawValue)
+                .onAppear {
+                    scrollView.scrollTo(itemKeys[itemKeys.count / 2], anchor: .center)
+                }
+                .background(
+                    GeometryReader { geometry -> Color in
+                        let minX = geometry.frame(in: .global).minX
+                        DispatchQueue.main.async {
+                            handleScrollChange(minX: minX)
+                        }
+                        return Color.clear
                     }
-                    return Color.clear
-                }
+                )
+            }
+            .frame(height: itemHeight + ViewMetrics.carouselHeightPadding)
             )
         }
-        .frame(height: itemHeight + ViewMetrics.carouselHeightPadding)
     }
     
     private func booksGridView(screenWidth: CGFloat) -> some View {
@@ -165,23 +184,36 @@ struct LibraryScreen: View {
             repeating: GridItem(.flexible(), spacing: ViewMetrics.gridItemSpacing),
             count: ViewMetrics.gridColumnsCount
         )
-        
-        return LazyVGrid(columns: columns, spacing: ViewMetrics.gridSpacing) {
-            ForEach(MockData.books) { book in
-                BookCard(
-                    book: book,
-                    width: (screenWidth - (ViewMetrics.horizontalPadding * 2) -
-                        (ViewMetrics.gridItemSpacing * CGFloat(ViewMetrics.gridColumnsCount - 1))) /
-                        CGFloat(ViewMetrics.gridColumnsCount),
-                    height: 270,
-                    action: {
-                        openBookDetail(book)
-                    }
-                )
+        if MockData.books.isEmpty {
+            return AnyView(
+                Text("Нет доступных книг")
+                    .appFont(.h2)
+                    .foregroundColor(.accentDark)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 50)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.emptyGridMessage.rawValue)
+            )
+        } else {
+            return AnyView(LazyVGrid(columns: columns, spacing: ViewMetrics.gridSpacing) {
+                ForEach(MockData.books) { book in
+                    BookCard(
+                        book: book,
+                        width: (screenWidth - (ViewMetrics.horizontalPadding * 2) -
+                            (ViewMetrics.gridItemSpacing * CGFloat(ViewMetrics.gridColumnsCount - 1))) /
+                            CGFloat(ViewMetrics.gridColumnsCount),
+                        height: 270,
+                        action: {
+                            openBookDetail(book)
+                        }
+                    )
+                    .accessibilityIdentifier("\(AccessibilityIdentifiers.bookCard.rawValue)\(book.id)")
+                }
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.booksGrid.rawValue)
+            .background(Color.clear)
+            .padding(.horizontal, ViewMetrics.horizontalPadding)
+            )
         }
-        .background(Color.clear)
-        .padding(.horizontal, ViewMetrics.horizontalPadding)
     }
     
     // MARK: - Helper Methods

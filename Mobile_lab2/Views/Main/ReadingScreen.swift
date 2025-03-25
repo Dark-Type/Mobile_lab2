@@ -66,6 +66,7 @@ struct ReadingScreen: View {
                 backButton
             }
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
         .toolbarBackground(.hidden, for: .navigationBar)
         .ignoresSafeArea(.all)
         .fullScreenCover(item: $selectedChapter) { chapter in
@@ -95,6 +96,7 @@ struct ReadingScreen: View {
                 )
             )
             .cornerRadius(ViewMetrics.cornerRadius)
+            .accessibilityIdentifier(AccessibilityIdentifiers.bookPoster.rawValue)
     }
     
     private var actionButtons: some View {
@@ -125,6 +127,7 @@ struct ReadingScreen: View {
             .background(.accentDark)
             .cornerRadius(ViewMetrics.buttonCornerRadius)
         }
+        .accessibilityIdentifier(AccessibilityIdentifiers.readButton.rawValue)
     }
     
     private var favoriteButton: some View {
@@ -143,20 +146,23 @@ struct ReadingScreen: View {
             .frame(maxWidth: .infinity)
             .background(isFavorite ? .secondaryRed : .accentLight)
             .cornerRadius(ViewMetrics.buttonCornerRadius)
-        }
+        }.accessibilityIdentifier(AccessibilityIdentifiers.favoriteButton.rawValue)
     }
     
     private var bookInfoSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.contentSpacing) {
             Text(book.title.uppercased())
                 .appFont(.h1)
+                .accessibilityIdentifier(AccessibilityIdentifiers.bookTitle.rawValue)
             
             Text(book.author.map { $0.name }.joined(separator: ", "))
                 .appFont(.body)
+                .accessibilityIdentifier(AccessibilityIdentifiers.authorName.rawValue)
             
             Text(book.description)
                 .appFont(.body)
                 .padding(.top, ViewMetrics.descriptionPaddingTop)
+                .accessibilityIdentifier(AccessibilityIdentifiers.bookDescription.rawValue)
         }
         .foregroundStyle(.accentDark)
         .padding(.horizontal, ViewMetrics.horizontalPadding)
@@ -169,6 +175,7 @@ struct ReadingScreen: View {
                 .foregroundStyle(.accentDark)
             
             ProgressBar(progress: book.userProgress.overallProgress)
+                .accessibilityIdentifier(AccessibilityIdentifiers.progressBar.rawValue)
         }
         .padding(.horizontal, ViewMetrics.horizontalPadding)
         .padding(.top, ViewMetrics.progressBarPaddingTop)
@@ -179,9 +186,11 @@ struct ReadingScreen: View {
             Text(L10n.Book.contents.uppercased())
                 .appFont(.h2)
                 .foregroundStyle(.accentDark)
+                .accessibilityIdentifier(AccessibilityIdentifiers.contentsTitle.rawValue)
             
             ForEach(book.chapters) { chapter in
                 ChapterListItem(chapter: chapter, action: { openChapter(chapter) }, showStatusIcon: true)
+                    .accessibilityIdentifier("\(AccessibilityIdentifiers.chapterListItem.rawValue)\(chapter.id)")
             }
         }
         .padding(.horizontal, ViewMetrics.horizontalPadding)
@@ -196,7 +205,7 @@ struct ReadingScreen: View {
                     .font(.system(size: ViewMetrics.backButtonFontSize, weight: .medium))
                     .foregroundStyle(AppColors.white.color)
             }
-        }
+        }.accessibilityIdentifier(AccessibilityIdentifiers.backButton.rawValue)
     }
     
     // MARK: - Helper Methods

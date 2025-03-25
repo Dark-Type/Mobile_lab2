@@ -9,11 +9,12 @@ import SwiftUI
 
 struct FullScreenBackground: ViewModifier {
     let color: Color
-    
+
     func body(content: Content) -> some View {
         ZStack {
             color.edgesIgnoringSafeArea(.all)
             content
+              
         }
     }
 }

@@ -73,6 +73,7 @@ struct ChapterReadingView: View {
                         .padding(.horizontal, 16)
                         .padding(.bottom, 120)
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.chapterReadingView.rawValue)
                     .simultaneousGesture(
                         DragGesture(minimumDistance: 5)
                             .onChanged { value in
@@ -244,6 +245,7 @@ extension ChapterReadingView {
                 .font(.custom("Georgia", size: fontSize))
                 .lineSpacing(lineSpacing)
                 .allowsHitTesting(false)
+                .accessibilityIdentifier("\(AccessibilityIdentifiers.paragraphText.rawValue)\(index)")
             
             Button(action: {
                 selectWholeParagraph(paragraph)
@@ -446,6 +448,7 @@ extension ChapterReadingView {
                     Text(L10n.Book.goBack)
                 }.foregroundColor(.accentDark)
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.chapterBackButton.rawValue)
         }
     }
     
@@ -454,9 +457,11 @@ extension ChapterReadingView {
             VStack {
                 Text(self.book.title)
                     .appFont(.h2)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.bookTitle.rawValue)
                 
                 Text(self.currentChapter.title)
                     .appFont(.bodySmall)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.chapterTitle.rawValue)
             }
             .foregroundStyle(.accentDark)
         }
@@ -474,10 +479,11 @@ extension ChapterReadingView {
                         }
                     }
                 }
-                
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterPreviousButton.rawValue)
                 customIconButton(icon: AppIcons.contents.image) {
                     withAnimation { showChapters.toggle() }
                 }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterContentsButton.rawValue)
                 
                 customIconButton(icon: AppIcons.next.image) {
                     if let currentIndex = book.chapters.firstIndex(where: { $0.id == currentChapter.id }) {
@@ -488,16 +494,17 @@ extension ChapterReadingView {
                         }
                     }
                 }
-                  
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterNextButton.rawValue)
                 customIconButton(icon: AppIcons.settings.image) {
                     withAnimation { showSettings.toggle() }
                 }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterSettingsButton.rawValue)
             }
             .padding(.leading, 8)
             
             customIconButton(
                 icon: isReading ?
-                    (autoScrollEnabled ? AppIcons.pause.image : AppIcons.play.image) :
+                    (isReading ? AppIcons.pause.image : AppIcons.play.image) :
                     AppIcons.play.image
             ) {
                 withAnimation {
@@ -509,6 +516,7 @@ extension ChapterReadingView {
                     }
                 }
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.chapterPlayButton.rawValue)
             .frame(maxWidth: .infinity, alignment: .trailing)
         }
         .foregroundColor(AppColors.white.color)
@@ -562,6 +570,7 @@ extension ChapterReadingView {
                         .fill(Color.gray.opacity(0.5))
                         .frame(width: 40, height: 5)
                         .padding(.top, 12)
+                        .accessibilityIdentifier(AccessibilityIdentifiers.quoteDragIndicator.rawValue)
                     
                     ScrollView {
                         TextEditor(text: $selectedText)
@@ -571,6 +580,7 @@ extension ChapterReadingView {
                             .padding(12)
                             .background(AppColors.accentLight.color.opacity(0.2))
                             .cornerRadius(12)
+                            .accessibilityIdentifier(AccessibilityIdentifiers.quoteTextEditor.rawValue)
                             .onChange(of: selectedText) { newValue in
                                 
                                 if newValue.count > originalSelectedText.count {
@@ -582,6 +592,7 @@ extension ChapterReadingView {
                                 }
                             }
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.quoteScrollView.rawValue)
                     .frame(maxHeight: 200)
                     .padding(.horizontal, 20)
                     
@@ -592,6 +603,7 @@ extension ChapterReadingView {
                             .font(.system(size: 14))
                             .foregroundColor(.accentDark)
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.quoteRestoreButton.rawValue)
                     .padding(.horizontal, 20)
                     .opacity(selectedText != originalSelectedText ? 1 : 0.3)
                     .disabled(selectedText == originalSelectedText)
@@ -608,6 +620,7 @@ extension ChapterReadingView {
                                 .foregroundStyle(.accentDark)
                                 .applyButtonStyle(backgroundColor: AppColors.accentLight.color)
                         }
+                        .accessibilityIdentifier(AccessibilityIdentifiers.quoteCancelButton.rawValue)
                         
                         Button {
                             withAnimation {
@@ -619,6 +632,7 @@ extension ChapterReadingView {
                             Text("Добавить в цитаты")
                                 .applyButtonStyle(foregroundColor: .white, backgroundColor: AppColors.accentDark.color)
                         }
+                        .accessibilityIdentifier(AccessibilityIdentifiers.quoteAddButton.rawValue)
                     }
                     .padding(.horizontal, 20)
                     .padding(.bottom, geometry.safeAreaInsets.bottom > 0 ? geometry.safeAreaInsets.bottom : 30)
@@ -627,6 +641,7 @@ extension ChapterReadingView {
                 .cornerRadius(16, corners: [.topLeft, .topRight])
                 .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: -5)
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.quoteOverlay.rawValue)
             .edgesIgnoringSafeArea(.bottom)
             .gesture(
                 DragGesture()
@@ -700,6 +715,7 @@ extension ChapterReadingView {
             Text(L10n.Book.Settings.font)
                 .appFont(.body)
                 .foregroundStyle(.accentDark)
+                .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeLabel.rawValue)
             
             HStack(spacing: 0) {
                 Text("\(Int(self.fontSize)) " + L10n.Book.Settings.measure)
@@ -707,6 +723,7 @@ extension ChapterReadingView {
                     .foregroundStyle(.accentDark)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 12)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeValue.rawValue)
                 
                 HStack(spacing: 0) {
                     Button(action: {
@@ -718,7 +735,7 @@ extension ChapterReadingView {
                             .foregroundStyle(.accentDark)
                             .frame(width: 47, height: 32)
                     }
-                    
+                    .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeDecreaseButton.rawValue)
                     Rectangle()
                         .fill(.accentMedium)
                         .frame(width: 1, height: 18)
@@ -732,6 +749,7 @@ extension ChapterReadingView {
                             .foregroundStyle(.accentDark)
                             .frame(width: 47, height: 32)
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeIncreaseButton.rawValue)
                 }
                 .background(AppColors.accentLight.color)
                 .cornerRadius(10)
@@ -744,6 +762,7 @@ extension ChapterReadingView {
             Text(L10n.Book.Settings.padding)
                 .appFont(.body)
                 .foregroundStyle(.accentDark)
+                .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingLabel.rawValue)
             
             HStack(spacing: 0) {
                 Text("\(Int(self.lineSpacing)) " + L10n.Book.Settings.measure)
@@ -751,6 +770,7 @@ extension ChapterReadingView {
                     .foregroundStyle(.accentDark)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.vertical, 12)
+                    .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingValue.rawValue)
                 
                 HStack(spacing: 0) {
                     Button(action: {
@@ -762,6 +782,7 @@ extension ChapterReadingView {
                             .foregroundStyle(.accentDark)
                             .frame(width: 47, height: 32)
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingDecreaseButton.rawValue)
                     
                     Rectangle()
                         .fill(.accentMedium)
@@ -776,6 +797,7 @@ extension ChapterReadingView {
                             .foregroundStyle(.accentDark)
                             .frame(width: 47, height: 32)
                     }
+                    .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingIncreaseButton.rawValue)
                 }
                 .background(AppColors.accentLight.color)
                 .cornerRadius(10)
@@ -787,12 +809,14 @@ extension ChapterReadingView {
         HStack {
             Text(title)
                 .appFont(.h2)
-            
+                .accessibilityIdentifier(AccessibilityIdentifiers.settingsTitle.rawValue)
+                    
             Spacer()
             Button(action: action) {
                 AppIcons.close.image
                     .renderingMode(.template)
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.settingsCloseButton.rawValue)
         }.foregroundColor(.accentDark)
     }
 }
@@ -805,6 +829,7 @@ extension ChapterReadingView {
             bottomOverlay {
                 VStack(spacing: 0) {
                     overlayDragIndicator
+                        .accessibilityIdentifier(AccessibilityIdentifiers.chaptersDragIndicator.rawValue)
                     
                     overlayTitle(L10n.Book.contents, action: {
                         withAnimation {
@@ -815,6 +840,7 @@ extension ChapterReadingView {
                         .foregroundStyle(AppColors.accentLight.color)
                     
                     chaptersListView
+                        .accessibilityIdentifier(AccessibilityIdentifiers.chaptersListView.rawValue)
                 }
             }
             .frame(height: geometry.size.height)
@@ -880,6 +906,7 @@ extension ChapterReadingView {
                         Text(L10n.Book.goBack)
                     }
                 }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chaptersCloseButton.rawValue)
                 
                 Spacer()
             }
@@ -888,6 +915,7 @@ extension ChapterReadingView {
             Text(title.uppercased())
                 .appFont(.h2)
                 .frame(maxWidth: .infinity, alignment: .center)
+                .accessibilityIdentifier(AccessibilityIdentifiers.chaptersTitle.rawValue)
         }
         .foregroundColor(.accentDark)
         .padding(.bottom, 8)
