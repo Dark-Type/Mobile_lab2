@@ -13,20 +13,20 @@ struct ChapterListItem: View {
     let chapter: Chapter
     let action: () -> Void
     let showStatusIcon: Bool
-    
+
     init(chapter: Chapter, action: @escaping () -> Void, showStatusIcon: Bool = false) {
         self.chapter = chapter
         self.action = action
         self.showStatusIcon = showStatusIcon
     }
-    
+
     // MARK: - Constants
 
     private enum ViewMetrics {
         static let verticalSpacing: CGFloat = 4
         static let verticalPadding: CGFloat = 12
     }
-    
+
     // MARK: - Body
 
     var body: some View {
@@ -34,8 +34,9 @@ struct ChapterListItem: View {
             itemContent
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("chapter_button_\(chapter.number)")
     }
-    
+
     // MARK: - Private Views
 
     private var itemContent: some View {
@@ -48,16 +49,16 @@ struct ChapterListItem: View {
         }
         .padding(.vertical, ViewMetrics.verticalPadding)
     }
-    
+
     private var chapterTitle: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.verticalSpacing) {
             Text(chapter.title)
                 .appFont(statusFont)
                 .foregroundColor(.accentDark)
-                
+                .accessibilityIdentifier("chapter_title_\(chapter.number)")
         }
     }
-    
+
     private var chapterStatusIcon: some View {
         Group {
             if let icon = statusIcon {
@@ -67,7 +68,7 @@ struct ChapterListItem: View {
             }
         }
     }
-    
+
     // MARK: - Computed Properties
 
     private var statusIcon: Image? {
@@ -113,7 +114,6 @@ struct ChapterListItem: View {
             ),
             action: {}
         )
-        
         ChapterListItem(
             chapter: Chapter(
                 title: "The Journey",
@@ -124,7 +124,6 @@ struct ChapterListItem: View {
             ),
             action: {}
         )
-        
         ChapterListItem(
             chapter: Chapter(
                 title: "The Resolution",
@@ -135,7 +134,6 @@ struct ChapterListItem: View {
             ),
             action: {},
             showStatusIcon: true
-            
         )
     }
     .padding()

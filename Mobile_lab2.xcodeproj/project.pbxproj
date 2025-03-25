@@ -115,6 +115,7 @@
 				A58666CB2D8925910010486C /* Sources */,
 				A58666CC2D8925910010486C /* Frameworks */,
 				A58666CD2D8925910010486C /* Resources */,
+				A5AC6A192D92839700280C4C /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -243,6 +244,28 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		A5AC6A192D92839700280C4C /* Run Script */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]\nthen\n    export PATH=\"/opt/homebrew/bin:$PATH\"\nfi\n\nif command -v swiftlint >/dev/null 2>&1\nthen\n    swiftlint lint --config swiftlint.yml \nelse\n    echo \"warning: `swiftlint` command not found - See https://github.com/realm/SwiftLint#installation for installation instructions.\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		A58666CB2D8925910010486C /* Sources */ = {
@@ -414,6 +437,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Mobile_lab2/Preview Content\"";
 				DEVELOPMENT_TEAM = QN79D4T9G3;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Mobile-lab2-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -446,6 +470,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"Mobile_lab2/Preview Content\"";
 				DEVELOPMENT_TEAM = QN79D4T9G3;
 				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Mobile-lab2-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";

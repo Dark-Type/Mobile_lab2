@@ -12,7 +12,7 @@ struct BookmarksScreen: View {
 
     @State private var selectedBook: Book?
     @State private var selectedChapter: Chapter? = nil
-    
+
     // MARK: - Properties
 
     let currentBook: Book?
@@ -31,7 +31,7 @@ struct BookmarksScreen: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 titleView
-                   
+
                 if BookmarksScreen.isTestMode {
                     if let book = MockData.testCurrentBook {
                         currentlyReadingSection(book: book)
@@ -51,10 +51,10 @@ struct BookmarksScreen: View {
                         emptyFavoriteBooksView
                     }
                 }
-                               
+
                 if !quotes.isEmpty {
                     quotesSection
-                                    
+
                 } else {
                     emptyQuotesView
                 }
@@ -86,28 +86,28 @@ struct BookmarksScreen: View {
     }
 
     // MARK: - UI Components
-    
+
     private var titleView: some View {
         Text(L10n.Bookmarks.title.uppercased())
-            .appFont(.h1)
+            .appFont(.header1)
             .foregroundColor(.secondaryRed)
             .padding(.horizontal)
             .accessibilityIdentifier(AccessibilityIdentifiers.bookmarksTitle.rawValue)
     }
-     
+
     private func currentlyReadingSection(book: Book) -> some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .center) {
                 Text(L10n.Bookmarks.current.uppercased())
-                    .appFont(.h2)
+                    .appFont(.header2)
                     .foregroundColor(.accentDark)
                     .accessibilityIdentifier(AccessibilityIdentifiers.currentReadingSectionTitle.rawValue)
                 Spacer()
-                   
+
                 continueReadingButton
             }
             .padding(.horizontal)
-               
+
             BookmarkListItem(
                 book: book,
                 isCurrent: true,
@@ -117,14 +117,13 @@ struct BookmarksScreen: View {
             .accessibilityIdentifier(AccessibilityIdentifiers.currentReadingBookItem.rawValue)
         }
     }
-    
+
     private var continueReadingButton: some View {
         Button(action: continueReading) {
             ZStack {
                 Circle()
                     .fill(AppColors.accentDark.color)
                     .frame(width: 40, height: 40)
-                 
                 AppIcons.play.image
                     .renderingMode(.template)
                     .resizable()
@@ -136,22 +135,23 @@ struct BookmarksScreen: View {
         .buttonStyle(PlainButtonStyle())
         .accessibilityIdentifier(AccessibilityIdentifiers.continueReadingButton.rawValue)
     }
-     
+
     private var favoriteBooksSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(L10n.Bookmarks.favorite.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal)
                 .accessibilityIdentifier(AccessibilityIdentifiers.favoriteBooksSectionTitle.rawValue)
-            
+
             favoriteBooksList
         }
     }
-    
+
     private var favoriteBooksList: some View {
         VStack(spacing: 16) {
-            ForEach(BookmarksScreen.isTestMode ? MockData.testFavoriteBooks! : favoriteBooks) { book in
+            ForEach((BookmarksScreen.isTestMode ? MockData.testFavoriteBooks : favoriteBooks) ??
+                [Book(title: "", author: [], description: "", coverImage: Image(systemName: "photo"), posterImage: Image(systemName: "photo"), genres: [], chapters: [])]) { book in
                 BookmarkListItem(
                     book: book,
                     isCurrent: false,
@@ -162,19 +162,18 @@ struct BookmarksScreen: View {
             }
         }
     }
-    
+
     private var quotesSection: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(L10n.Bookmarks.quotes.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal)
                 .accessibilityIdentifier(AccessibilityIdentifiers.quotesSectionTitle.rawValue)
-            
             quotesList
         }
     }
-    
+
     private var quotesList: some View {
         VStack(spacing: 16) {
             ForEach(MockData.quotes) { quote in
@@ -188,11 +187,10 @@ struct BookmarksScreen: View {
     private var emptyFavoriteBooksView: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(L10n.Bookmarks.favorite.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal)
                 .accessibilityIdentifier(AccessibilityIdentifiers.favoriteBooksSectionTitle.rawValue)
-                
             emptyStateCard(
                 message: "У вас нет избранных книг",
                 description: "Добавляйте книги в избранное, чтобы быстро находить их здесь"
@@ -200,15 +198,14 @@ struct BookmarksScreen: View {
             .accessibilityIdentifier(AccessibilityIdentifiers.emptyFavoriteBooksView.rawValue)
         }
     }
-        
+
     private var emptyQuotesView: some View {
         VStack(alignment: .leading, spacing: 16) {
             Text(L10n.Bookmarks.quotes.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal)
                 .accessibilityIdentifier(AccessibilityIdentifiers.quotesSectionTitle.rawValue)
-                
             emptyStateCard(
                 message: "У вас нет сохраненных цитат",
                 description: "Сохраняйте понравившиеся цитаты во время чтения"
@@ -216,16 +213,15 @@ struct BookmarksScreen: View {
             .accessibilityIdentifier(AccessibilityIdentifiers.emptyQuotesView.rawValue)
         }
     }
-        
+
     private func emptyStateCard(message: String, description: String) -> some View {
         VStack(spacing: 8) {
             Text(message)
                 .appFont(.body)
                 .foregroundColor(.accentDark)
                 .multilineTextAlignment(.center)
-                
             Text(description)
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentMedium)
                 .multilineTextAlignment(.center)
         }
@@ -236,7 +232,7 @@ struct BookmarksScreen: View {
         .cornerRadius(12)
         .padding(.horizontal)
     }
-        
+
     // MARK: - Actions
 
     private func openBookDetail(_ book: Book) {
@@ -246,7 +242,6 @@ struct BookmarksScreen: View {
     private func continueReading() {
         if let book = currentBook {
             let progress = book.userProgress
-        
             setCurrentBook(book)
             let chapterIndex = min(progress.currentChapter, book.chapters.count - 1)
             selectedChapter = book.chapters[chapterIndex]

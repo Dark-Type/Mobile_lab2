@@ -12,10 +12,10 @@ struct Chapter: Identifiable, Equatable {
     let title: String
     let number: Int
     let content: String
-    let paragraphs: [String]  
+    let paragraphs: [String]
     var isStarted: Bool
     var isFinished: Bool
-    
+
     init(id: UUID = UUID(), title: String, number: Int, content: String, isStarted: Bool = false, isFinished: Bool = false) {
         self.id = id
         self.title = title

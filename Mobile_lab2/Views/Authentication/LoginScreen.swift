@@ -16,13 +16,13 @@ struct LoginScreen: View {
     @State private var selectedCarouselIndex = 0
     @State private var keyboardHeight: CGFloat = 0
     @AppStorage("isLoggedIn") private var isLoggedIn = false
-    
+
     // MARK: - Computed Properties
 
     private var isFormValid: Bool {
         !email.isEmpty && !password.isEmpty
     }
-    
+
     // MARK: - View
 
     var body: some View {
@@ -32,7 +32,7 @@ struct LoginScreen: View {
             let carouselHeight = layout.carouselHeight(totalHeight: geometry.size.height)
             let verticalSpacing = layout.verticalSpacing(totalHeight: geometry.size.height)
             let horizontalPadding = layout.horizontalPadding(totalHeight: geometry.size.height)
-              
+
             ScrollView(showsIndicators: false) {
                 ZStack(alignment: .top) {
                     carouselView
@@ -40,16 +40,16 @@ struct LoginScreen: View {
                         .frame(height: carouselHeight)
                         .padding(.top)
                         .ignoresSafeArea(edges: .horizontal)
-                      
+
                     VStack(spacing: 0) {
                         Spacer()
                             .frame(height: carouselHeight + verticalSpacing)
-                        
+
                         titleSection
                             .padding(.top, topPadding)
-                          
+
                         loginForm
-                          
+
                         loginButton
                             .padding(.top, verticalSpacing)
                             .padding(.bottom, verticalSpacing)
@@ -68,7 +68,7 @@ struct LoginScreen: View {
             }
         }
     }
-      
+
     // MARK: - Subviews
 
     private var carouselView: some View {
@@ -76,16 +76,16 @@ struct LoginScreen: View {
             let images = [MockBooks.book1.image, MockBooks.book2.image, MockBooks.book3.image]
             let itemWidth = (geometry.size.width) / 2.2
             let spacing: CGFloat = 5
-            
+
             let totalWidth = CGFloat(images.count) * (itemWidth + spacing)
-            
+
             TimelineView(.animation) { timeline in
                 let time = timeline.date.timeIntervalSinceReferenceDate
                 let duration: Double = 10
                 let phase = time.truncatingRemainder(dividingBy: duration) / duration
-                
+
                 let offset = totalWidth * phase
-                
+
                 HStack(spacing: spacing) {
                     ForEach(0..<3) { _ in
                         ForEach(0..<images.count, id: \.self) { index in
@@ -113,7 +113,7 @@ struct LoginScreen: View {
             GeometryReader { geometry in
                 CustomTextLabel()
                     .text(L10n.Login.Title.first.uppercased())
-                    .appFont(AppFont.h1)
+                    .appFont(AppFont.header1)
                     .foregroundColor(AppColors.accentLight.color)
                     .lineHeightMultiple(1.0)
                     .lineLimit(1)
@@ -121,9 +121,9 @@ struct LoginScreen: View {
                     .truncationMode(.byTruncatingTail)
                     .accessibilityIdentifier(AccessibilityIdentifiers.titleFirstLine.rawValue)
             }
-            .frame(height: AppFont.h1.size * 1.2)
+            .frame(height: AppFont.header1.size * 1.2)
             .padding(.bottom, 8)
-            
+
             GeometryReader { geometry in
                 CustomTextLabel()
                     .text(L10n.Login.Title.second.uppercased())
@@ -148,7 +148,7 @@ struct LoginScreen: View {
                 showClearButton: !email.isEmpty,
                 clearAction: { email = "" }
             )
-                
+
             enhancedSecureField(
                 placeholder: L10n.Login.password,
                 text: $password,
@@ -173,12 +173,12 @@ struct LoginScreen: View {
                 .padding(.leading, 16)
                 .appFont(.bodySmall)
                 .padding(.vertical, 16)
-                
+
             TextField("", text: text)
                 .accessibilityIdentifier(AccessibilityIdentifiers.emailTextField.rawValue)
                 .foregroundColor(AppColors.accentLight.color)
                 .appFont(.bodySmall)
-                    
+
             if showClearButton {
                 Button(action: clearAction) {
                     AppIcons.close.image
@@ -194,7 +194,7 @@ struct LoginScreen: View {
             }
         }
     }
-       
+
     private func enhancedSecureField(
         placeholder: String,
         text: Binding<String>,
@@ -206,7 +206,7 @@ struct LoginScreen: View {
             Divider()
                 .background(AppColors.accentMedium.color)
                 .padding(.leading, 16)
-            
+
             HStack(spacing: 0) {
                 Text(placeholder)
                     .foregroundColor(AppColors.accentMedium.color)
@@ -214,14 +214,14 @@ struct LoginScreen: View {
                     .padding(.leading, 16)
                     .appFont(.bodySmall)
                     .padding(.vertical, 16)
-                
+
                 Group {
                     if isVisible.wrappedValue {
                         TextField("", text: text)
                             .accessibilityIdentifier(AccessibilityIdentifiers.passwordTextField.rawValue)
                             .foregroundStyle(.accentLight)
                             .appFont(AppFont.bodySmall)
-                            
+
                     } else {
                         SecureField("", text: text)
                             .accessibilityIdentifier(AccessibilityIdentifiers.passwordTextField.rawValue)
@@ -229,23 +229,27 @@ struct LoginScreen: View {
                             .appFont(.bodySmall)
                     }
                 }
-                
+
                 if !text.wrappedValue.isEmpty {
-                    Button(action: { isVisible.wrappedValue.toggle() }) {
-                        (isVisible.wrappedValue ? AppIcons.eyeOn : AppIcons.eyeOff).image
-                            .resizable()
-                            .renderingMode(.template)
-                            .foregroundColor(AppColors.accentLight.color)
-                            .frame(width: 24, height: 24)
-                    }
+                    Button(
+                        action: {
+                            isVisible.wrappedValue.toggle()
+                        },
+                        label: {
+                            (isVisible.wrappedValue ? AppIcons.eyeOn : AppIcons.eyeOff).image
+                                .resizable()
+                                .renderingMode(.template)
+                                .foregroundColor(AppColors.accentLight.color)
+                                .frame(width: 24, height: 24)
+                        }
+                    )
                     .padding(.trailing, 16)
-                    
                 } else {
                     Spacer()
                         .frame(width: 16)
                 }
             }
-            
+
             .background(.clear)
         }
     }
@@ -262,7 +266,7 @@ struct LoginScreen: View {
         .accessibilityIdentifier(AccessibilityIdentifiers.loginButton.rawValue)
         .disabled(!isFormValid)
     }
-    
+
     // MARK: - Actions
 
     private func login() {
@@ -289,7 +293,7 @@ struct OutlinedFieldModifier: ViewModifier {
 struct TitleTextModifier: ViewModifier {
     let fontSize: CGFloat
     let weight: Font.Weight
-    
+
     func body(content: Content) -> some View {
         content
             .font(.system(size: fontSize, weight: weight))
@@ -300,10 +304,9 @@ struct TitleTextModifier: ViewModifier {
 private struct ContinuousScrollModifier: ViewModifier {
     let itemWidth: CGFloat
     let totalWidth: CGFloat
-    
     @State private var offset: CGFloat = 0
     @State private var isAnimating: Bool = false
-    
+
     func body(content: Content) -> some View {
         content
             .offset(x: -offset)
@@ -316,10 +319,9 @@ private struct ContinuousScrollModifier: ViewModifier {
                 }
             }
     }
-    
+
     private func startAnimation() {
         isAnimating = true
-       
         withAnimation(.linear(duration: 10).repeatForever(autoreverses: false)) {
             offset = totalWidth
         }
@@ -332,11 +334,11 @@ extension View {
     func applyOutlinedFieldStyle() -> some View {
         modifier(OutlinedFieldModifier())
     }
-    
+
     func applyTitleStyle(fontSize: CGFloat, weight: Font.Weight) -> some View {
         modifier(TitleTextModifier(fontSize: fontSize, weight: weight))
     }
-    
+
     func placeholder<Content: View>(
         when shouldShow: Bool,
         alignment: Alignment = .leading,

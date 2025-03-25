@@ -7,11 +7,7 @@
 
 import XCTest
 
-final class Mobile_lab2UITestsLaunchTests: XCTestCase {
-
-    override class var runsForEachTargetApplicationUIConfiguration: Bool {
-        true
-    }
+final class MyBooksUITestsLaunchTests: XCTestCase {
 
     override func setUpWithError() throws {
         continueAfterFailure = false

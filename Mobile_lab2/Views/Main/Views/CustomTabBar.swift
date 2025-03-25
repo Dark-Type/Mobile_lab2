@@ -13,7 +13,7 @@ struct CustomTabBar: View {
     @Binding var selectedTab: Int
     var readingAction: () -> Void
     var logoutAction: () -> Void
-    
+
     // MARK: - Constants
 
     private enum ViewMetrics {
@@ -25,7 +25,7 @@ struct CustomTabBar: View {
         static let cornerRadius: CGFloat = 45
         static let bottomPadding: CGFloat = 20
     }
-    
+
     // MARK: - Body
 
     var body: some View {
@@ -35,7 +35,7 @@ struct CustomTabBar: View {
         }
         .background(Color.clear)
     }
-    
+
     // MARK: - Private Views
 
     private var tabBarBackground: some View {
@@ -52,7 +52,7 @@ struct CustomTabBar: View {
         .padding(.horizontal)
         .padding(.bottom, ViewMetrics.bottomPadding)
     }
-    
+
     private var leftTabButtons: some View {
         HStack(spacing: 0) {
             tabButton(icon: .library, index: 0)
@@ -60,12 +60,12 @@ struct CustomTabBar: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     private var middleButtonSpace: some View {
         Spacer()
             .frame(width: ViewMetrics.middleButtonSize + ViewMetrics.middleButtonSpacing)
     }
-    
+
     private var rightTabButtons: some View {
         HStack(spacing: 0) {
             tabButton(icon: .bookmarks, index: 2)
@@ -73,7 +73,7 @@ struct CustomTabBar: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     private var logoutButton: some View {
         Button(action: logoutAction) {
             AppIcons.logout.image
@@ -86,7 +86,7 @@ struct CustomTabBar: View {
         }
         .frame(maxWidth: .infinity)
     }
-    
+
     private var middleButton: some View {
         Button(action: readingAction) {
             ZStack {
@@ -103,7 +103,7 @@ struct CustomTabBar: View {
         .buttonStyle(NoFadeButtonStyle())
         .offset(y: ViewMetrics.middleButtonOffset)
     }
-    
+
     private func tabButton(icon: AppIcons, index: Int) -> some View {
         let identifierName: String
         switch index {
@@ -116,22 +116,25 @@ struct CustomTabBar: View {
         default:
             identifierName = "tab_button_\(index)"
         }
-        
-        return Button(action: {
-            selectedTab = index
-        }) {
-            icon.image
-                .resizable()
-                .renderingMode(.template)
-                .aspectRatio(contentMode: .fit)
-                .frame(width: ViewMetrics.iconSize, height: ViewMetrics.iconSize)
-                .foregroundColor(tabIconColor(for: index))
-                .padding()
-        }
+
+        return Button(
+            action: {
+                selectedTab = index
+            },
+            label: {
+                icon.image
+                    .resizable()
+                    .renderingMode(.template)
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: ViewMetrics.iconSize, height: ViewMetrics.iconSize)
+                    .foregroundColor(tabIconColor(for: index))
+                    .padding()
+            }
+        )
         .accessibilityIdentifier(identifierName)
         .frame(maxWidth: .infinity)
     }
-    
+
     // MARK: - Helper Methods
 
     private func tabIconColor(for index: Int) -> Color {

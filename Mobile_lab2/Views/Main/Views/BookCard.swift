@@ -14,7 +14,7 @@ struct BookCard: View {
     let width: CGFloat
     let height: CGFloat
     let action: () -> Void
-    
+
     // MARK: - Constants
 
     private enum ViewMetrics {
@@ -27,21 +27,21 @@ struct BookCard: View {
         static let maxAuthorsShown: Int = 2
         static let textOpacity: CGFloat = 0.7
     }
-    
+
     // MARK: - Computed Properties
 
     private var shouldShowAdditionalAuthorsLabel: Bool {
         book.author.count > ViewMetrics.maxAuthorsShown
     }
-    
+
     private var visibleAuthors: [Author] {
         Array(book.author.prefix(ViewMetrics.maxAuthorsShown))
     }
-    
+
     private var additionalAuthorsCount: Int {
         book.author.count - ViewMetrics.maxAuthorsShown
     }
-    
+
     // MARK: - Body
 
     var body: some View {
@@ -50,18 +50,18 @@ struct BookCard: View {
         }
         .buttonStyle(.plain)
     }
-    
+
     // MARK: - Private Views
 
     private var cardContent: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.verticalSpacing) {
             coverImageView
-            
+
             detailsView
         }
         .frame(width: width, height: height)
     }
-    
+
     private var coverImageView: some View {
         book.coverImage
             .resizable()
@@ -70,45 +70,45 @@ struct BookCard: View {
             .cornerRadius(ViewMetrics.cornerRadius)
             .clipped()
     }
-    
+
     private var detailsView: some View {
         GeometryReader { geometry in
             VStack(alignment: .leading, spacing: ViewMetrics.titleDetailsSpacing) {
                 titleLabelView(width: geometry.size.width)
-                
+
                 authorsView(width: geometry.size.width)
             }
             .padding(.vertical, ViewMetrics.verticalPadding)
         }
         .frame(height: height * ViewMetrics.titleDetailHeightRatio)
     }
-    
+
     private func titleLabelView(width: CGFloat) -> some View {
         CustomTextLabel()
             .text(book.title.uppercased())
-            .appFont(.h2)
+            .appFont(.header2)
             .foregroundColor(AppColors.accentDark.color)
             .lineHeightMultiple(ViewMetrics.lineHeightMultiple)
             .lineLimit(2)
             .maxWidth(width)
             .truncationMode(.byTruncatingTail)
-            .frame(height: calculateTextHeight(font: .h2, lines: 2))
+            .frame(height: calculateTextHeight(font: .header2, lines: 2))
     }
-    
+
     private func authorsView(width: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: 0) {
             if !book.author.isEmpty {
                 ForEach(visibleAuthors.indices, id: \.self) { index in
                     authorNameView(for: visibleAuthors[index], width: width)
                 }
-                
+
                 if shouldShowAdditionalAuthorsLabel {
                     additionalAuthorsView(width: width)
                 }
             }
         }
     }
-    
+
     private func authorNameView(for author: Author, width: CGFloat) -> some View {
         CustomTextLabel()
             .text(author.name)
@@ -120,7 +120,7 @@ struct BookCard: View {
             .truncationMode(.byTruncatingTail)
             .frame(height: calculateTextHeight(font: .bodySmall, lines: 1))
     }
-    
+
     private func additionalAuthorsView(width: CGFloat) -> some View {
         CustomTextLabel()
             .text("и ещё \(additionalAuthorsCount)")
@@ -132,7 +132,7 @@ struct BookCard: View {
             .truncationMode(.byTruncatingTail)
             .frame(height: calculateTextHeight(font: .footnote, lines: 1))
     }
-    
+
     // MARK: - Helper Methods
 
     private func calculateTextHeight(font: AppFont, lines: Int) -> CGFloat {

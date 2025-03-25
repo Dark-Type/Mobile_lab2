@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct QuoteCard: View {
     // MARK: - Constants
 
@@ -27,7 +25,8 @@ struct QuoteCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.spacing) {
             Text(quote.content)
-                .appFont(.quote).italic(true)
+                .appFont(.quote)
+                .italic(true)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .foregroundColor(AppColors.black.color)
                 .lineSpacing(ViewMetrics.lineSpacing)

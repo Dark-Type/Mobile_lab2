@@ -8,8 +8,9 @@
 import SwiftUI
 
 @main
-struct Mobile_lab2App: App {
+struct MyBooksApp: App {
     @AppStorage("isLoggedIn") private var isLoggedIn = false
+
     init() {
         if ProcessInfo.processInfo.arguments.contains("-ui-testing-logged-in") {
             print("UI TESTING: Setting logged in state to TRUE")

@@ -19,7 +19,9 @@ struct Book: Identifiable {
     var userProgress: ReadingProgress
     var isFavorite: Bool = false
 
-    init(id: UUID = UUID(), title: String, author: [Author], description: String, coverImage: Image, posterImage: Image, genres: [String], chapters: [Chapter], userProgress: ReadingProgress? = nil, isFavorite: Bool = false) {
+    init(id: UUID = UUID(), title: String, author: [Author],
+         description: String, coverImage: Image, posterImage: Image, genres: [String],
+         chapters: [Chapter], userProgress: ReadingProgress? = nil, isFavorite: Bool = false) {
         self.id = id
         self.title = title
         self.author = author

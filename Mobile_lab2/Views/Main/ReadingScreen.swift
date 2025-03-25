@@ -7,11 +7,9 @@
 
 import SwiftUI
 
-import SwiftUI
-
 struct ReadingScreen: View {
     // MARK: - Constants
-    
+
     private enum ViewMetrics {
         static let spacing: CGFloat = 24
         static let buttonSpacing: CGFloat = 10
@@ -31,20 +29,20 @@ struct ReadingScreen: View {
         static let bottomPadding: CGFloat = 32
         static let backButtonFontSize: CGFloat = 17
     }
-    
+
     // MARK: - Properties
-    
+
     let book: Book
     let setCurrentBook: (Book) -> Void
     let isFavorite: Bool
     let toggleFavorite: () -> Void
-    
+
     @Environment(\.dismiss) private var dismiss
     @State private var showChapters: Bool = false
     @State private var selectedChapter: Chapter? = nil
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack(alignment: .leading, spacing: ViewMetrics.spacing) {
@@ -54,7 +52,7 @@ struct ReadingScreen: View {
                 if book.userProgress.currentChapter != 0 {
                     readingProgressSection
                 }
-                
+
                 chaptersSection
             }
             .padding(.bottom, ViewMetrics.bottomPadding)
@@ -76,9 +74,9 @@ struct ReadingScreen: View {
             }
         }
     }
-    
+
     // MARK: - View Components
-    
+
     private var posterView: some View {
         book.posterImage
             .resizable()
@@ -98,7 +96,7 @@ struct ReadingScreen: View {
             .cornerRadius(ViewMetrics.cornerRadius)
             .accessibilityIdentifier(AccessibilityIdentifiers.bookPoster.rawValue)
     }
-    
+
     private var actionButtons: some View {
         HStack(alignment: .center, spacing: ViewMetrics.buttonSpacing) {
             readButton
@@ -108,7 +106,7 @@ struct ReadingScreen: View {
         .padding(.top, ViewMetrics.topButtonsPaddingTop)
         .frame(maxWidth: .infinity)
     }
-    
+
     private var readButton: some View {
         Button {
             let chapter = book.chapters[book.userProgress.currentChapter]
@@ -119,7 +117,8 @@ struct ReadingScreen: View {
                     .renderingMode(.template)
                 Text(L10n.Book.read)
             }
-            .appFont(.body).bold(true)
+            .appFont(.body)
+            .bold(true)
             .foregroundColor(AppColors.white.color)
             .padding(.horizontal, ViewMetrics.buttonHorizontalPadding)
             .padding(.vertical, ViewMetrics.buttonVerticalPadding)
@@ -129,7 +128,7 @@ struct ReadingScreen: View {
         }
         .accessibilityIdentifier(AccessibilityIdentifiers.readButton.rawValue)
     }
-    
+
     private var favoriteButton: some View {
         Button {
             toggleFavorite()
@@ -139,8 +138,9 @@ struct ReadingScreen: View {
                     .renderingMode(.template)
                 Text(isFavorite ? "Убрать из избранного" : L10n.Book.favorites)
             }
-            .appFont(.body).bold()
-            .foregroundColor(.accentDark)
+            .appFont(.body)
+            .bold()
+            .foregroundColor(isFavorite ? .accentLight : .accentDark)
             .padding(.horizontal, ViewMetrics.buttonHorizontalPadding)
             .padding(.vertical, ViewMetrics.buttonVerticalPadding)
             .frame(maxWidth: .infinity)
@@ -148,17 +148,15 @@ struct ReadingScreen: View {
             .cornerRadius(ViewMetrics.buttonCornerRadius)
         }.accessibilityIdentifier(AccessibilityIdentifiers.favoriteButton.rawValue)
     }
-    
+
     private var bookInfoSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.contentSpacing) {
             Text(book.title.uppercased())
-                .appFont(.h1)
+                .appFont(.header1)
                 .accessibilityIdentifier(AccessibilityIdentifiers.bookTitle.rawValue)
-            
             Text(book.author.map { $0.name }.joined(separator: ", "))
                 .appFont(.body)
                 .accessibilityIdentifier(AccessibilityIdentifiers.authorName.rawValue)
-            
             Text(book.description)
                 .appFont(.body)
                 .padding(.top, ViewMetrics.descriptionPaddingTop)
@@ -167,27 +165,25 @@ struct ReadingScreen: View {
         .foregroundStyle(.accentDark)
         .padding(.horizontal, ViewMetrics.horizontalPadding)
     }
-    
+
     private var readingProgressSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.contentSpacing) {
             Text(L10n.Book.readBook.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundStyle(.accentDark)
-            
             ProgressBar(progress: book.userProgress.overallProgress)
                 .accessibilityIdentifier(AccessibilityIdentifiers.progressBar.rawValue)
         }
         .padding(.horizontal, ViewMetrics.horizontalPadding)
         .padding(.top, ViewMetrics.progressBarPaddingTop)
     }
-    
+
     private var chaptersSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.headerSpacing) {
             Text(L10n.Book.contents.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundStyle(.accentDark)
                 .accessibilityIdentifier(AccessibilityIdentifiers.contentsTitle.rawValue)
-            
             ForEach(book.chapters) { chapter in
                 ChapterListItem(chapter: chapter, action: { openChapter(chapter) }, showStatusIcon: true)
                     .accessibilityIdentifier("\(AccessibilityIdentifiers.chapterListItem.rawValue)\(chapter.id)")
@@ -196,20 +192,26 @@ struct ReadingScreen: View {
         .padding(.horizontal, ViewMetrics.horizontalPadding)
         .padding(.top, ViewMetrics.chaptersPaddingTop)
     }
-    
+
     private var backButton: some View {
-        Button(action: { dismiss() }) {
-            HStack {
-                AppIcons.arrowLeft.image
-                Text(L10n.Book.goBack)
-                    .font(.system(size: ViewMetrics.backButtonFontSize, weight: .medium))
-                    .foregroundStyle(AppColors.white.color)
+        Button(
+            action: {
+                dismiss()
+            },
+            label: {
+                HStack {
+                    AppIcons.arrowLeft.image
+                    Text(L10n.Book.goBack)
+                        .font(.system(size: ViewMetrics.backButtonFontSize, weight: .medium))
+                        .foregroundStyle(AppColors.white.color)
+                }
             }
-        }.accessibilityIdentifier(AccessibilityIdentifiers.backButton.rawValue)
+        )
+        .accessibilityIdentifier(AccessibilityIdentifiers.backButton.rawValue)
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func openChapter(_ chapter: Chapter) {
         setCurrentBook(book)
         selectedChapter = chapter

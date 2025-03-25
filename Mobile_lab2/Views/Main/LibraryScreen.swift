@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LibraryScreen: View {
     // MARK: - Constants
-    
+
     private enum ViewMetrics {
         static let verticalSpacing: CGFloat = 24
         static let sectionSpacing: CGFloat = 12
@@ -26,22 +26,22 @@ struct LibraryScreen: View {
         static let scrollThresholdMultiplier: CGFloat = 1.5
         static let scrollThresholdEndMultiplier: CGFloat = 3
     }
-    
+
     // MARK: - Properties
-    
+
     private let featuredBooks = MockData.books
     private var initialItems: [Book] = []
     let isFavorite: (Book) -> Bool
     let setCurrentBook: (Book) -> Void
     let toggleFavorite: (Book) -> Void
-    
+
     @State private var carouselItems: [UUID: Book] = [:]
     @State private var itemKeys: [UUID] = []
     @State private var currentIndex: Int = 0
     @State private var selectedBook: Book? = nil
-    
+
     // MARK: - Initialization
-    
+
     init(
         isFavorite: @escaping (Book) -> Bool,
         setCurrentBook: @escaping (Book) -> Void = { _ in },
@@ -50,22 +50,19 @@ struct LibraryScreen: View {
         self.isFavorite = isFavorite
         self.setCurrentBook = setCurrentBook
         self.toggleFavorite = toggleFavorite
-        
         var initialCarouselItems: [UUID: Book] = [:]
         var initialKeys: [UUID] = []
-        
         for book in MockData.books.prefix(3) {
             let id = UUID()
             initialCarouselItems[id] = book
             initialKeys.append(id)
         }
-        
         _carouselItems = State(initialValue: initialCarouselItems)
         _itemKeys = State(initialValue: initialKeys)
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         GeometryReader { screenGeometry in
             ScrollView(showsIndicators: false) {
@@ -95,23 +92,22 @@ struct LibraryScreen: View {
     }
 
     // MARK: - View Components
-    
+
     private var headerView: some View {
         Text(L10n.Library.title.uppercased())
-            .appFont(.h1)
+            .appFont(.header1)
             .foregroundColor(.secondaryRed)
             .padding(.horizontal, ViewMetrics.horizontalPadding)
             .accessibilityIdentifier(AccessibilityIdentifiers.libraryTitle.rawValue)
     }
-    
+
     private func newBooksSection(screenHeight: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             Text(L10n.Library.new.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal, ViewMetrics.horizontalPadding)
                 .accessibilityIdentifier(AccessibilityIdentifiers.newBooksTitle.rawValue)
-            
             carouselView(screenHeight: screenHeight)
         }
     }
@@ -119,11 +115,10 @@ struct LibraryScreen: View {
     private func popularBooksSection(screenWidth: CGFloat) -> some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing * 2) {
             Text(L10n.Library.popular.uppercased())
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .padding(.horizontal, ViewMetrics.horizontalPadding)
                 .accessibilityIdentifier(AccessibilityIdentifiers.popularBooksTitle.rawValue)
-                
             booksGridView(screenWidth: screenWidth)
         }
         .padding(.bottom, ViewMetrics.bottomPadding)
@@ -136,7 +131,7 @@ struct LibraryScreen: View {
         if MockData.books.isEmpty {
             return AnyView(
                 Text("Нет доступных книг")
-                    .appFont(.h2)
+                    .appFont(.header2)
                     .foregroundColor(.accentDark)
                     .frame(height: 300)
                     .frame(maxWidth: .infinity)
@@ -178,7 +173,7 @@ struct LibraryScreen: View {
             )
         }
     }
-    
+
     private func booksGridView(screenWidth: CGFloat) -> some View {
         let columns = Array(
             repeating: GridItem(.flexible(), spacing: ViewMetrics.gridItemSpacing),
@@ -187,7 +182,7 @@ struct LibraryScreen: View {
         if MockData.books.isEmpty {
             return AnyView(
                 Text("Нет доступных книг")
-                    .appFont(.h2)
+                    .appFont(.header2)
                     .foregroundColor(.accentDark)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 50)
@@ -215,52 +210,43 @@ struct LibraryScreen: View {
             )
         }
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func openBookDetail(_ book: Book) {
         selectedBook = book
     }
-    
+
     private func handleScrollChange(minX: CGFloat) {
         let threshold: CGFloat = UIScreen.main.bounds.width * ViewMetrics.scrollThresholdMultiplier
-        
         if minX > -threshold && currentIndex > 0 {
             insertItemsAtStart()
             currentIndex -= MockData.books.count
         }
-        
         if minX < -threshold * ViewMetrics.scrollThresholdEndMultiplier &&
-            currentIndex < itemKeys.count - MockData.books.count
-        {
-            appendItemsAtEnd()
-        }
+            currentIndex < itemKeys.count - MockData.books.count { appendItemsAtEnd() }
     }
-    
+
     private func insertItemsAtStart() {
         var newItems: [UUID: Book] = [:]
         var newKeys: [UUID] = []
-        
         for book in MockData.books {
             let id = UUID()
             newItems[id] = book
             newKeys.append(id)
         }
-        
         carouselItems.merge(newItems) { _, new in new }
         itemKeys.insert(contentsOf: newKeys, at: 0)
     }
-    
+
     private func appendItemsAtEnd() {
         var newItems: [UUID: Book] = [:]
         var newKeys: [UUID] = []
-        
         for book in MockData.books {
             let id = UUID()
             newItems[id] = book
             newKeys.append(id)
         }
-        
         carouselItems.merge(newItems) { _, new in new }
         itemKeys.append(contentsOf: newKeys)
     }

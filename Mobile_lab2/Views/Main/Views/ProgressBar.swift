@@ -9,19 +9,19 @@ import SwiftUI
 
 struct ProgressBar: View {
     // MARK: - Constants
-    
+
     private enum ViewMetrics {
         static let defaultHeight: CGFloat = 5
         static let cornerRadiusFactor: CGFloat = 0.5
     }
-    
+
     // MARK: - Properties
-    
+
     let progress: Double
     let height: CGFloat
     let backgroundColor: Color
     let foregroundColor: Color
-    
+
     init(
         progress: Double,
         height: CGFloat = ViewMetrics.defaultHeight,
@@ -33,14 +33,13 @@ struct ProgressBar: View {
         self.backgroundColor = backgroundColor
         self.foregroundColor = foregroundColor
     }
-    
+
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
                 Rectangle()
                     .fill(backgroundColor)
                     .cornerRadius(height * ViewMetrics.cornerRadiusFactor)
-                
                 Rectangle()
                     .fill(foregroundColor)
                     .frame(width: geometry.size.width * CGFloat(progress))

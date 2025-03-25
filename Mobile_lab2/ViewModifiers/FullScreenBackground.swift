@@ -14,7 +14,6 @@ struct FullScreenBackground: ViewModifier {
         ZStack {
             color.edgesIgnoringSafeArea(.all)
             content
-              
         }
     }
 }

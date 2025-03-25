@@ -9,8 +9,8 @@ import SwiftUI
 
 enum AppFont {
     case title
-    case h1
-    case h2
+    case header1
+    case header2
     case body
     case bodySmall
     case footnote
@@ -20,7 +20,7 @@ enum AppFont {
 
     var name: String {
         switch self {
-        case .title, .h1, .h2:
+        case .title, .header1, .header2:
             return "AlumniSans-Bold"
         case .body, .bodySmall, .footnote:
             return "VelaSans"
@@ -35,9 +35,9 @@ enum AppFont {
         switch self {
         case .title:
             return 96
-        case .h1:
+        case .header1:
             return 48
-        case .h2:
+        case .header2:
             return 24
         case .body:
             return 16
@@ -58,9 +58,9 @@ enum AppFont {
         switch self {
         case .title:
             return 0.8
-        case .h1:
+        case .header1:
             return 1.0
-        case .h2:
+        case .header2:
             return 1.0
         case .body:
             return 1.3
@@ -75,7 +75,6 @@ enum AppFont {
         case .bold:
             return 1.0
         }
-    
     }
 }
 
@@ -85,6 +84,7 @@ extension View {
             .lineSpacing(style.size * (style.lineHeightMultiplier - 1))
     }
 }
+
 extension AppFont {
     func withReadingSettings(fontSize: CGFloat, lineSpacing: CGFloat) -> ReadingFont {
         return ReadingFont(
@@ -99,9 +99,8 @@ struct ReadingFont {
     let baseFontStyle: AppFont
     let fontSize: CGFloat
     let lineSpacing: CGFloat
-    
     var name: String {
-        return baseFontStyle.name
+        return self.baseFontStyle.name
     }
 }
 

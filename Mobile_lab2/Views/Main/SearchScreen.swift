@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchScreen: View {
     // MARK: - Constants
-    
+
     private enum ViewMetrics {
         static let mainSpacing: CGFloat = 24
         static let sectionSpacing: CGFloat = 16
@@ -21,28 +21,27 @@ struct SearchScreen: View {
         static let gridMinimumItemWidth: CGFloat = 140
         static let gridSpacing: CGFloat = 12
     }
-    
+
     // MARK: - State
-    
+
     @State private var searchText = ""
     @State private var recentSearches = isEmptyStateTest ? [] : ["Android", "Чистый код", "Чистая Архитектура", "Advanced Swift", "iOS"]
     @State private var selectedBook: Book? = nil
     @State private var isReadingScreenPresented = false
-    
+
     // MARK: - Properties
-    
+
     private let genres = MockData.genres
     private let authors = MockData.authors
     let isFavorite: (Book) -> Bool
     let setCurrentBook: (Book) -> Void
     let toggleFavorite: (Book) -> Void
-    
     static var isEmptyStateTest: Bool {
         ProcessInfo.processInfo.arguments.contains("-empty-state-test")
     }
-    
+
     // MARK: - Initializer
-    
+
     init(
         isFavorite: @escaping (Book) -> Bool = { _ in false },
         setCurrentBook: @escaping (Book) -> Void = { _ in },
@@ -52,14 +51,14 @@ struct SearchScreen: View {
         self.setCurrentBook = setCurrentBook
         self.toggleFavorite = toggleFavorite
     }
-    
+
     // MARK: - Body
-    
+
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: ViewMetrics.mainSpacing) {
                 searchBar
-                
+
                 if searchText.isEmpty {
                     recentSearchesSection
                     genresGridSection
@@ -85,16 +84,16 @@ struct SearchScreen: View {
             }
         }
     }
-    
+
     // MARK: - UI Components
-    
+
     private var searchBar: some View {
         HStack {
             HStack {
                 AppIcons.search.image
                     .renderingMode(.template)
                     .foregroundColor(.accentDark)
-                
+
                 TextField("", text: $searchText)
                     .appFont(.body)
                     .foregroundStyle(.accentDark)
@@ -104,7 +103,6 @@ struct SearchScreen: View {
                             .appFont(.body)
                             .foregroundStyle(.accentMedium)
                     }
-                
                 if !searchText.isEmpty {
                     clearButton
                 }
@@ -119,18 +117,21 @@ struct SearchScreen: View {
             .cornerRadius(ViewMetrics.cornerRadius)
         }
     }
-    
+
     private var clearButton: some View {
-        Button(action: {
-            searchText = ""
-        }) {
-            AppIcons.close.image
-                .renderingMode(.template)
-                .foregroundColor(.accentDark)
-        }
+        Button(
+            action: {
+                searchText = ""
+            },
+            label: {
+                AppIcons.close.image
+                    .renderingMode(.template)
+                    .foregroundColor(.accentDark)
+            }
+        )
         .accessibilityIdentifier(AccessibilityIdentifiers.searchClearButton.rawValue)
     }
-    
+
     private var recentSearchesSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             sectionTitle(L10n.Search.recent)
@@ -156,7 +157,6 @@ struct SearchScreen: View {
         VStack(alignment: .leading, spacing: ViewMetrics.itemSpacing) {
             sectionTitle(L10n.Search.genres)
                 .accessibilityIdentifier(AccessibilityIdentifiers.genresSectionTitle.rawValue)
-                
             if genres.isEmpty {
                 emptyGenresView
             } else {
@@ -178,12 +178,12 @@ struct SearchScreen: View {
             }
         }
     }
-        
+
     private var authorsSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             sectionTitle(L10n.Search.authors)
                 .accessibilityIdentifier(AccessibilityIdentifiers.authorsSectionTitle.rawValue)
-              
+
             if authors.isEmpty {
                 emptyAuthorsView
             } else {
@@ -199,7 +199,7 @@ struct SearchScreen: View {
             }
         }
     }
-    
+
     private var searchResultsSection: some View {
         VStack(alignment: .leading, spacing: ViewMetrics.sectionSpacing) {
             VStack(spacing: ViewMetrics.sectionSpacing) {
@@ -240,7 +240,7 @@ struct SearchScreen: View {
         .cornerRadius(ViewMetrics.cornerRadius)
         .accessibilityIdentifier(AccessibilityIdentifiers.emptyGenresView.rawValue)
     }
-       
+
     private var emptyAuthorsView: some View {
         VStack {
             Text("Авторы недоступны")
@@ -261,12 +261,12 @@ struct SearchScreen: View {
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .frame(width: 120, height: 120)
-            
+
             Text("Ничего не найдено")
-                .appFont(.h2)
+                .appFont(.header2)
                 .foregroundColor(.accentDark)
                 .multilineTextAlignment(.center)
-            
+
             Text("Попробуйте другие запросы")
                 .appFont(.body)
                 .foregroundColor(.accentMedium)
@@ -276,15 +276,15 @@ struct SearchScreen: View {
         .padding(.top, 50)
         .accessibilityIdentifier(AccessibilityIdentifiers.emptySearchResultsView.rawValue)
     }
-    
+
     // MARK: - Helper Methods
-    
+
     private func sectionTitle(_ title: String) -> some View {
         Text(title.uppercased())
-            .appFont(.h2)
+            .appFont(.header2)
             .foregroundColor(.accentDark)
     }
-    
+
     private func openBookDetail(_ book: Book) {
         selectedBook = book
         isReadingScreenPresented = true

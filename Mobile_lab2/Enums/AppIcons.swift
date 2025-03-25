@@ -4,8 +4,6 @@
 //
 //  Created by dark type on 18.03.2025.
 //
-
-
 import SwiftUI
 
 enum AppIcons: String {
@@ -26,23 +24,27 @@ enum AppIcons: String {
     case readingNow = "ReadingNow"
     case search = "Search"
     case settings = "Settings"
-    
+
     var image: Image {
         Image(self.rawValue)
     }
 }
+
 enum MockBooks: String {
     case book1 = "Book_1"
     case book2 = "Book_2"
     case book3 = "Book_3"
+
     var image: Image {
         Image(self.rawValue)
     }
 }
+
 enum MockPosters: String {
     case poster1 = "Poster_1"
     case poster4 = "Poster_4"
-    var image : Image {
+
+    var image: Image {
         Image(self.rawValue)
     }
 }
