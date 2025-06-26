@@ -5,11 +5,14 @@
 //  Created by dark type on 18.03.2025.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 @main
 struct MyBooksApp: App {
-    @AppStorage("isLoggedIn") private var isLoggedIn = false
+    let store = Store(initialState: AppFeature.State()) {
+        AppFeature()
+    }
 
     init() {
         if ProcessInfo.processInfo.arguments.contains("-ui-testing-logged-in") {
@@ -28,17 +31,7 @@ struct MyBooksApp: App {
 
     var body: some Scene {
         WindowGroup {
-            if isLoggedIn {
-                MainView()
-            } else {
-                LoginScreen()
-                    .toolbarBackground(.clear, for: .navigationBar)
-                    .toolbarBackground(.clear, for: .tabBar)
-                    .background(
-                        AppColors.accentDark.color
-                            .ignoresSafeArea()
-                    )
-            }
+            AppView(store: store)
         }
     }
 }
