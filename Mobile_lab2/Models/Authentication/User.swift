@@ -17,4 +17,6 @@ struct User: Equatable, Codable {
         self.email = email
         self.name = name
     }
+
+    static let mockUser = User(email: "mock@example.com", name: "Mock User")
 }

@@ -6,39 +6,44 @@
 //
 
 import SwiftUI
+import Perception
 
 struct LoginCarouselView: View {
     let selectedIndex: Int
 
     var body: some View {
         GeometryReader { geometry in
-            let images = [MockBooks.book1.image, MockBooks.book2.image, MockBooks.book3.image]
-            let itemWidth = geometry.size.width / 2.2
-            let spacing: CGFloat = 5
-            let totalWidth = CGFloat(images.count) * (itemWidth + spacing)
+            WithPerceptionTracking {
+                let images = [MockBooks.book1.image, MockBooks.book2.image, MockBooks.book3.image]
+                let itemWidth = geometry.size.width / 2.2
+                let spacing: CGFloat = 5
+                let totalWidth = CGFloat(images.count) * (itemWidth + spacing)
 
-            TimelineView(.animation) { timeline in
-                let time = timeline.date.timeIntervalSinceReferenceDate
-                let duration: Double = 10
-                let phase = time.truncatingRemainder(dividingBy: duration) / duration
-                let offset = totalWidth * phase
+                TimelineView(.animation) { timeline in
+                    WithPerceptionTracking {
+                        let time = timeline.date.timeIntervalSinceReferenceDate
+                        let duration: Double = 10
+                        let phase = time.truncatingRemainder(dividingBy: duration) / duration
+                        let offset = totalWidth * phase
 
-                HStack(spacing: spacing) {
-                    ForEach(0..<3) { _ in
-                        ForEach(0..<images.count, id: \.self) { index in
-                            CarouselImageView(
-                                image: images[index],
-                                width: itemWidth,
-                                height: geometry.size.height,
-                                index: index
-                            )
+                        HStack(spacing: spacing) {
+                            ForEach(0..<3) { _ in
+                                ForEach(0..<images.count, id: \.self) { index in
+                                    CarouselImageView(
+                                        image: images[index],
+                                        width: itemWidth,
+                                        height: geometry.size.height,
+                                        index: index
+                                    )
+                                }
+                            }
                         }
+                        .offset(x: -offset)
                     }
                 }
-                .offset(x: -offset)
+                .frame(width: geometry.size.width)
+                .clipped()
             }
-            .frame(width: geometry.size.width)
-            .clipped()
         }
         .accessibilityIdentifier(AccessibilityIdentifiers.carouselView.rawValue)
     }

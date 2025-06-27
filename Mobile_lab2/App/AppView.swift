@@ -14,23 +14,24 @@ struct AppView: View {
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(store, observe: { $0 }, content: { viewStore in
-                Group {
-                    switch viewStore.authenticationState {
-                    case .loggedOut, .authenticating:
-                        LoginView(store: store.scope(state: \.login, action: \.login))
-                            .loginScreenStyle()
+                WithPerceptionTracking {
+                    Group {
+                        switch viewStore.authenticationState {
+                        case .loggedOut:
+                            LoginView(store: store.scope(state: \.login, action: \.login))
+                                .loginScreenStyle()
+                                .transition(.opacity)
 
-                    case .loggedIn:
-                        MainView(store: Store(initialState: MainFeature.State()) {
-                            MainFeature()
-                        })
-                        .transition(.opacity)
+                        case .loggedIn:
+                            MainView(store: store.scope(state: \.main, action: \.main))
+                                .transition(.opacity)
+                        }
                     }
+                    .onAppear {
+                        viewStore.send(.appLaunched)
+                    }
+                    .animation(.easeInOut(duration: 0.3), value: viewStore.authenticationState.isLoggedIn)
                 }
-                .onAppear {
-                    viewStore.send(.appLaunched)
-                }
-                .animation(.easeInOut(duration: 0.3), value: viewStore.authenticationState.isLoggedIn)
             })
         }
     }

@@ -11,5 +11,5 @@ protocol UserDefaultsServiceProtocol: Sendable {
     func setFavoriteBookIDs(_ bookIDs: [String]) async
     func getFavoriteBookIDs() async -> [String]
     func setLoggedIn(_ isLoggedIn: Bool) async
-    func isLoggedIn() async -> Bool
+    func getLoggedIn() async -> Bool
 }

@@ -30,7 +30,7 @@ struct UserDefaultsService: UserDefaultsServiceProtocol {
         UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn")
     }
 
-    func isLoggedIn() async -> Bool {
+    func getLoggedIn() async -> Bool {
         UserDefaults.standard.bool(forKey: "isLoggedIn")
     }
 }

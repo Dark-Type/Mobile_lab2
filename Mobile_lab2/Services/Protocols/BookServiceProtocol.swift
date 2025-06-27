@@ -8,4 +8,6 @@
 protocol BookServiceProtocol: Sendable {
     func getCurrentBook() async -> Book?
     func setCurrentBook(_ book: Book) async
+    func getFeaturedBooks() async throws -> [Book]
+    func getPopularBooks() async throws -> [Book]
 }

@@ -14,15 +14,17 @@ struct LoginContentView: View {
     var body: some View {
         WithPerceptionTracking {
             GeometryReader { geometry in
-                let config = LoginLayoutConfig(
-                    screenSize: geometry.size,
-                    safeAreaInsets: geometry.safeAreaInsets
-                )
+                WithPerceptionTracking {
+                    let config = LoginLayoutConfig(
+                        screenSize: geometry.size,
+                        safeAreaInsets: geometry.safeAreaInsets
+                    )
 
-                ScrollView(showsIndicators: false) {
-                    LoginScrollContent(viewStore: viewStore, config: config)
+                    ScrollView(showsIndicators: false) {
+                        LoginScrollContent(viewStore: viewStore, config: config)
+                    }
+                    .background(AppColors.accentDark.color.ignoresSafeArea())
                 }
-                .background(AppColors.accentDark.color.ignoresSafeArea())
             }
         }
     }

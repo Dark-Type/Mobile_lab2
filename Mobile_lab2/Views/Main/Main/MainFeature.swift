@@ -23,6 +23,8 @@ struct MainFeature {
         var favoriteBooks: [Book] = []
         var favoriteBookIDs: [String] = []
 
+        var library = LibraryFeature.State()
+
         var hasFavoriteBooks: Bool {
             !favoriteBooks.isEmpty
         }
@@ -60,6 +62,14 @@ struct MainFeature {
         case favoriteBooksLoaded([Book])
         case favoriteBookIDsLoaded([String])
         case favoriteToggled(Book, Bool)
+
+        case library(LibraryFeature.Action)
+
+        case delegate(Delegate)
+
+        enum Delegate: Equatable {
+            case logout
+        }
     }
 
     // MARK: - Dependencies
@@ -73,6 +83,10 @@ struct MainFeature {
     var body: some ReducerOf<Self> {
         BindingReducer()
 
+        Scope(state: \.library, action: \.library) {
+            LibraryFeature()
+        }
+
         Reduce { state, action in
             switch action {
             case .binding:
@@ -80,6 +94,9 @@ struct MainFeature {
 
             case let .tabSelected(index):
                 state.selectedTab = index
+                if index == 0 && state.library.featuredBooks.isEmpty && state.library.popularBooks.isEmpty && !state.library.isLoading {
+                    return .send(.library(.viewAppeared))
+                }
                 return .none
 
             case let .setCurrentBook(book):
@@ -129,15 +146,15 @@ struct MainFeature {
                 return .none
 
             case .logoutButtonTapped:
-                return .run { _ in
-                    await userDefaultsService.setLoggedIn(false)
-                }
+                return .send(.delegate(.logout))
 
             case .viewAppeared:
                 return .run { send in
                     async let currentBook = bookService.getCurrentBook()
                     async let favoriteBooks = favoritesService.getFavoriteBooks()
                     async let favoriteBookIDs = userDefaultsService.getFavoriteBookIDs()
+
+                    await send(.library(.viewAppeared))
 
                     await send(.currentBookLoaded(currentBook))
                     await send(.favoriteBooksLoaded(favoriteBooks))
@@ -175,6 +192,18 @@ struct MainFeature {
                 return .run { _ in
                     await userDefaultsService.setFavoriteBookIDs(favoriteBookIDs)
                 }
+
+            case .library(.delegate(.setCurrentBook(let book))):
+                return .send(.setCurrentBook(book))
+
+            case .library(.delegate(.toggleFavorite(let book))):
+                return .send(.toggleFavorite(book))
+
+            case .library:
+                return .none
+
+            case .delegate:
+                return .none
             }
         }
     }

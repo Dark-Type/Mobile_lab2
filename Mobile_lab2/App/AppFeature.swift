@@ -14,15 +14,20 @@ struct AppFeature {
 
     @ObservableState
     struct State: Equatable {
-        var authenticationState: AuthenticationState = .loggedOut
+        var authenticationState: AuthenticationState
         var login: LoginFeature.State = .init()
+        var main: MainFeature.State = .init()
+
+        init() {
+            let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
+            self.authenticationState = isLoggedIn ? .loggedIn(User.mockUser) : .loggedOut
+        }
     }
 
     // MARK: - Authentication State
 
     enum AuthenticationState: Equatable {
         case loggedOut
-        case authenticating
         case loggedIn(User)
 
         var isLoggedIn: Bool {
@@ -45,6 +50,7 @@ struct AppFeature {
     enum Action: Equatable {
         case appLaunched
         case login(LoginFeature.Action)
+        case main(MainFeature.Action)
         case logout
         case authenticationStateChanged(AuthenticationState)
     }
@@ -52,6 +58,7 @@ struct AppFeature {
     // MARK: - Dependencies
 
     @Dependency(\.authenticationService) var authenticationService
+    @Dependency(\.userDefaultsService) var userDefaultsService
 
     // MARK: - Reducer
 
@@ -60,24 +67,24 @@ struct AppFeature {
             LoginFeature()
         }
 
+        Scope(state: \.main, action: \.main) {
+            MainFeature()
+        }
+
         Reduce { state, action in
             switch action {
             case .appLaunched:
-                let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
-                if isLoggedIn {
-                    return .run { send in
-                        if let user = await authenticationService.getCurrentUser() {
-                            await send(.authenticationStateChanged(.loggedIn(user)))
-                        }
-                    }
+                if state.authenticationState.isLoggedIn {
+                    return .send(.main(.viewAppeared))
                 }
                 return .none
 
             case let .login(.loginResponse(.success(user))):
                 state.authenticationState = .loggedIn(user)
-
-                UserDefaults.standard.set(true, forKey: "isLoggedIn")
-                return .none
+                return .run { send in
+                    await userDefaultsService.setLoggedIn(true)
+                    await send(.main(.viewAppeared))
+                }
 
             case .login:
                 return .none
@@ -85,14 +92,21 @@ struct AppFeature {
             case .logout:
                 state.authenticationState = .loggedOut
                 state.login = LoginFeature.State()
+                state.main = MainFeature.State()
 
                 return .run { _ in
                     try await authenticationService.logout()
-                    UserDefaults.standard.set(false, forKey: "isLoggedIn")
+                    await userDefaultsService.setLoggedIn(false)
                 }
 
             case let .authenticationStateChanged(newState):
                 state.authenticationState = newState
+                return .none
+
+            case .main(.delegate(.logout)):
+                return .send(.logout)
+
+            case .main:
                 return .none
             }
         }

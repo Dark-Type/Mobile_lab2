@@ -14,7 +14,7 @@ struct MainView: View {
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(store, observe: { $0 }, content: { viewStore in
-                MainContentView(viewStore: viewStore)
+                MainContentView(viewStore: viewStore, store: store)
             })
         }
     }
@@ -24,20 +24,23 @@ struct MainView: View {
 
 private struct MainContentView: View {
     let viewStore: ViewStore<MainFeature.State, MainFeature.Action>
+    let store: StoreOf<MainFeature>
 
     var body: some View {
-        ZStack {
-            AppColors.background.color
-                .ignoresSafeArea()
+        WithPerceptionTracking {
+            ZStack {
+                AppColors.background.color
+                    .ignoresSafeArea()
 
-            mainTabView
+                mainTabView
+            }
+            .setupFullScreenCovers(viewStore: viewStore)
+            .setupAlerts(viewStore: viewStore)
+            .onAppear {
+                viewStore.send(.viewAppeared)
+            }
+            .accessibilityIdentifier(AccessibilityIdentifiers.mainView.rawValue)
         }
-        .setupFullScreenCovers(viewStore: self.viewStore)
-        .setupAlerts(viewStore: self.viewStore)
-        .onAppear {
-            viewStore.send(.viewAppeared)
-        }
-        .accessibilityIdentifier(AccessibilityIdentifiers.mainView.rawValue)
     }
 
     private var mainTabView: some View {
@@ -51,46 +54,51 @@ private struct MainContentView: View {
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .safeAreaInset(edge: .bottom) {
-            CustomTabBar(
-                selectedTab: .init(
-                    get: { viewStore.selectedTab },
-                    set: { viewStore.send(.tabSelected($0)) }
-                ),
-                readingAction: { viewStore.send(.readingButtonTapped) },
-                logoutAction: { viewStore.send(.logoutButtonTapped) }
-            )
+            WithPerceptionTracking {
+                CustomTabBar(
+                    selectedTab: .init(
+                        get: { viewStore.selectedTab },
+                        set: { viewStore.send(.tabSelected($0)) }
+                    ),
+                    readingAction: { viewStore.send(.readingButtonTapped) },
+                    logoutAction: { viewStore.send(.logoutButtonTapped) }
+                )
+            }
         }
     }
 
     private var libraryTab: some View {
-        LibraryScreen(
-            isFavorite: { book in viewStore.state.isFavorite(book) },
-            setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-            toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
+        LibraryView(
+            store: store.scope(state: \.library, action: \.library),
+            isFavorite: { book in viewStore.state.isFavorite(book) }
         )
         .tag(0)
         .toolbarBackground(.hidden, for: .tabBar)
     }
 
     private var searchTab: some View {
-        SearchScreen(
-            isFavorite: { book in viewStore.state.isFavorite(book) },
-            setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-            toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
-        )
-        .tag(1)
-        .toolbarBackground(.hidden, for: .tabBar)
+        WithPerceptionTracking {
+            SearchScreen(
+                isFavorite: { book in viewStore.state.isFavorite(book) },
+                setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
+                toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
+            )
+            .tag(1)
+            .toolbarBackground(.hidden, for: .tabBar)
+        }
     }
 
     private var bookmarksTab: some View {
-        BookmarksScreen(
-            currentBook: viewStore.currentBook,
-            favoriteBooks: viewStore.favoriteBooks,
-            setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-            toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
-        )
-        .tag(2)
-        .toolbarBackground(.hidden, for: .tabBar)
+        WithPerceptionTracking {
+            BookmarksScreen(
+                currentBook: viewStore.currentBook,
+                favoriteBooks: viewStore.favoriteBooks,
+                setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
+                toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
+            )
+            .tag(2)
+            .toolbarBackground(.hidden, for: .tabBar)
+        }
     }
 }
 
@@ -103,13 +111,17 @@ private extension View {
                 get: { viewStore.isReadingScreenPresented },
                 set: { _ in viewStore.send(.readingScreenDismissed) }
             )) {
-                CurrentBookReadingView(viewStore: viewStore)
+                WithPerceptionTracking {
+                    CurrentBookReadingView(viewStore: viewStore)
+                }
             }
             .fullScreenCover(item: .init(
                 get: { viewStore.selectedBookForReading },
                 set: { viewStore.send(.bookSelectedForReading($0)) }
             )) { book in
-                SelectedBookReadingView(book: book, viewStore: viewStore)
+                WithPerceptionTracking {
+                    SelectedBookReadingView(book: book, viewStore: viewStore)
+                }
             }
     }
 
@@ -134,17 +146,19 @@ private struct CurrentBookReadingView: View {
     let viewStore: ViewStore<MainFeature.State, MainFeature.Action>
 
     var body: some View {
-        Group {
-            if let book = viewStore.currentBook {
-                NavigationStack {
-                    ReadingScreen(
-                        book: book,
-                        setCurrentBook: { book in
-                            viewStore.send(.setCurrentBook(book)) },
-                        isFavorite: viewStore.state.isFavorite(book),
-                        toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
-                    )
-                    .toolbarBackground(.clear, for: .navigationBar)
+        WithPerceptionTracking {
+            Group {
+                if let book = viewStore.currentBook {
+                    NavigationStack {
+                        ReadingScreen(
+                            book: book,
+                            setCurrentBook: { book in
+                                viewStore.send(.setCurrentBook(book)) },
+                            isFavorite: viewStore.state.isFavorite(book),
+                            toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
+                        )
+                        .toolbarBackground(.clear, for: .navigationBar)
+                    }
                 }
             }
         }
@@ -156,14 +170,16 @@ private struct SelectedBookReadingView: View {
     let viewStore: ViewStore<MainFeature.State, MainFeature.Action>
 
     var body: some View {
-        NavigationStack {
-            ReadingScreen(
-                book: book,
-                setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-                isFavorite: viewStore.state.isFavorite(book),
-                toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
-            )
-            .toolbarBackground(.clear, for: .navigationBar)
+        WithPerceptionTracking {
+            NavigationStack {
+                ReadingScreen(
+                    book: book,
+                    setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
+                    isFavorite: viewStore.state.isFavorite(book),
+                    toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
+                )
+                .toolbarBackground(.clear, for: .navigationBar)
+            }
         }
     }
 }

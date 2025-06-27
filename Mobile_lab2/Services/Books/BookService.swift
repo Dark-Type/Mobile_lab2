@@ -13,7 +13,19 @@ struct BookService: BookServiceProtocol {
     }
 
     func setCurrentBook(_ book: Book) async {
-        print("Setting current book: \(book.title)")
+        print("🔍 BookService.setCurrentBook - Setting current book: \(book.title)")
+    }
+
+    func getFeaturedBooks() async throws -> [Book] {
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        return Array(MockData.books.prefix(3))
+    }
+
+    func getPopularBooks() async throws -> [Book] {
+        try await Task.sleep(nanoseconds: 100_000_000)
+
+        return MockData.books
     }
 }
 

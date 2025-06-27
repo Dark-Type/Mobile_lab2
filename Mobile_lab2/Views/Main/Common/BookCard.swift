@@ -124,19 +124,19 @@ struct BookCard: View {
     private func additionalAuthorsView(width: CGFloat) -> some View {
         CustomTextLabel()
             .text("и ещё \(additionalAuthorsCount)")
-            .appFont(.footnote)
+            .appFont(.bodySmall)
             .foregroundColor(AppColors.accentDark.color.opacity(ViewMetrics.textOpacity))
             .lineHeightMultiple(ViewMetrics.lineHeightMultiple)
             .lineLimit(1)
             .maxWidth(width)
             .truncationMode(.byTruncatingTail)
-            .frame(height: calculateTextHeight(font: .footnote, lines: 1))
+            .frame(height: calculateTextHeight(font: .bodySmall, lines: 1))
     }
 
     // MARK: - Helper Methods
 
     private func calculateTextHeight(font: AppFont, lines: Int) -> CGFloat {
-        font.size * CGFloat(lines) * ViewMetrics.lineHeightMultiple
+        return font.size * ViewMetrics.lineHeightMultiple * CGFloat(lines)
     }
 }
 
