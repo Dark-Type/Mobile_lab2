@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct Author: Identifiable {
+struct Author: Identifiable, Equatable {
     let name: String
     let image: Image
     let id: String = UUID().uuidString

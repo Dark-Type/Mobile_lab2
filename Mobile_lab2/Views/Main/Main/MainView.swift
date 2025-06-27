@@ -77,15 +77,12 @@ private struct MainContentView: View {
     }
 
     private var searchTab: some View {
-        WithPerceptionTracking {
-            SearchScreen(
-                isFavorite: { book in viewStore.state.isFavorite(book) },
-                setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-                toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
-            )
-            .tag(1)
-            .toolbarBackground(.hidden, for: .tabBar)
-        }
+        SearchView(
+            store: store.scope(state: \.search, action: \.search),
+            isFavorite: { book in viewStore.state.isFavorite(book) }
+        )
+        .tag(1)
+        .toolbarBackground(.hidden, for: .tabBar)
     }
 
     private var bookmarksTab: some View {

@@ -24,6 +24,7 @@ struct MainFeature {
         var favoriteBookIDs: [String] = []
 
         var library = LibraryFeature.State()
+        var search = SearchFeature.State()
 
         var hasFavoriteBooks: Bool {
             !favoriteBooks.isEmpty
@@ -64,6 +65,7 @@ struct MainFeature {
         case favoriteToggled(Book, Bool)
 
         case library(LibraryFeature.Action)
+        case search(SearchFeature.Action)
 
         case delegate(Delegate)
 
@@ -87,6 +89,10 @@ struct MainFeature {
             LibraryFeature()
         }
 
+        Scope(state: \.search, action: \.search) {
+            SearchFeature()
+        }
+
         Reduce { state, action in
             switch action {
             case .binding:
@@ -94,8 +100,18 @@ struct MainFeature {
 
             case let .tabSelected(index):
                 state.selectedTab = index
-                if index == 0 && state.library.featuredBooks.isEmpty && state.library.popularBooks.isEmpty && !state.library.isLoading {
-                    return .send(.library(.viewAppeared))
+
+                switch index {
+                case 0:
+                    if state.library.featuredBooks.isEmpty && state.library.popularBooks.isEmpty && !state.library.isLoading {
+                        return .send(.library(.viewAppeared))
+                    }
+                case 1:
+                    if !state.search.hasLoadedInitialData && !state.search.isLoadingInitialData {
+                        return .send(.search(.viewAppeared))
+                    }
+                default:
+                    break
                 }
                 return .none
 
@@ -200,6 +216,15 @@ struct MainFeature {
                 return .send(.toggleFavorite(book))
 
             case .library:
+                return .none
+
+            case .search(.delegate(.setCurrentBook(let book))):
+                return .send(.setCurrentBook(book))
+
+            case .search(.delegate(.toggleFavorite(let book))):
+                return .send(.toggleFavorite(book))
+
+            case .search:
                 return .none
 
             case .delegate:
