@@ -8,8 +8,6 @@
 import ComposableArchitecture
 import Foundation
 
-// MARK: - App Feature
-
 @Reducer
 struct AppFeature {
     // MARK: - State

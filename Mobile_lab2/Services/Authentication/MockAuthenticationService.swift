@@ -5,6 +5,7 @@
 //  Created by dark type on 26.06.2025.
 //
 
+import Dependencies
 import Foundation
 
 struct MockAuthenticationService: AuthenticationServiceProtocol {
@@ -24,5 +25,19 @@ struct MockAuthenticationService: AuthenticationServiceProtocol {
 
     func getCurrentUser() async -> User? {
         return User(email: "mock@example.com", name: "Mock User")
+    }
+}
+
+// MARK: - Dependency Registration
+
+extension MockAuthenticationService: DependencyKey {
+    static let liveValue: AuthenticationServiceProtocol = MockAuthenticationService()
+    static let testValue: AuthenticationServiceProtocol = MockAuthenticationService()
+}
+
+extension DependencyValues {
+    var authenticationService: AuthenticationServiceProtocol {
+        get { self[MockAuthenticationService.self] }
+        set { self[MockAuthenticationService.self] = newValue }
     }
 }

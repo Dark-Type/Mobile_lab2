@@ -7,7 +7,11 @@
 
 import SwiftUI
 
-struct Book: Identifiable {
+struct Book: Identifiable, Equatable {
+    static func == (lhs: Book, rhs: Book) -> Bool {
+        return lhs.id == rhs.id
+    }
+
     let id: UUID
     let title: String
     let author: [Author]

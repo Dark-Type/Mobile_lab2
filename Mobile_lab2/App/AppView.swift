@@ -21,8 +21,10 @@ struct AppView: View {
                             .loginScreenStyle()
 
                     case .loggedIn:
-                        MainView()
-                            .transition(.opacity)
+                        MainView(store: Store(initialState: MainFeature.State()) {
+                            MainFeature()
+                        })
+                        .transition(.opacity)
                     }
                 }
                 .onAppear {
