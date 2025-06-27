@@ -19,19 +19,24 @@ struct MainFeature {
         var selectedBookForReading: Book? = nil
         var showNoBookAlert: Bool = false
 
-        var currentBook: Book? = nil
+        var currentBooks: [Book] = []
         var favoriteBooks: [Book] = []
         var favoriteBookIDs: [String] = []
 
         var library = LibraryFeature.State()
         var search = SearchFeature.State()
+        var bookmarks = BookmarksFeature.State()
 
         var hasFavoriteBooks: Bool {
             !favoriteBooks.isEmpty
         }
 
-        var hasCurrentBook: Bool {
-            currentBook != nil
+        var hasCurrentBooks: Bool {
+            !currentBooks.isEmpty
+        }
+
+        var topCurrentBook: Book? {
+            currentBooks.first
         }
 
         func isFavorite(_ book: Book) -> Bool {
@@ -47,6 +52,8 @@ struct MainFeature {
         case tabSelected(Int)
 
         case setCurrentBook(Book)
+        case setCurrentBookAndChapter(Book, Chapter)
+        case addToCurrentBooks(Book)
         case bookSelectedForReading(Book?)
         case toggleFavorite(Book)
 
@@ -59,13 +66,14 @@ struct MainFeature {
         case logoutButtonTapped
 
         case viewAppeared
-        case currentBookLoaded(Book?)
+        case currentBooksLoaded([Book])
         case favoriteBooksLoaded([Book])
         case favoriteBookIDsLoaded([String])
         case favoriteToggled(Book, Bool)
 
         case library(LibraryFeature.Action)
         case search(SearchFeature.Action)
+        case bookmarks(BookmarksFeature.Action)
 
         case delegate(Delegate)
 
@@ -93,6 +101,10 @@ struct MainFeature {
             SearchFeature()
         }
 
+        Scope(state: \.bookmarks, action: \.bookmarks) {
+            BookmarksFeature()
+        }
+
         Reduce { state, action in
             switch action {
             case .binding:
@@ -110,16 +122,42 @@ struct MainFeature {
                     if !state.search.hasLoadedInitialData && !state.search.isLoadingInitialData {
                         return .send(.search(.viewAppeared))
                     }
+                case 2:
+                    if !state.bookmarks.hasLoadedInitialData && !state.bookmarks.isLoading {
+                        return .send(.bookmarks(.viewAppeared))
+                    }
                 default:
                     break
                 }
                 return .none
 
             case let .setCurrentBook(book):
-                state.currentBook = book
+                state.currentBooks.removeAll { $0.id == book.id }
+                state.currentBooks.insert(book, at: 0)
+
                 return .run { _ in
-                    await userDefaultsService.setCurrentBookID(book.id.uuidString)
+                    await bookService.addToCurrentBooks(book)
+                    await bookService.moveBookToTop(book)
                 }
+
+            case let .setCurrentBookAndChapter(book, chapter):
+                state.currentBooks.removeAll { $0.id == book.id }
+                state.currentBooks.insert(book, at: 0)
+
+                return .run { _ in
+                    await bookService.addToCurrentBooks(book)
+                    await bookService.moveBookToTop(book)
+                }
+
+            case let .addToCurrentBooks(book):
+                if !state.currentBooks.contains(where: { $0.id == book.id }) {
+                    state.currentBooks.insert(book, at: 0)
+
+                    return .run { _ in
+                        await bookService.addToCurrentBooks(book)
+                    }
+                }
+                return .none
 
             case let .bookSelectedForReading(book):
                 state.selectedBookForReading = book
@@ -141,7 +179,7 @@ struct MainFeature {
                 }
 
             case .readingButtonTapped:
-                if state.hasCurrentBook {
+                if state.hasCurrentBooks {
                     state.isReadingScreenPresented = true
                 } else {
                     state.showNoBookAlert = true
@@ -165,20 +203,21 @@ struct MainFeature {
                 return .send(.delegate(.logout))
 
             case .viewAppeared:
+                print("🔍 MainFeature.viewAppeared - Starting data load")
                 return .run { send in
-                    async let currentBook = bookService.getCurrentBook()
+                    async let currentBooks = bookService.getCurrentBooks()
                     async let favoriteBooks = favoritesService.getFavoriteBooks()
                     async let favoriteBookIDs = userDefaultsService.getFavoriteBookIDs()
 
                     await send(.library(.viewAppeared))
 
-                    await send(.currentBookLoaded(currentBook))
+                    await send(.currentBooksLoaded(currentBooks))
                     await send(.favoriteBooksLoaded(favoriteBooks))
                     await send(.favoriteBookIDsLoaded(favoriteBookIDs))
                 }
 
-            case let .currentBookLoaded(book):
-                state.currentBook = book
+            case let .currentBooksLoaded(books):
+                state.currentBooks = books
                 return .none
 
             case let .favoriteBooksLoaded(books):
@@ -209,22 +248,34 @@ struct MainFeature {
                     await userDefaultsService.setFavoriteBookIDs(favoriteBookIDs)
                 }
 
-            case .library(.delegate(.setCurrentBook(let book))):
+            case let .library(.delegate(.setCurrentBook(book))):
                 return .send(.setCurrentBook(book))
 
-            case .library(.delegate(.toggleFavorite(let book))):
+            case let .library(.delegate(.toggleFavorite(book))):
                 return .send(.toggleFavorite(book))
 
             case .library:
                 return .none
 
-            case .search(.delegate(.setCurrentBook(let book))):
+            case let .search(.delegate(.setCurrentBook(book))):
                 return .send(.setCurrentBook(book))
 
-            case .search(.delegate(.toggleFavorite(let book))):
+            case let .search(.delegate(.toggleFavorite(book))):
                 return .send(.toggleFavorite(book))
 
             case .search:
+                return .none
+
+            case let .bookmarks(.delegate(.setCurrentBook(book))):
+                return .send(.setCurrentBook(book))
+
+            case let .bookmarks(.delegate(.setCurrentBookAndChapter(book, chapter))):
+                return .send(.setCurrentBookAndChapter(book, chapter))
+
+            case let .bookmarks(.delegate(.toggleFavorite(book))):
+                return .send(.toggleFavorite(book))
+
+            case .bookmarks:
                 return .none
 
             case .delegate:

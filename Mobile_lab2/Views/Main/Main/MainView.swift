@@ -86,16 +86,12 @@ private struct MainContentView: View {
     }
 
     private var bookmarksTab: some View {
-        WithPerceptionTracking {
-            BookmarksScreen(
-                currentBook: viewStore.currentBook,
-                favoriteBooks: viewStore.favoriteBooks,
-                setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-                toggleFavorite: { book in viewStore.send(.toggleFavorite(book)) }
-            )
-            .tag(2)
-            .toolbarBackground(.hidden, for: .tabBar)
-        }
+        BookmarksView(
+            store: store.scope(state: \.bookmarks, action: \.bookmarks),
+            isFavorite: { book in viewStore.state.isFavorite(book) }
+        )
+        .tag(2)
+        .toolbarBackground(.hidden, for: .tabBar)
     }
 }
 
@@ -145,7 +141,7 @@ private struct CurrentBookReadingView: View {
     var body: some View {
         WithPerceptionTracking {
             Group {
-                if let book = viewStore.currentBook {
+                if let book = viewStore.topCurrentBook {
                     NavigationStack {
                         ReadingScreen(
                             book: book,

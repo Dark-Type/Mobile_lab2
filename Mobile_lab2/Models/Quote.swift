@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct Quote: Identifiable {
+struct Quote: Identifiable, Equatable {
     let id: UUID
     let content: String
     let bookId: UUID
