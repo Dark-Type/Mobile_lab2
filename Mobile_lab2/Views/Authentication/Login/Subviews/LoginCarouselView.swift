@@ -5,15 +5,16 @@
 //  Created by dark type on 26.06.2025.
 //
 
-import SwiftUI
 import Perception
+import SwiftUI
 
 struct LoginCarouselView: View {
     let selectedIndex: Int
 
     var body: some View {
-        GeometryReader { geometry in
-            WithPerceptionTracking {
+        WithPerceptionTracking {
+            GeometryReader { geometry in
+
                 let images = [MockBooks.book1.image, MockBooks.book2.image, MockBooks.book3.image]
                 let itemWidth = geometry.size.width / 2.2
                 let spacing: CGFloat = 5

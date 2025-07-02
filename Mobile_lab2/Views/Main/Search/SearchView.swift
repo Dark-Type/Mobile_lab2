@@ -17,6 +17,7 @@ struct SearchView: View {
             WithViewStore(store, observe: { $0 }, content: { viewStore in
                 SearchContentView(
                     viewStore: viewStore,
+                    store: store,
                     isFavorite: isFavorite
                 )
             })
@@ -28,6 +29,7 @@ struct SearchView: View {
 
 private struct SearchContentView: View {
     let viewStore: ViewStore<SearchFeature.State, SearchFeature.Action>
+    let store: StoreOf<SearchFeature>
     let isFavorite: (Book) -> Bool
 
     var body: some View {
@@ -43,7 +45,7 @@ private struct SearchContentView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background.color)
-            .setupFullScreenCovers(viewStore: viewStore, isFavorite: isFavorite)
+            .setupFullScreenCovers(viewStore: viewStore, store: store, isFavorite: isFavorite)
             .onAppear {
                 viewStore.send(.viewAppeared)
             }
@@ -77,6 +79,7 @@ private struct SearchContentStateView: View {
 private extension View {
     func setupFullScreenCovers(
         viewStore: ViewStore<SearchFeature.State, SearchFeature.Action>,
+        store: StoreOf<SearchFeature>,
         isFavorite: @escaping (Book) -> Bool
     ) -> some View {
         self.fullScreenCover(item: .init(
@@ -85,14 +88,15 @@ private extension View {
         )) { book in
             WithPerceptionTracking {
                 NavigationStack {
-                    ReadingScreen(
-                        book: book,
-                        setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-                        isFavorite: isFavorite(book),
-                        toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
+                    ReadingView(
+                        store: Store(
+                            initialState: ReadingFeature.State(book: book, isFavorite: isFavorite(book))
+                        ) {
+                            ReadingFeature()
+                        }
                     )
                     .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
-                    .toolbarBackground(Color.clear, for: .navigationBar)
+                    .toolbarBackground(Color.clear, for: ToolbarPlacement.navigationBar)
                 }
             }
         }

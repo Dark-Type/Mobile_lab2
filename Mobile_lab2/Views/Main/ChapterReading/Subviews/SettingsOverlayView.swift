@@ -11,17 +11,18 @@ struct SettingsOverlayView: View {
     @Binding var fontSize: CGFloat
     @Binding var lineSpacing: CGFloat
     @Binding var showSettings: Bool
+    let onFontSizeIncrease: () -> Void
+    let onFontSizeDecrease: () -> Void
+    let onLineSpacingIncrease: () -> Void
+    let onLineSpacingDecrease: () -> Void
+    let onClose: () -> Void
 
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
                 Spacer()
                 VStack(spacing: 16) {
-                    overlaySettingsTitle(L10n.Book.Settings.title, action: {
-                        withAnimation {
-                            showSettings = false
-                        }
-                    })
+                    overlaySettingsTitle(L10n.Book.Settings.title)
                     fontSizeControl
                     lineSpacingControl
                     Spacer(minLength: 16)
@@ -65,36 +66,22 @@ struct SettingsOverlayView: View {
                     .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeValue.rawValue)
 
                 HStack(spacing: 0) {
-                    Button(
-                        action: {
-                            if fontSize > 14 {
-                                fontSize -= 2
-                            }
-                        },
-                        label: {
-                            Image(systemName: "minus")
-                                .foregroundStyle(.accentDark)
-                                .frame(width: 47, height: 32)
-                        }
-                    )
+                    Button(action: onFontSizeDecrease) {
+                        Image(systemName: "minus")
+                            .foregroundStyle(.accentDark)
+                            .frame(width: 47, height: 32)
+                    }
                     .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeDecreaseButton.rawValue)
 
                     Rectangle()
                         .fill(.accentMedium)
                         .frame(width: 1, height: 18)
 
-                    Button(
-                        action: {
-                            if fontSize < 24 {
-                                fontSize += 2
-                            }
-                        },
-                        label: {
-                            Image(systemName: "plus")
-                                .foregroundStyle(.accentDark)
-                                .frame(width: 47, height: 32)
-                        }
-                    )
+                    Button(action: onFontSizeIncrease) {
+                        Image(systemName: "plus")
+                            .foregroundStyle(.accentDark)
+                            .frame(width: 47, height: 32)
+                    }
                     .accessibilityIdentifier(AccessibilityIdentifiers.fontSizeIncreaseButton.rawValue)
                 }
                 .background(AppColors.accentLight.color)
@@ -119,36 +106,24 @@ struct SettingsOverlayView: View {
                     .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingValue.rawValue)
 
                 HStack(spacing: 0) {
-                    Button(
-                        action: {
-                            if lineSpacing > 4 {
-                                lineSpacing -= 2
-                            }
-                        },
-                        label: {
-                            Image(systemName: "minus")
-                                .foregroundStyle(.accentDark)
-                                .frame(width: 47, height: 32)
-                        }
-                    )
+                    Button(action: onLineSpacingDecrease) {
+                        Image(systemName: "minus")
+                            .foregroundStyle(.accentDark)
+                            .frame(width: 47, height: 32)
+                    }
+
                     .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingDecreaseButton.rawValue)
 
                     Rectangle()
                         .fill(.accentMedium)
                         .frame(width: 1, height: 18)
 
-                    Button(
-                        action: {
-                            if lineSpacing < 12 {
-                                lineSpacing += 2
-                            }
-                        },
-                        label: {
-                            Image(systemName: "plus")
-                                .foregroundStyle(.accentDark)
-                                .frame(width: 47, height: 32)
-                        }
-                    )
+                    Button(action: onLineSpacingIncrease) {
+                        Image(systemName: "plus")
+                            .foregroundStyle(.accentDark)
+                            .frame(width: 47, height: 32)
+                    }
+
                     .accessibilityIdentifier(AccessibilityIdentifiers.lineSpacingIncreaseButton.rawValue)
                 }
                 .background(AppColors.accentLight.color)
@@ -157,14 +132,14 @@ struct SettingsOverlayView: View {
         }
     }
 
-    private func overlaySettingsTitle(_ title: String, action: @escaping () -> Void) -> some View {
+    private func overlaySettingsTitle(_ title: String) -> some View {
         HStack {
             Text(title)
                 .appFont(.header2)
                 .accessibilityIdentifier(AccessibilityIdentifiers.settingsTitle.rawValue)
 
             Spacer()
-            Button(action: action) {
+            Button(action: onClose) {
                 AppIcons.close.image
                     .renderingMode(.template)
             }

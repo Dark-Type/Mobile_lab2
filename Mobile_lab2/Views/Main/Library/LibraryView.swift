@@ -237,14 +237,15 @@ private extension View {
         )) { book in
             WithPerceptionTracking {
                 NavigationStack {
-                    ReadingScreen(
-                        book: book,
-                        setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-                        isFavorite: isFavorite(book),
-                        toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
+                    ReadingView(
+                        store: Store(
+                            initialState: ReadingFeature.State(book: book, isFavorite: isFavorite(book))
+                        ) {
+                            ReadingFeature()
+                        }
                     )
                     .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
-                    .toolbarBackground(Color.clear, for: .navigationBar)
+                    .toolbarBackground(Color.clear, for: ToolbarPlacement.navigationBar)
                 }
             }
         }

@@ -5,291 +5,312 @@
 //  Created by dark type on 19.03.2025.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 struct ChapterReadingView: View {
-    // MARK: - Properties
+    let store: StoreOf<ChapterReadingFeature>
+    let onSetCurrentBook: ((Book) -> Void)?
 
-    let book: Book
-    let setCurrentBook: (Book) -> Void
-    @State private var currentChapter: Chapter
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showChapters: Bool = false
-    @State private var showSettings: Bool = false
-    @State private var showQuoteOverlay: Bool = false
-    @State private var selectedText: String = ""
-    @State private var originalSelectedText: String = ""
-    @State private var alertMessage = ""
-
-    @State private var isSelecting: Bool = false
-    @State private var selectionTimer: Timer?
-
-    @State private var fontSize: CGFloat = 14
-    @State private var lineSpacing: CGFloat = 6
-
-    @State private var isReading: Bool = false
-    @State private var autoScrollEnabled: Bool = false
-    @State private var currentParagraphIndex: Int = 0
-    @State private var currentSentenceIndex: Int = 0
-    @State private var isScrollingProgrammatically: Bool = false
-    @State private var readingWorkItem: DispatchWorkItem? = nil
-    private var paragraphs: [String] {
-        currentChapter.paragraphs
+    var body: some View {
+        WithPerceptionTracking {
+            WithViewStore(store, observe: { $0 }, content: { viewStore in
+                ChapterReadingContentView(
+                    viewStore: viewStore,
+                    store: store,
+                    onSetCurrentBook: onSetCurrentBook
+                )
+            })
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                LeadingToolbarItem(dismiss: { dismiss() })
+                PrincipalToolbarItem(book: store.book, currentChapter: store.currentChapter)
+            }
+            .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbar(store.showChapters || store.showSettings || store.showQuoteOverlay ? .hidden : .automatic, for: .navigationBar)
+        }
     }
+}
 
-    @State private var hasScrolled: Bool = false
+// MARK: - Main Content View
 
-    init(book: Book, setCurrentBook: @escaping (Book) -> Void, chapter: Chapter) {
-        self.book = book
-        self.setCurrentBook = setCurrentBook
-        _currentChapter = State(initialValue: chapter)
-    }
+private struct ChapterReadingContentView: View {
+    let viewStore: ViewStore<ChapterReadingFeature.State, ChapterReadingFeature.Action>
+    let store: StoreOf<ChapterReadingFeature>
+    let onSetCurrentBook: ((Book) -> Void)?
 
     var body: some View {
-        ZStack(alignment: .bottom) {
-            ScrollViewReader { proxy in
-                VStack(spacing: 0) {
-                    Rectangle()
-                        .fill(AppColors.background.color)
-                        .frame(height: 1)
-                        .offset(y: -1)
-                        .zIndex(1)
-                    ScrollView(showsIndicators: false) {
-                        VisibilityDetector(onVisible: {
-                            withAnimation(.easeOut(duration: 0.2)) {
-                                hasScrolled = false
+        WithPerceptionTracking {
+            ZStack(alignment: .bottom) {
+                ScrollViewReader { proxy in
+                    VStack(spacing: 0) {
+                        Rectangle()
+                            .fill(AppColors.background.color)
+                            .frame(height: 1)
+                            .offset(y: -1)
+                            .zIndex(1)
+
+                        ScrollView(showsIndicators: false) {
+                            VisibilityDetector(onVisible: {
+                                viewStore.send(.scrollStateChanged(false))
+
+                            })
+                            .frame(height: 1)
+
+                            LazyVStack(alignment: .leading, spacing: 16) {
+                                ForEach(Array(viewStore.paragraphs.enumerated()), id: \.offset) { index, paragraph in
+                                    ParagraphView(
+                                        paragraph: paragraph,
+                                        index: index,
+                                        isCurrentParagraph: index == viewStore.currentParagraphIndex && viewStore.isReading,
+                                        currentSentenceIndex: viewStore.currentSentenceIndex,
+                                        fontSize: viewStore.fontSize,
+                                        lineSpacing: viewStore.lineSpacing,
+                                        onSelect: { paragraph in
+                                            viewStore.send(.paragraphSelected(paragraph))
+                                        }
+                                    )
+                                }
                             }
-                        })
-                        .frame(height: 1)
-                        VStack(alignment: .leading, spacing: 16) {
-                            ForEach(Array(paragraphs.enumerated()), id: \.offset) { index, paragraph in
-                                ParagraphView(
-                                    paragraph: paragraph,
-                                    index: index,
-                                    isCurrentParagraph: index == currentParagraphIndex && isReading,
-                                    currentSentenceIndex: currentSentenceIndex,
-                                    fontSize: fontSize,
-                                    lineSpacing: lineSpacing,
-                                    onSelect: selectWholeParagraph
-                                )
-                            }
+                            .padding(.top, 24)
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 120)
                         }
-                        .padding(.top, 24)
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 120)
-                    }
-                    .accessibilityIdentifier(AccessibilityIdentifiers.chapterReadingView.rawValue)
-                    .simultaneousGesture(
-                        DragGesture(minimumDistance: 5)
-                            .onChanged { value in
-                                if value.translation.height < -20 {
-                                    withAnimation(.easeOut(duration: 0.2)) {
-                                        hasScrolled = true
+                        .accessibilityIdentifier(AccessibilityIdentifiers.chapterReadingView.rawValue)
+                        .simultaneousGesture(
+                            DragGesture(minimumDistance: 5)
+                                .onChanged { value in
+                                    if value.translation.height < -20 {
+                                        viewStore.send(.scrollStateChanged(true))
+                                    }
+
+                                    if viewStore.isReading, viewStore.autoScrollEnabled, !viewStore.isScrollingProgrammatically {
+                                        viewStore.send(.autoScrollToggled(false))
                                     }
                                 }
-                                if isReading, autoScrollEnabled, !isScrollingProgrammatically {
-                                    autoScrollEnabled = false
-                                }
+                        )
+                    }
+                    .onChange(of: viewStore.shouldScrollToParagraph) { paragraphIndex in
+                        guard let paragraphIndex = paragraphIndex,
+                              paragraphIndex < viewStore.paragraphs.count,
+                              viewStore.isReading,
+                              viewStore.autoScrollEnabled else { return }
+
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.02) {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                proxy.scrollTo("para-\(paragraphIndex)", anchor: .center)
+                                viewStore.send(.scrollStateChanged(true))
                             }
-                    )
-                }
-                .onChange(of: currentParagraphIndex) { newIndex in
-                    guard newIndex < paragraphs.count, isReading, autoScrollEnabled else { return }
 
-                    isScrollingProgrammatically = true
-
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        withAnimation(.easeInOut(duration: 0.4)) {
-                            proxy.scrollTo("para-\(newIndex)", anchor: .center)
-                            hasScrolled = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.35) {
+                                viewStore.send(.setScrollingProgrammatically(false))
+                            }
                         }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                            isScrollingProgrammatically = false
+                    }
+                    .onChange(of: viewStore.currentChapter) { _ in
+                        proxy.scrollTo("para-0", anchor: .top)
+                    }
+                }
+
+                WithPerceptionTracking {
+                    VStack(spacing: 0) {
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(stops: [
+                                        .init(color: AppColors.background.color, location: 0),
+                                        .init(color: AppColors.background.color.opacity(0), location: 1)
+                                    ]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .frame(height: 60)
+                            .opacity(viewStore.hasScrolled ? 1 : 0)
+                        Spacer()
+                    }
+                    .allowsHitTesting(false)
+                    .frame(maxHeight: .infinity, alignment: .top)
+                }
+
+                WithPerceptionTracking {
+                    VStack(spacing: 0) {
+                        Rectangle()
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(stops: [
+                                        .init(color: AppColors.background.color.opacity(0), location: 0),
+                                        .init(color: AppColors.background.color, location: 1)
+                                    ]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
+                            .frame(height: 100)
+                            .allowsHitTesting(false)
+
+                        ChapterTabBarView(viewStore: viewStore)
+                    }
+                    .ignoresSafeArea(.all, edges: .bottom)
+                }
+
+                WithPerceptionTracking {
+                    Group {
+                        if viewStore.showChapters {
+                            ChaptersOverlayView(
+                                book: viewStore.book,
+                                currentChapter: .constant(viewStore.currentChapter),
+                                showChapters: .constant(viewStore.showChapters)
+                            ) { chapter in
+                                viewStore.send(.chapterSelected(chapter))
+                            }
+                        }
+
+                        if viewStore.showSettings {
+                            SettingsOverlayView(
+                                fontSize: .constant(viewStore.fontSize),
+                                lineSpacing: .constant(viewStore.lineSpacing),
+                                showSettings: .constant(viewStore.showSettings),
+                                onFontSizeIncrease: { viewStore.send(.fontSizeIncreased) },
+                                onFontSizeDecrease: { viewStore.send(.fontSizeDecreased) },
+                                onLineSpacingIncrease: { viewStore.send(.lineSpacingIncreased) },
+                                onLineSpacingDecrease: { viewStore.send(.lineSpacingDecreased) },
+                                onClose: { viewStore.send(.toggleSettingsOverlay) }
+                            )
+                        }
+
+                        if viewStore.showQuoteOverlay {
+                            QuoteSelectionOverlayView(
+                                selectedText: .constant(viewStore.selectedText),
+                                originalSelectedText: .constant(viewStore.originalSelectedText),
+                                showQuoteOverlay: .constant(viewStore.showQuoteOverlay),
+                                onTextChange: { text in viewStore.send(.selectedTextChanged(text)) },
+                                onRestore: { viewStore.send(.restoreOriginalText) },
+                                onCancel: { viewStore.send(.cancelQuoteSelection) },
+                                onAdd: { viewStore.send(.addQuote) }
+                            )
                         }
                     }
                 }
-                .onChange(of: currentChapter) { _ in
-                    proxy.scrollTo("para-0", anchor: .top)
+            }
+            .onAppear {
+                viewStore.send(.viewAppeared)
+                onSetCurrentBook?(viewStore.book)
+            }
+            .onDisappear {
+                viewStore.send(.viewDisappeared)
+            }
+            .background(
+                AppColors.background.color
+                    .ignoresSafeArea()
+            )
+        }
+    }
+}
+
+// MARK: - Chapter Tab Bar View
+
+private struct ChapterTabBarView: View {
+    let viewStore: ViewStore<ChapterReadingFeature.State, ChapterReadingFeature.Action>
+
+    var body: some View {
+        HStack(spacing: 0) {
+            HStack(spacing: 0) {
+                customIconButton(icon: AppIcons.previous.image) {
+                    viewStore.send(.previousChapterTapped)
+                }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterPreviousButton.rawValue)
+
+                customIconButton(icon: AppIcons.contents.image) {
+                    viewStore.send(.toggleChaptersOverlay)
+                }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterContentsButton.rawValue)
+
+                customIconButton(icon: AppIcons.next.image) {
+                    viewStore.send(.nextChapterTapped)
+                }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterNextButton.rawValue)
+
+                customIconButton(icon: AppIcons.settings.image) {
+                    viewStore.send(.toggleSettingsOverlay)
+                }
+                .accessibilityIdentifier(AccessibilityIdentifiers.chapterSettingsButton.rawValue)
+            }
+            .padding(.leading, 8)
+
+            customIconButton(
+                icon: viewStore.isReading ? AppIcons.pause.image : AppIcons.play.image
+            ) {
+                withAnimation {
+                    if !viewStore.isReading {
+                        viewStore.send(.startReading(viewStore.currentParagraphIndex))
+                    } else {
+                        viewStore.send(.stopReading)
+                    }
                 }
             }
+            .accessibilityIdentifier(AccessibilityIdentifiers.chapterPlayButton.rawValue)
+            .frame(maxWidth: .infinity, alignment: .trailing)
+        }
+        .foregroundColor(AppColors.white.color)
+        .background(AppColors.accentDark.color)
+    }
 
-            VStack(spacing: 0) {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: AppColors.background.color, location: 0),
-                                .init(color: AppColors.background.color.opacity(0), location: 1)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(height: 60)
-                    .opacity(hasScrolled ? 1 : 0)
-                Spacer()
-            }
-            .allowsHitTesting(false)
-            .frame(maxHeight: .infinity, alignment: .top)
-
-            VStack(spacing: 0) {
-                Rectangle()
-                    .fill(
-                        LinearGradient(
-                            gradient: Gradient(stops: [
-                                .init(color: AppColors.background.color.opacity(0), location: 0),
-                                .init(color: AppColors.background.color, location: 1)
-                            ]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                    )
-                    .frame(height: 100)
-                    .allowsHitTesting(false)
-
-                ChapterTabBar(
-                    book: book,
-                    currentChapter: $currentChapter,
-                    showChapters: $showChapters,
-                    showSettings: $showSettings,
-                    isReading: $isReading,
-                    autoScrollEnabled: $autoScrollEnabled,
-                    currentParagraphIndex: $currentParagraphIndex,
-                    onStartReading: { index in
-                        startReading(at: index, proxy: nil)
+    func customIconButton(icon: Image, action: @escaping () -> Void) -> some View {
+        if icon == AppIcons.play.image || icon == AppIcons.pause.image {
+            return AnyView(
+                Button(
+                    action: action,
+                    label: {
+                        ZStack {
+                            Circle()
+                                .fill(AppColors.accentLight.color)
+                                .frame(width: 52, height: 52)
+                            icon
+                                .resizable()
+                                .renderingMode(.template)
+                                .aspectRatio(contentMode: .fit)
+                                .frame(width: 22, height: 22)
+                                .foregroundColor(AppColors.accentDark.color)
+                        }.padding(.top, 16)
+                            .padding(.trailing, 16)
+                    }
+                ).buttonStyle(NoFadeButtonStyle())
+            )
+        } else {
+            return AnyView(
+                Button(
+                    action: action,
+                    label: {
+                        icon
+                            .resizable()
+                            .renderingMode(.template)
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 22, height: 22)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 16)
                     }
                 )
-            }
-            .ignoresSafeArea(.all, edges: .bottom)
-
-            if showChapters {
-                ChaptersOverlayView(book: book, currentChapter: $currentChapter, showChapters: $showChapters)
-            }
-
-            if showSettings {
-                SettingsOverlayView(fontSize: $fontSize, lineSpacing: $lineSpacing, showSettings: $showSettings)
-            }
-
-            if showQuoteOverlay {
-                QuoteSelectionOverlayView(selectedText: $selectedText, originalSelectedText: $originalSelectedText, showQuoteOverlay: $showQuoteOverlay)
-            }
+            )
         }
-        .onAppear {
-            setCurrentBook(book)
-        }
-        .onDisappear {
-            stopReading()
-            cleanupSelectionResources()
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            LeadingToolbarItem(dismiss: { dismiss() })
-            PrincipalToolbarItem(book: book, currentChapter: currentChapter)
-        }
-        .onChange(of: currentChapter) { _ in
-            currentParagraphIndex = 0
-            currentSentenceIndex = 0
-            hasScrolled = false
-        }
-        .background(
-            AppColors.background.color
-                .ignoresSafeArea()
-        )
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .toolbar(showChapters || showSettings || showQuoteOverlay ? .hidden : .automatic, for: .navigationBar)
-    }
-
-    private func cleanupSelectionResources() {
-        selectionTimer?.invalidate()
-        selectionTimer = nil
-        isSelecting = false
-    }
-
-    // MARK: - Text Selection Methods
-
-    private func selectWholeParagraph(_ paragraph: String) {
-        selectedText = paragraph
-        withAnimation(.spring()) {
-            showQuoteOverlay = true
-        }
-    }
-
-    // MARK: - Reading Control Methods
-
-    private func startReading(at index: Int, proxy: ScrollViewProxy?) {
-        readingWorkItem?.cancel()
-        readingWorkItem = nil
-        currentParagraphIndex = index
-        currentSentenceIndex = 0
-        isReading = true
-        autoScrollEnabled = true
-        if let proxy = proxy {
-            isScrollingProgrammatically = true
-            withAnimation {
-                proxy.scrollTo("para-\(index)", anchor: .center)
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                isScrollingProgrammatically = false
-            }
-        }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            advanceToNextSentence()
-        }
-    }
-
-    private func stopReading() {
-        isReading = false
-        autoScrollEnabled = false
-        readingWorkItem?.cancel()
-        readingWorkItem = nil
-    }
-
-    private func advanceToNextSentence() {
-        readingWorkItem?.cancel()
-        guard isReading, currentParagraphIndex < paragraphs.count else {
-            if currentParagraphIndex >= paragraphs.count {
-                stopReading()
-            }
-            return
-        }
-        let paragraph = paragraphs[currentParagraphIndex]
-        let sentences = TextProcessingUtils.splitIntoSentences(paragraph)
-        if currentSentenceIndex >= sentences.count {
-            if currentParagraphIndex + 1 < paragraphs.count {
-                currentParagraphIndex += 1
-                currentSentenceIndex = 0
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                    advanceToNextSentence()
-                }
-            } else {
-                stopReading()
-            }
-            return
-        }
-        let sentence = sentences[currentSentenceIndex]
-        let readingTime = TextProcessingUtils.calculateReadingTime(for: sentence)
-        let workItem = DispatchWorkItem {
-            guard isReading else { return }
-            DispatchQueue.main.async {
-                currentSentenceIndex += 1
-
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                    advanceToNextSentence()
-                }
-            }
-        }
-        readingWorkItem = workItem
-        DispatchQueue.main.asyncAfter(deadline: .now() + readingTime, execute: workItem)
     }
 }
 
-#Preview {
-    NavigationStack {
-        ChapterReadingView(
-            book: MockData.books[0],
-            setCurrentBook: { _ in },
-            chapter: MockData.books[0].chapters[1]
-        )
-    }
-}
+// MARK: - Preview
+
+// #Preview {
+//    NavigationStack {
+//        ChapterReadingView(
+//            store: Store(
+//                initialState: ChapterReadingFeature.State(
+//                    book: MockData.books[0],
+//                    chapter: MockData.books[0].chapters[1]
+//                )
+//            ) {
+//                ChapterReadingFeature()
+//            }, onSetCurrentBook: <#((Book) -> Void)?#>
+//        )
+//    }
+// }

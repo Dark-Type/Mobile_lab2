@@ -299,44 +299,24 @@ private extension View {
         viewStore: ViewStore<BookmarksFeature.State, BookmarksFeature.Action>,
         isFavorite: @escaping (Book) -> Bool
     ) -> some View {
-        self
-            .fullScreenCover(item: .init(
-                get: { viewStore.selectedBookForReading },
-                set: { viewStore.send(.bookSelectedForReading($0)) }
-            )) { book in
-                WithPerceptionTracking {
-                    NavigationStack {
-                        ReadingScreen(
-                            book: book,
-                            setCurrentBook: { book in viewStore.send(.delegate(.setCurrentBook(book))) },
-                            isFavorite: isFavorite(book),
-                            toggleFavorite: { viewStore.send(.delegate(.toggleFavorite(book))) }
-                        )
-                        .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
-                        .toolbarBackground(Color.clear, for: .navigationBar)
-                    }
+        self.fullScreenCover(item: .init(
+            get: { viewStore.selectedBookForReading },
+            set: { viewStore.send(.bookSelectedForReading($0)) }
+        )) { book in
+            WithPerceptionTracking {
+                NavigationStack {
+                    ReadingView(
+                        store: Store(
+                            initialState: ReadingFeature.State(book: book, isFavorite: isFavorite(book))
+                        ) {
+                            ReadingFeature()
+                        }
+                    )
+                    .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
+                    .toolbarBackground(Color.clear, for: ToolbarPlacement.navigationBar)
                 }
             }
-            .fullScreenCover(item: .init(
-                get: {
-                    if let selected = viewStore.selectedChapterForReading {
-                        return ChapterSelection(book: selected.book, chapter: selected.chapter)
-                    }
-                    return nil
-                },
-                set: { _ in viewStore.send(.chapterReadingScreenDismissed) }
-            )) { selection in
-                WithPerceptionTracking {
-                    NavigationStack {
-                        ChapterReadingView(
-                            book: selection.book,
-                            setCurrentBook: { book in viewStore.send(.delegate(.setCurrentBook(book))) },
-                            chapter: selection.chapter
-                        )
-                        .toolbarBackground(Color.clear, for: .navigationBar)
-                    }
-                }
-            }
+        }
     }
 }
 

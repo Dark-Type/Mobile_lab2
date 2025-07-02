@@ -11,6 +11,7 @@ struct ChaptersOverlayView: View {
     let book: Book
     @Binding var currentChapter: Chapter
     @Binding var showChapters: Bool
+    let onChapterSelected: (Chapter) -> Void
 
     var body: some View {
         GeometryReader { geometry in
@@ -53,8 +54,7 @@ struct ChaptersOverlayView: View {
                 ForEach(book.chapters) { chapter in
                     ChapterListItem(chapter: chapter) {
                         withAnimation {
-                            showChapters = false
-                            currentChapter = book.chapters[chapter.number]
+                            onChapterSelected(chapter)
                         }
                     }
                 }

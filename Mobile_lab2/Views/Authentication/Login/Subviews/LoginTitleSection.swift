@@ -5,8 +5,9 @@
 //  Created by dark type on 26.06.2025.
 //
 
-import SwiftUI
 import Perception
+import SwiftUI
+
 struct LoginTitleSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -21,8 +22,9 @@ struct LoginTitleSection: View {
 
 struct FirstTitleLine: View {
     var body: some View {
-        GeometryReader { geometry in
-            WithPerceptionTracking {
+        WithPerceptionTracking {
+            GeometryReader { geometry in
+
                 CustomTextLabel()
                     .text(L10n.Login.Title.first.uppercased())
                     .appFont(AppFont.header1)
@@ -40,8 +42,8 @@ struct FirstTitleLine: View {
 
 struct SecondTitleLine: View {
     var body: some View {
-        GeometryReader { geometry in
-            WithPerceptionTracking {
+        WithPerceptionTracking {
+            GeometryReader { geometry in
                 CustomTextLabel()
                     .text(L10n.Login.Title.second.uppercased())
                     .appFont(AppFont.title)

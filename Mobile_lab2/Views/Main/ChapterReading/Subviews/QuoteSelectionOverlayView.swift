@@ -11,7 +11,10 @@ struct QuoteSelectionOverlayView: View {
     @Binding var selectedText: String
     @Binding var originalSelectedText: String
     @Binding var showQuoteOverlay: Bool
-
+    let onTextChange: (String) -> Void
+    let onRestore: () -> Void
+    let onCancel: () -> Void
+    let onAdd: () -> Void
     var body: some View {
         GeometryReader { geometry in
             VStack(spacing: 0) {
@@ -32,20 +35,13 @@ struct QuoteSelectionOverlayView: View {
                             .cornerRadius(12)
                             .accessibilityIdentifier(AccessibilityIdentifiers.quoteTextEditor.rawValue)
                             .onChange(of: selectedText) { newValue in
-                                if newValue.count > originalSelectedText.count {
-                                    selectedText = originalSelectedText
-                                }
-                                if !originalSelectedText.contains(newValue) && !newValue.isEmpty {
-                                    selectedText = originalSelectedText
-                                }
+                                onTextChange(newValue)
                             }
                     }
                     .accessibilityIdentifier(AccessibilityIdentifiers.quoteScrollView.rawValue)
                     .frame(maxHeight: 200)
                     .padding(.horizontal, 20)
-                    Button {
-                        selectedText = originalSelectedText
-                    } label: {
+                    Button(action: onRestore) {
                         Text("Восстановить исходный текст")
                             .font(.system(size: 14))
                             .foregroundColor(.accentDark)
@@ -55,25 +51,13 @@ struct QuoteSelectionOverlayView: View {
                     .opacity(selectedText != originalSelectedText ? 1 : 0.3)
                     .disabled(selectedText == originalSelectedText)
                     HStack(spacing: 12) {
-                        Button {
-                            withAnimation {
-                                showQuoteOverlay = false
-                                selectedText = ""
-                                originalSelectedText = ""
-                            }
-                        } label: {
+                        Button(action: onCancel) {
                             Text("Отмена")
                                 .foregroundStyle(.accentDark)
                                 .applyButtonStyle(backgroundColor: AppColors.accentLight.color)
                         }
                         .accessibilityIdentifier(AccessibilityIdentifiers.quoteCancelButton.rawValue)
-                        Button {
-                            withAnimation {
-                                showQuoteOverlay = false
-                                selectedText = ""
-                                originalSelectedText = ""
-                            }
-                        } label: {
+                        Button(action: onAdd) {
                             Text("Добавить в цитаты")
                                 .applyButtonStyle(foregroundColor: .white, backgroundColor: AppColors.accentDark.color)
                         }

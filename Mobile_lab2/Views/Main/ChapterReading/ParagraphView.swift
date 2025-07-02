@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ComposableArchitecture
 
 struct ParagraphView: View {
     let paragraph: String
@@ -16,21 +17,20 @@ struct ParagraphView: View {
     let lineSpacing: CGFloat
     let onSelect: (String) -> Void
 
-    var body: some View {
-        let highlightSentenceIndex = isCurrentParagraph ? currentSentenceIndex : -1
+    @State private var displayText = AttributedString("")
+    @State private var lastUpdateKey: String = ""
 
-        return ZStack(alignment: .topLeading) {
-            Text(TextProcessingUtils.highlightedText(
-                paragraph,
-                sentenceIndex: highlightSentenceIndex,
-                fontSize: fontSize,
-                accentDarkColor: AppColors.accentDark.color,
-                secondaryColor: AppColors.secondary.color
-            ))
-            .font(.custom("Georgia", size: fontSize))
-            .lineSpacing(lineSpacing)
-            .allowsHitTesting(false)
-            .accessibilityIdentifier("\(AccessibilityIdentifiers.paragraphText.rawValue)\(index)")
+    private var updateKey: String {
+        "\(isCurrentParagraph)-\(currentSentenceIndex)-\(fontSize)"
+    }
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            Text(displayText)
+                .font(.custom("Georgia", size: fontSize))
+                .lineSpacing(lineSpacing)
+                .allowsHitTesting(false)
+                .accessibilityIdentifier("\(AccessibilityIdentifiers.paragraphText.rawValue)\(index)")
 
             Button(
                 action: {
@@ -44,5 +44,32 @@ struct ParagraphView: View {
             .buttonStyle(BorderlessButtonStyle())
         }
         .id("para-\(index)")
+        .onChange(of: updateKey) { newKey in
+            if newKey != lastUpdateKey {
+                lastUpdateKey = newKey
+                updateDisplayText()
+            }
+        }
+        .onAppear {
+            updateDisplayText()
+        }
+    }
+
+    private func updateDisplayText() {
+        let highlightSentenceIndex = isCurrentParagraph ? currentSentenceIndex : -1
+
+        DispatchQueue.main.async {
+            let highlighted = TextProcessingUtils.highlightedText(
+                paragraph,
+                sentenceIndex: highlightSentenceIndex,
+                fontSize: fontSize,
+                accentDarkColor: AppColors.accentDark.color,
+                secondaryColor: AppColors.secondary.color
+            )
+
+            withAnimation(.easeInOut(duration: 0.2)) {
+                displayText = highlighted
+            }
+        }
     }
 }

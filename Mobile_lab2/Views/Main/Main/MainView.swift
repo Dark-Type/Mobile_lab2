@@ -100,20 +100,31 @@ private struct MainContentView: View {
 private extension View {
     func setupFullScreenCovers(viewStore: ViewStore<MainFeature.State, MainFeature.Action>) -> some View {
         self
-            .fullScreenCover(isPresented: .init(
-                get: { viewStore.isReadingScreenPresented },
-                set: { _ in viewStore.send(.readingScreenDismissed) }
-            )) {
-                WithPerceptionTracking {
-                    CurrentBookReadingView(viewStore: viewStore)
-                }
-            }
             .fullScreenCover(item: .init(
                 get: { viewStore.selectedBookForReading },
                 set: { viewStore.send(.bookSelectedForReading($0)) }
             )) { book in
                 WithPerceptionTracking {
-                    SelectedBookReadingView(book: book, viewStore: viewStore)
+                    NavigationStack {
+                        ReadingView(
+                            store: Store(
+                                initialState: ReadingFeature.State(
+                                    book: book,
+                                    isFavorite: viewStore.state.isFavorite(book)
+                                )
+                            ) {
+                                ReadingFeature()
+                            },
+                            onSetCurrentBook: { book in
+                                viewStore.send(.setCurrentBook(book))
+                            },
+                            onToggleFavorite: { book in
+                                viewStore.send(.toggleFavorite(book))
+                            }
+                        )
+                        .accessibilityIdentifier(AccessibilityIdentifiers.readingScreen.rawValue)
+                        .toolbarBackground(Color.clear, for: ToolbarPlacement.navigationBar)
+                    }
                 }
             }
     }
@@ -130,50 +141,6 @@ private extension View {
             } message: {
                 Text("Please select a book from the Library or Search to start reading.")
             }
-    }
-}
-
-// MARK: - Reading Views
-
-private struct CurrentBookReadingView: View {
-    let viewStore: ViewStore<MainFeature.State, MainFeature.Action>
-
-    var body: some View {
-        WithPerceptionTracking {
-            Group {
-                if let book = viewStore.topCurrentBook {
-                    NavigationStack {
-                        ReadingScreen(
-                            book: book,
-                            setCurrentBook: { book in
-                                viewStore.send(.setCurrentBook(book)) },
-                            isFavorite: viewStore.state.isFavorite(book),
-                            toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
-                        )
-                        .toolbarBackground(.clear, for: .navigationBar)
-                    }
-                }
-            }
-        }
-    }
-}
-
-private struct SelectedBookReadingView: View {
-    let book: Book
-    let viewStore: ViewStore<MainFeature.State, MainFeature.Action>
-
-    var body: some View {
-        WithPerceptionTracking {
-            NavigationStack {
-                ReadingScreen(
-                    book: book,
-                    setCurrentBook: { book in viewStore.send(.setCurrentBook(book)) },
-                    isFavorite: viewStore.state.isFavorite(book),
-                    toggleFavorite: { viewStore.send(.toggleFavorite(book)) }
-                )
-                .toolbarBackground(.clear, for: .navigationBar)
-            }
-        }
     }
 }
 

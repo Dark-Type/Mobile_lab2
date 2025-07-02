@@ -5,6 +5,7 @@
 //  Created by dark type on 25.03.2025.
 //
 
+import ComposableArchitecture
 import SwiftUI
 
 struct ChapterTabBar: View {
@@ -16,57 +17,41 @@ struct ChapterTabBar: View {
     @Binding var autoScrollEnabled: Bool
     @Binding var currentParagraphIndex: Int
     var onStartReading: (Int) -> Void
+    let viewStore: ViewStore<ChapterReadingFeature.State, ChapterReadingFeature.Action>
 
     var body: some View {
         HStack(spacing: 0) {
             HStack(spacing: 0) {
                 customIconButton(icon: AppIcons.previous.image) {
-                    if let currentIndex = book.chapters.firstIndex(where: { $0.id == currentChapter.id }) {
-                        let previousIndex = currentIndex - 1
-                        if previousIndex >= 0 {
-                            isReading = false
-                            autoScrollEnabled = false
-                            currentChapter = book.chapters[previousIndex]
-                        }
-                    }
+                    viewStore.send(.previousChapterTapped)
                 }
                 .accessibilityIdentifier(AccessibilityIdentifiers.chapterPreviousButton.rawValue)
 
                 customIconButton(icon: AppIcons.contents.image) {
-                    withAnimation { showChapters.toggle() }
+                    viewStore.send(.toggleChaptersOverlay)
                 }
                 .accessibilityIdentifier(AccessibilityIdentifiers.chapterContentsButton.rawValue)
 
                 customIconButton(icon: AppIcons.next.image) {
-                    if let currentIndex = book.chapters.firstIndex(where: { $0.id == currentChapter.id }) {
-                        let nextIndex = currentIndex + 1
-                        if nextIndex < book.chapters.count {
-                            isReading = false
-                            autoScrollEnabled = false
-                            currentChapter = book.chapters[nextIndex]
-                        }
-                    }
+                    viewStore.send(.nextChapterTapped)
                 }
                 .accessibilityIdentifier(AccessibilityIdentifiers.chapterNextButton.rawValue)
 
                 customIconButton(icon: AppIcons.settings.image) {
-                    withAnimation { showSettings.toggle() }
+                    viewStore.send(.toggleSettingsOverlay)
                 }
                 .accessibilityIdentifier(AccessibilityIdentifiers.chapterSettingsButton.rawValue)
             }
             .padding(.leading, 8)
 
             customIconButton(
-                icon: isReading ?
-                    (isReading ? AppIcons.pause.image : AppIcons.play.image) :
-                    AppIcons.play.image
+                icon: viewStore.isReading ? AppIcons.pause.image : AppIcons.play.image
             ) {
                 withAnimation {
-                    if !isReading {
-                        onStartReading(currentParagraphIndex)
+                    if !viewStore.isReading {
+                        viewStore.send(.startReading(viewStore.currentParagraphIndex))
                     } else {
-                        autoScrollEnabled = false
-                        isReading = false
+                        viewStore.send(.stopReading)
                     }
                 }
             }

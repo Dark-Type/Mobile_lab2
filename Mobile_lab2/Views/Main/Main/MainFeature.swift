@@ -138,6 +138,7 @@ struct MainFeature {
                 return .run { _ in
                     await bookService.addToCurrentBooks(book)
                     await bookService.moveBookToTop(book)
+                    await userDefaultsService.setCurrentBookID(book.id.uuidString)
                 }
 
             case let .setCurrentBookAndChapter(book, chapter):
@@ -147,6 +148,7 @@ struct MainFeature {
                 return .run { _ in
                     await bookService.addToCurrentBooks(book)
                     await bookService.moveBookToTop(book)
+                    await userDefaultsService.setCurrentBookID(book.id.uuidString)
                 }
 
             case let .addToCurrentBooks(book):
@@ -163,6 +165,8 @@ struct MainFeature {
                 state.selectedBookForReading = book
                 if book != nil {
                     state.isReadingScreenPresented = true
+                } else {
+                    state.isReadingScreenPresented = false
                 }
                 return .none
 
@@ -179,7 +183,8 @@ struct MainFeature {
                 }
 
             case .readingButtonTapped:
-                if state.hasCurrentBooks {
+                if state.hasCurrentBooks, let topBook = state.topCurrentBook {
+                    state.selectedBookForReading = topBook
                     state.isReadingScreenPresented = true
                 } else {
                     state.showNoBookAlert = true
@@ -203,7 +208,6 @@ struct MainFeature {
                 return .send(.delegate(.logout))
 
             case .viewAppeared:
-                print("🔍 MainFeature.viewAppeared - Starting data load")
                 return .run { send in
                     async let currentBooks = bookService.getCurrentBooks()
                     async let favoriteBooks = favoritesService.getFavoriteBooks()
