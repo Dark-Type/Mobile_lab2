@@ -6,4 +6,4 @@
 //
 
 import Foundation
-
+internal import Alamofire

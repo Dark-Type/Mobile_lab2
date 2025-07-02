@@ -126,7 +126,7 @@ struct ChapterReadingFeature {
                 let chapterId = state.currentChapter.id
 
                 if state.shouldAutoStartReading {
-                    state.shouldAutoStartReading = false 
+                    state.shouldAutoStartReading = false
                     return .merge([
                         .run { _ in
                             // TODO: Load from API

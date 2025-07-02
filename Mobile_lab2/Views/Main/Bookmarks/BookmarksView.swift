@@ -14,10 +14,10 @@ struct BookmarksView: View {
 
     var body: some View {
         WithPerceptionTracking {
-            WithViewStore(self.store, observe: { $0 }, content: { viewStore in
+            WithViewStore(store, observe: { $0 }, content: { viewStore in
                 BookmarksContentView(
                     viewStore: viewStore,
-                    isFavorite: self.isFavorite
+                    isFavorite: isFavorite
                 )
             })
         }
@@ -34,14 +34,14 @@ private struct BookmarksContentView: View {
         WithPerceptionTracking {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    self.titleView
+                    titleView
 
-                    if self.viewStore.isLoading {
-                        self.loadingView
+                    if viewStore.isLoading {
+                        loadingView
                     } else if let errorMessage = viewStore.errorMessage {
-                        self.errorView(errorMessage)
+                        errorView(errorMessage)
                     } else {
-                        self.mainContent
+                        mainContent
                     }
                 }
                 .padding(.top, 16)
@@ -51,7 +51,7 @@ private struct BookmarksContentView: View {
             .background(AppColors.background.color)
             .setupFullScreenCovers(viewStore: self.viewStore, isFavorite: self.isFavorite)
             .onAppear {
-                self.viewStore.send(.viewAppeared)
+                viewStore.send(.viewAppeared)
             }
         }
     }
@@ -93,7 +93,7 @@ private struct BookmarksContentView: View {
                 .foregroundColor(.accentDark)
                 .multilineTextAlignment(.center)
             Button("Retry") {
-                self.viewStore.send(.loadInitialData)
+                viewStore.send(.loadInitialData)
             }
             .foregroundColor(.secondaryRed)
         }
@@ -105,17 +105,17 @@ private struct BookmarksContentView: View {
 
     private var mainContent: some View {
         VStack(alignment: .leading, spacing: 24) {
-            if self.viewStore.hasCurrentlyReadingBooks {
+            if viewStore.hasCurrentlyReadingBooks {
                 currentlyReadingSection
             }
 
-            if self.viewStore.hasFavoriteBooks {
+            if viewStore.hasFavoriteBooks {
                 favoriteBooksSection
             } else {
                 emptyFavoriteBooksSection
             }
 
-            if self.viewStore.hasQuotes {
+            if viewStore.hasQuotes {
                 quotesSection
             } else {
                 emptyQuotesSection

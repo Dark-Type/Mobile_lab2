@@ -11,6 +11,8 @@
 		A543C5D52E154A9D00B85236 /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A543C5CA2E154A9D00B85236 /* Networking.framework */; };
 		A543C5DF2E154A9D00B85236 /* Networking.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A543C5CA2E154A9D00B85236 /* Networking.framework */; };
 		A543C5E02E154A9D00B85236 /* Networking.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = A543C5CA2E154A9D00B85236 /* Networking.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		A543C5EA2E154C1B00B85236 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A543C5E92E154C1B00B85236 /* Alamofire */; };
+		A543C64B2E15804B00B85236 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = A543C64A2E15804B00B85236 /* Config.xcconfig */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +70,7 @@
 /* Begin PBXFileReference section */
 		A543C5CA2E154A9D00B85236 /* Networking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Networking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		A543C5D42E154A9D00B85236 /* NetworkingTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NetworkingTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A543C64A2E15804B00B85236 /* Config.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Config.xcconfig; path = /Users/nikitaskazutin/Downloads/Config.xcconfig; sourceTree = "<absolute>"; };
 		A58666CF2D8925910010486C /* Mobile_lab2.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Mobile_lab2.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58666DF2D8925920010486C /* Mobile_lab2Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Mobile_lab2Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A58666E92D8925920010486C /* Mobile_lab2UITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Mobile_lab2UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -119,6 +122,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A543C5EA2E154C1B00B85236 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,6 +163,7 @@
 		A58666C62D8925910010486C = {
 			isa = PBXGroup;
 			children = (
+				A543C64A2E15804B00B85236 /* Config.xcconfig */,
 				A58666D12D8925910010486C /* Mobile_lab2 */,
 				A58666E22D8925920010486C /* Mobile_lab2Tests */,
 				A58666EC2D8925920010486C /* Mobile_lab2UITests */,
@@ -211,6 +216,7 @@
 			);
 			name = Networking;
 			packageProductDependencies = (
+				A543C5E92E154C1B00B85236 /* Alamofire */,
 			);
 			productName = Networking;
 			productReference = A543C5CA2E154A9D00B85236 /* Networking.framework */;
@@ -354,6 +360,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A52EB2842E0D94A100823ACD /* XCRemoteSwiftPackageReference "swift-composable-architecture" */,
+				A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A58666D02D8925910010486C /* Products */;
@@ -388,6 +395,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A543C64B2E15804B00B85236 /* Config.xcconfig in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -929,6 +937,14 @@
 				minimumVersion = 1.20.2;
 			};
 		};
+		A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Alamofire/Alamofire.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.10.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -936,6 +952,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A52EB2842E0D94A100823ACD /* XCRemoteSwiftPackageReference "swift-composable-architecture" */;
 			productName = ComposableArchitecture;
+		};
+		A543C5E92E154C1B00B85236 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
