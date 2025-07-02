@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Perception
 struct ChaptersOverlayView: View {
     let book: Book
     @Binding var currentChapter: Chapter
@@ -14,53 +14,57 @@ struct ChaptersOverlayView: View {
     let onChapterSelected: (Chapter) -> Void
 
     var body: some View {
-        GeometryReader { geometry in
-            bottomOverlay {
-                VStack(spacing: 0) {
-                    overlayDragIndicator
-                        .accessibilityIdentifier(AccessibilityIdentifiers.chaptersDragIndicator.rawValue)
+        WithPerceptionTracking {
+            GeometryReader { geometry in
+                bottomOverlay {
+                    VStack(spacing: 0) {
+                        overlayDragIndicator
+                            .accessibilityIdentifier(AccessibilityIdentifiers.chaptersDragIndicator.rawValue)
 
-                    overlayTitle(L10n.Book.contents, action: {
-                        withAnimation {
-                            showChapters = false
-                        }
-                    })
-                    Divider()
-                        .foregroundStyle(AppColors.accentLight.color)
-
-                    chaptersListView
-                        .accessibilityIdentifier(AccessibilityIdentifiers.chaptersListView.rawValue)
-                }
-            }
-            .frame(height: geometry.size.height)
-            .transition(.move(edge: .bottom))
-            .zIndex(1)
-            .gesture(
-                DragGesture()
-                    .onEnded { value in
-                        if value.translation.height > 100 {
+                        overlayTitle(L10n.Book.contents, action: {
                             withAnimation {
                                 showChapters = false
                             }
-                        }
+                        })
+                        Divider()
+                            .foregroundStyle(AppColors.accentLight.color)
+
+                        chaptersListView
+                            .accessibilityIdentifier(AccessibilityIdentifiers.chaptersListView.rawValue)
                     }
-            )
+                }
+                .frame(height: geometry.size.height)
+                .transition(.move(edge: .bottom))
+                .zIndex(1)
+                .gesture(
+                    DragGesture()
+                        .onEnded { value in
+                            if value.translation.height > 100 {
+                                withAnimation {
+                                    showChapters = false
+                                }
+                            }
+                        }
+                )
+            }
         }
     }
 
     private var chaptersListView: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(spacing: 0) {
-                ForEach(book.chapters) { chapter in
-                    ChapterListItem(chapter: chapter) {
-                        withAnimation {
-                            onChapterSelected(chapter)
+        WithPerceptionTracking {
+            ScrollView(showsIndicators: false) {
+                VStack(spacing: 0) {
+                    ForEach(book.chapters) { chapter in
+                        ChapterListItem(chapter: chapter) {
+                            withAnimation {
+                                onChapterSelected(chapter)
+                            }
                         }
                     }
                 }
+                .padding(.horizontal)
+                .padding(.bottom, 30)
             }
-            .padding(.horizontal)
-            .padding(.bottom, 30)
         }
     }
 

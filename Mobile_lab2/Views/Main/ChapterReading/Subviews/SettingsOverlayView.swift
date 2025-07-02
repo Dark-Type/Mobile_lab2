@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import Perception
 struct SettingsOverlayView: View {
     @Binding var fontSize: CGFloat
     @Binding var lineSpacing: CGFloat
@@ -18,36 +18,38 @@ struct SettingsOverlayView: View {
     let onClose: () -> Void
 
     var body: some View {
-        GeometryReader { geometry in
-            VStack(spacing: 0) {
-                Spacer()
-                VStack(spacing: 16) {
-                    overlaySettingsTitle(L10n.Book.Settings.title)
-                    fontSizeControl
-                    lineSpacingControl
-                    Spacer(minLength: 16)
+        WithPerceptionTracking {
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    Spacer()
+                    VStack(spacing: 16) {
+                        overlaySettingsTitle(L10n.Book.Settings.title)
+                        fontSizeControl
+                        lineSpacingControl
+                        Spacer(minLength: 16)
+                    }
+                    .padding(.top, 32)
+                    .padding(.horizontal, 16)
+                    .frame(height: min(350, geometry.size.height * 0.35))
+                    .background(AppColors.background.color)
+                    .cornerRadius(8, corners: [.topLeft, .topRight])
+                    .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: -5)
                 }
-                .padding(.top, 32)
-                .padding(.horizontal, 16)
-                .frame(height: min(350, geometry.size.height * 0.35))
-                .background(AppColors.background.color)
-                .cornerRadius(8, corners: [.topLeft, .topRight])
-                .shadow(color: Color.black.opacity(0.2), radius: 10, x: 0, y: -5)
+                .ignoresSafeArea(.all, edges: .bottom)
             }
-            .ignoresSafeArea(.all, edges: .bottom)
-        }
-        .transition(.move(edge: .bottom))
-        .zIndex(1)
-        .gesture(
-            DragGesture()
-                .onEnded { value in
-                    if value.translation.height > 50 {
-                        withAnimation {
-                            showSettings = false
+            .transition(.move(edge: .bottom))
+            .zIndex(1)
+            .gesture(
+                DragGesture()
+                    .onEnded { value in
+                        if value.translation.height > 50 {
+                            withAnimation {
+                                showSettings = false
+                            }
                         }
                     }
-                }
-        )
+            )
+        }
     }
 
     private var fontSizeControl: some View {

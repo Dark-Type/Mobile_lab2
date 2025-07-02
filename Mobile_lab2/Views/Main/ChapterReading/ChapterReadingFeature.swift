@@ -25,6 +25,10 @@ struct ChapterReadingFeature {
         var originalSelectedText: String = ""
         var isSelecting: Bool = false
 
+        var savedParagraphIndex: Int = 0
+        var savedSentenceIndex: Int = 0
+        var readingProgress: ReadingProgress?
+
         var fontSize: CGFloat = 14
         var lineSpacing: CGFloat = 6
 
@@ -94,6 +98,11 @@ struct ChapterReadingFeature {
         case advanceToNextSentence
         case moveToNextParagraph
         case readingCompleted
+
+        case saveReadingProgress
+        case loadReadingProgress(ReadingProgress?)
+        case resetToSavedPosition
+        case restartFromBeginning
     }
 
     // MARK: - Dependencies
@@ -113,11 +122,23 @@ struct ChapterReadingFeature {
         Reduce { state, action in
             switch action {
             case .viewAppeared:
-                state.hasScrolled = false
+                let bookId = state.book.id
+                let chapterId = state.currentChapter.id
+
                 if state.shouldAutoStartReading {
-                    return .send(.startReading(0))
+                    state.shouldAutoStartReading = false 
+                    return .merge([
+                        .run { _ in
+                            // TODO: Load from API
+
+                        },
+                        .send(.startReading(0))
+                    ])
+                } else {
+                    return .run { _ in
+                        // TODO: Load from API
+                    }
                 }
-                return .none
 
             case .viewDisappeared:
                 return .merge([
@@ -198,7 +219,7 @@ struct ChapterReadingFeature {
 
             case let .selectedTextChanged(text):
                 if text.count <= state.originalSelectedText.count &&
-                    state.originalSelectedText.contains(text){
+                    state.originalSelectedText.contains(text) {
                     state.selectedText = text
                 } else if text != state.originalSelectedText {
                     state.selectedText = state.originalSelectedText
@@ -251,28 +272,33 @@ struct ChapterReadingFeature {
                 return .none
 
             case let .startReading(index):
-                state.currentParagraphIndex = index
-                state.currentSentenceIndex = 0
+
+                if index == state.currentParagraphIndex && (state.savedParagraphIndex != 0 || state.savedSentenceIndex != 0) {
+                    state.currentParagraphIndex = state.savedParagraphIndex
+                    state.currentSentenceIndex = state.savedSentenceIndex
+                } else {
+                    state.currentParagraphIndex = index
+                    state.currentSentenceIndex = 0
+                    state.savedParagraphIndex = index
+                    state.savedSentenceIndex = 0
+                }
+
                 state.isReading = true
                 state.autoScrollEnabled = true
 
                 return .merge([
-                    .send(.scrollToParagraph(index)),
+                    .send(.scrollToParagraph(state.currentParagraphIndex)),
                     .run { send in
-
-                        try await clock.sleep(for: .milliseconds(300))
+                        try await clock.sleep(for: .milliseconds(800))
                         await send(.highlightFirstSentence)
                     }
                     .cancellable(id: CancelID.reading, cancelInFlight: true)
                 ])
 
             case .highlightFirstSentence:
-
                 state.currentSentenceIndex = 0
-
                 return .run { send in
-
-                    try await clock.sleep(for: .milliseconds(400))
+                    try await clock.sleep(for: .milliseconds(500))
                     await send(.advanceToNextSentence)
                 }
 
@@ -298,7 +324,12 @@ struct ChapterReadingFeature {
             case .stopReading:
                 state.isReading = false
                 state.autoScrollEnabled = false
-                return .cancel(id: CancelID.reading)
+                state.savedParagraphIndex = state.currentParagraphIndex
+                state.savedSentenceIndex = state.currentSentenceIndex
+                return .merge([
+                    .cancel(id: CancelID.reading),
+                    .send(.saveReadingProgress)
+                ])
 
             case let .paragraphIndexChanged(index):
                 state.currentParagraphIndex = index
@@ -324,26 +355,32 @@ struct ChapterReadingFeature {
                 let readingTime = TextProcessingUtils.calculateReadingTime(for: sentence)
 
                 state.currentSentenceIndex += 1
+                state.savedParagraphIndex = state.currentParagraphIndex
+                state.savedSentenceIndex = state.currentSentenceIndex
 
-                return .run { send in
-                    try await clock.sleep(for: .seconds(readingTime))
-
-                    try await clock.sleep(for: .milliseconds(100))
-
-                    await send(.advanceToNextSentence)
-                }
-                .cancellable(id: CancelID.sentenceTimer, cancelInFlight: true)
+                return .merge([
+                    .run { send in
+                        try await clock.sleep(for: .seconds(readingTime))
+                        try await clock.sleep(for: .milliseconds(100))
+                        await send(.advanceToNextSentence)
+                    }
+                    .cancellable(id: CancelID.sentenceTimer, cancelInFlight: true),
+                    .send(.saveReadingProgress)
+                ])
 
             case .moveToNextParagraph:
                 if state.currentParagraphIndex + 1 < state.paragraphs.count {
                     state.currentParagraphIndex += 1
                     state.currentSentenceIndex = 0
+                    state.savedParagraphIndex = state.currentParagraphIndex
+                    state.savedSentenceIndex = 0
 
                     let effects: [Effect<Action>] = [
                         .run { send in
                             try await clock.sleep(for: .milliseconds(200))
                             await send(.advanceToNextSentence)
-                        }
+                        },
+                        .send(.saveReadingProgress)
                     ]
 
                     if state.autoScrollEnabled {
@@ -358,7 +395,44 @@ struct ChapterReadingFeature {
             case .readingCompleted:
                 state.isReading = false
                 state.autoScrollEnabled = false
-                return .cancel(id: CancelID.reading)
+                state.savedParagraphIndex = state.paragraphs.count
+                state.savedSentenceIndex = 0
+                return .merge([
+                    .cancel(id: CancelID.reading),
+                    .send(.saveReadingProgress)
+                ])
+
+            case .saveReadingProgress:
+
+                let progress = ReadingProgressCalculator.createReadingProgress(from: state)
+                state.readingProgress = progress
+
+                return .run { [progress] _ in
+                    // TODO: Save to API
+                    print("📖 Saving progress: P\(progress.paragraphIndex) S\(progress.sentenceIndex) (\(Int(progress.progressPercentage * 100))%)")
+                }
+
+            case let .loadReadingProgress(progress):
+                if let progress = progress {
+                    state.readingProgress = progress
+                    state.savedParagraphIndex = progress.paragraphIndex
+                    state.savedSentenceIndex = progress.sentenceIndex
+                    state.currentParagraphIndex = progress.paragraphIndex
+                    state.currentSentenceIndex = progress.sentenceIndex
+                }
+                return .none
+
+            case .resetToSavedPosition:
+                state.currentParagraphIndex = state.savedParagraphIndex
+                state.currentSentenceIndex = state.savedSentenceIndex
+                return .none
+
+            case .restartFromBeginning:
+                state.currentParagraphIndex = 0
+                state.currentSentenceIndex = 0
+                state.savedParagraphIndex = 0
+                state.savedSentenceIndex = 0
+                return .send(.saveReadingProgress)
 
             case .readingTimerFired:
                 return .none

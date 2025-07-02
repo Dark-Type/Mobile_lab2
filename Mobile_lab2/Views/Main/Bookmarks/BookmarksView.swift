@@ -14,10 +14,10 @@ struct BookmarksView: View {
 
     var body: some View {
         WithPerceptionTracking {
-            WithViewStore(store, observe: { $0 }, content: { viewStore in
+            WithViewStore(self.store, observe: { $0 }, content: { viewStore in
                 BookmarksContentView(
                     viewStore: viewStore,
-                    isFavorite: isFavorite
+                    isFavorite: self.isFavorite
                 )
             })
         }
@@ -34,14 +34,14 @@ private struct BookmarksContentView: View {
         WithPerceptionTracking {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    titleView
+                    self.titleView
 
-                    if viewStore.isLoading {
-                        loadingView
+                    if self.viewStore.isLoading {
+                        self.loadingView
                     } else if let errorMessage = viewStore.errorMessage {
-                        errorView(errorMessage)
+                        self.errorView(errorMessage)
                     } else {
-                        mainContent
+                        self.mainContent
                     }
                 }
                 .padding(.top, 16)
@@ -49,9 +49,9 @@ private struct BookmarksContentView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background.color)
-            .setupFullScreenCovers(viewStore: viewStore, isFavorite: isFavorite)
+            .setupFullScreenCovers(viewStore: self.viewStore, isFavorite: self.isFavorite)
             .onAppear {
-                viewStore.send(.viewAppeared)
+                self.viewStore.send(.viewAppeared)
             }
         }
     }
@@ -93,7 +93,7 @@ private struct BookmarksContentView: View {
                 .foregroundColor(.accentDark)
                 .multilineTextAlignment(.center)
             Button("Retry") {
-                viewStore.send(.loadInitialData)
+                self.viewStore.send(.loadInitialData)
             }
             .foregroundColor(.secondaryRed)
         }
@@ -105,17 +105,17 @@ private struct BookmarksContentView: View {
 
     private var mainContent: some View {
         VStack(alignment: .leading, spacing: 24) {
-            if viewStore.hasCurrentlyReadingBooks {
+            if self.viewStore.hasCurrentlyReadingBooks {
                 currentlyReadingSection
             }
 
-            if viewStore.hasFavoriteBooks {
+            if self.viewStore.hasFavoriteBooks {
                 favoriteBooksSection
             } else {
                 emptyFavoriteBooksSection
             }
 
-            if viewStore.hasQuotes {
+            if self.viewStore.hasQuotes {
                 quotesSection
             } else {
                 emptyQuotesSection
@@ -127,7 +127,6 @@ private struct BookmarksContentView: View {
 // MARK: - Content Sections
 
 extension BookmarksContentView {
-
     // MARK: - Currently Reading Section
 
     private var currentlyReadingSection: some View {
@@ -141,22 +140,22 @@ extension BookmarksContentView {
                 Spacer()
 
                 if let topBook = viewStore.topCurrentBook {
-                    continueReadingButton(for: topBook)
+                    self.continueReadingButton(for: topBook)
                 }
             }
             .padding(.horizontal)
 
             WithPerceptionTracking {
                 VStack(spacing: 16) {
-                    ForEach(viewStore.currentlyReadingBooks) { book in
+                    ForEach(self.viewStore.currentlyReadingBooks) { book in
                         BookmarkListItem(
                             book: book,
                             isCurrent: true,
                             startReadingAction: {
-                                viewStore.send(.continueReading(book))
+                                self.viewStore.send(.continueReading(book))
                             },
                             openBookDetailsAction: {
-                                viewStore.send(.bookSelectedForReading(book))
+                                self.viewStore.send(.bookSelectedForReading(book))
                             }
                         )
                         .accessibilityIdentifier("\(AccessibilityIdentifiers.currentReadingBookItem.rawValue)_\(book.id)")
@@ -168,7 +167,7 @@ extension BookmarksContentView {
 
     private func continueReadingButton(for book: Book) -> some View {
         Button(action: {
-            viewStore.send(.continueReading(book))
+            self.viewStore.send(.continueReading(book))
         }, label: {
             ZStack {
                 Circle()
@@ -198,15 +197,15 @@ extension BookmarksContentView {
 
             WithPerceptionTracking {
                 VStack(spacing: 16) {
-                    ForEach(viewStore.favoriteBooks) { book in
+                    ForEach(self.viewStore.favoriteBooks) { book in
                         BookmarkListItem(
                             book: book,
                             isCurrent: false,
                             startReadingAction: {
-                                viewStore.send(.bookSelectedForReading(book))
+                                self.viewStore.send(.bookSelectedForReading(book))
                             },
                             openBookDetailsAction: {
-                                viewStore.send(.bookSelectedForReading(book))
+                                self.viewStore.send(.bookSelectedForReading(book))
                             }
                         )
                         .accessibilityIdentifier("\(AccessibilityIdentifiers.favoriteBookItem.rawValue)_\(book.id)")
@@ -224,7 +223,7 @@ extension BookmarksContentView {
                 .padding(.horizontal)
                 .accessibilityIdentifier(AccessibilityIdentifiers.favoriteBooksSectionTitle.rawValue)
 
-            emptyStateCard(
+            self.emptyStateCard(
                 message: "У вас нет избранных книг",
                 description: "Добавляйте книги в избранное, чтобы быстро находить их здесь"
             )
@@ -244,7 +243,7 @@ extension BookmarksContentView {
 
             WithPerceptionTracking {
                 VStack(spacing: 16) {
-                    ForEach(viewStore.quotes) { quote in
+                    ForEach(self.viewStore.quotes) { quote in
                         QuoteCard(quote: quote)
                             .padding(.horizontal)
                             .accessibilityIdentifier("\(AccessibilityIdentifiers.quoteItem.rawValue)_\(quote.id)")
@@ -262,7 +261,7 @@ extension BookmarksContentView {
                 .padding(.horizontal)
                 .accessibilityIdentifier(AccessibilityIdentifiers.quotesSectionTitle.rawValue)
 
-            emptyStateCard(
+            self.emptyStateCard(
                 message: "У вас нет сохраненных цитат",
                 description: "Сохраняйте понравившиеся цитаты во время чтения"
             )

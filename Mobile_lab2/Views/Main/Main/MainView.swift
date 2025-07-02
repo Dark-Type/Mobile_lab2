@@ -13,8 +13,8 @@ struct MainView: View {
 
     var body: some View {
         WithPerceptionTracking {
-            WithViewStore(store, observe: { $0 }, content: { viewStore in
-                MainContentView(viewStore: viewStore, store: store)
+            WithViewStore(self.store, observe: { $0 }, content: { viewStore in
+                MainContentView(viewStore: viewStore, store: self.store)
             })
         }
     }
@@ -32,12 +32,12 @@ private struct MainContentView: View {
                 AppColors.background.color
                     .ignoresSafeArea()
 
-                mainTabView
+                self.mainTabView
             }
-            .setupFullScreenCovers(viewStore: viewStore)
-            .setupAlerts(viewStore: viewStore)
+            .setupFullScreenCovers(viewStore: self.viewStore)
+            .setupAlerts(viewStore: self.viewStore)
             .onAppear {
-                viewStore.send(.viewAppeared)
+                self.viewStore.send(.viewAppeared)
             }
             .accessibilityIdentifier(AccessibilityIdentifiers.mainView.rawValue)
         }
@@ -45,23 +45,23 @@ private struct MainContentView: View {
 
     private var mainTabView: some View {
         TabView(selection: .init(
-            get: { viewStore.selectedTab },
-            set: { viewStore.send(.tabSelected($0)) }
+            get: { self.viewStore.selectedTab },
+            set: { self.viewStore.send(.tabSelected($0)) }
         )) {
-            libraryTab
-            searchTab
-            bookmarksTab
+            self.libraryTab
+            self.searchTab
+            self.bookmarksTab
         }
         .ignoresSafeArea(.container, edges: .bottom)
         .safeAreaInset(edge: .bottom) {
             WithPerceptionTracking {
                 CustomTabBar(
                     selectedTab: .init(
-                        get: { viewStore.selectedTab },
-                        set: { viewStore.send(.tabSelected($0)) }
+                        get: { self.viewStore.selectedTab },
+                        set: { self.viewStore.send(.tabSelected($0)) }
                     ),
-                    readingAction: { viewStore.send(.readingButtonTapped) },
-                    logoutAction: { viewStore.send(.logoutButtonTapped) }
+                    readingAction: { self.viewStore.send(.readingButtonTapped) },
+                    logoutAction: { self.viewStore.send(.logoutButtonTapped) }
                 )
             }
         }
@@ -69,8 +69,8 @@ private struct MainContentView: View {
 
     private var libraryTab: some View {
         LibraryView(
-            store: store.scope(state: \.library, action: \.library),
-            isFavorite: { book in viewStore.state.isFavorite(book) }
+            store: self.store.scope(state: \.library, action: \.library),
+            isFavorite: { book in self.viewStore.state.isFavorite(book) }
         )
         .tag(0)
         .toolbarBackground(.hidden, for: .tabBar)
@@ -78,8 +78,8 @@ private struct MainContentView: View {
 
     private var searchTab: some View {
         SearchView(
-            store: store.scope(state: \.search, action: \.search),
-            isFavorite: { book in viewStore.state.isFavorite(book) }
+            store: self.store.scope(state: \.search, action: \.search),
+            isFavorite: { book in self.viewStore.state.isFavorite(book) }
         )
         .tag(1)
         .toolbarBackground(.hidden, for: .tabBar)
@@ -87,8 +87,8 @@ private struct MainContentView: View {
 
     private var bookmarksTab: some View {
         BookmarksView(
-            store: store.scope(state: \.bookmarks, action: \.bookmarks),
-            isFavorite: { book in viewStore.state.isFavorite(book) }
+            store: self.store.scope(state: \.bookmarks, action: \.bookmarks),
+            isFavorite: { book in self.viewStore.state.isFavorite(book) }
         )
         .tag(2)
         .toolbarBackground(.hidden, for: .tabBar)
