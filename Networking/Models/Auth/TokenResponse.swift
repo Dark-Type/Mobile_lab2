@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct TokenResponse: Codable {
+public struct TokenResponse: Codable {
     let jwt: String
     let user: User
 }

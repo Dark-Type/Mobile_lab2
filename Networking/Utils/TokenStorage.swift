@@ -7,20 +7,22 @@
 
 import Foundation
 
-protocol TokenStorage: Sendable {
+public protocol TokenStorage: Sendable {
     func getToken() async -> String?
     func setToken(_ token: String?) async
     func removeToken() async
 }
 
-final class UserDefaultsTokenStorage: TokenStorage {
+public final class UserDefaultsTokenStorage: TokenStorage {
     private let key = "auth_token"
 
-    func getToken() async -> String? {
+    public init() {}
+
+    public func getToken() async -> String? {
         UserDefaults.standard.string(forKey: key)
     }
 
-    func setToken(_ token: String?) async {
+    public func setToken(_ token: String?) async {
         if let token = token {
             UserDefaults.standard.set(token, forKey: key)
         } else {
@@ -28,7 +30,7 @@ final class UserDefaultsTokenStorage: TokenStorage {
         }
     }
 
-    func removeToken() async {
+    public func removeToken() async {
         UserDefaults.standard.removeObject(forKey: key)
     }
 }

@@ -5,25 +5,25 @@
 //  Created by dark type on 03.07.2025.
 //
 
-internal import Alamofire
+import Alamofire
 import Foundation
 
-protocol ProgressServiceProtocol: Sendable {
+public protocol ProgressServiceProtocol: Sendable {
     func getProgresses() async throws -> Progresses
     func saveProgress(_ progress: ShortProgress) async throws -> Progress
     func updateProgress(progressId: String, progress: ShortProgress) async throws -> Progress
 }
 
-final class ProgressService: ProgressServiceProtocol {
+public final class ProgressService: ProgressServiceProtocol {
     private let session: Session
     private let baseURL: String
 
-    init(session: Session = .shared, baseURL: String) {
+    public init(session: Session = .default, baseURL: String) {
         self.session = session
         self.baseURL = baseURL
     }
 
-    func getProgresses() async throws -> Progresses {
+    public func getProgresses() async throws -> Progresses {
         let url = "\(baseURL)\(ProgressRouter.getProgresses.path)"
         return try await session.request(
             url,
@@ -34,7 +34,7 @@ final class ProgressService: ProgressServiceProtocol {
         .value
     }
 
-    func saveProgress(_ progress: ShortProgress) async throws -> Progress {
+    public func saveProgress(_ progress: ShortProgress) async throws -> Progress {
         let url = "\(baseURL)\(ProgressRouter.saveProgress.path)"
         let saveProgress = SaveProgress(data: progress)
         return try await session.request(
@@ -48,7 +48,7 @@ final class ProgressService: ProgressServiceProtocol {
         .value
     }
 
-    func updateProgress(progressId: String, progress: ShortProgress) async throws -> Progress {
+    public func updateProgress(progressId: String, progress: ShortProgress) async throws -> Progress {
         let url = "\(baseURL)\(ProgressRouter.updateProgress(progressId: progressId).path)"
         let saveProgress = SaveProgress(data: progress)
         return try await session.request(

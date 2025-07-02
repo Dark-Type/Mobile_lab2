@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct Quote: Codable {
+public struct Quote: Codable {
     let id: Int
     let documentId: String
     let text: String

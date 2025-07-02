@@ -5,16 +5,16 @@
 //  Created by dark type on 02.07.2025.
 //
 
-internal import Alamofire
+import Alamofire
 import Foundation
 
-final class AuthRequestInterceptor: RequestInterceptor, Sendable {
+public final class AuthRequestInterceptor: RequestInterceptor, Sendable {
     private let tokenStorage: TokenStorage
     private let authRepository: AuthRepositoryProtocol
     private let refreshRequestProvider: @Sendable () async -> RefreshRequest?
     private let refreshState = RefreshState()
 
-    init(
+    public init(
         tokenStorage: TokenStorage,
         authRepository: AuthRepositoryProtocol,
         refreshRequestProvider: @escaping @Sendable () async -> RefreshRequest?
@@ -24,7 +24,7 @@ final class AuthRequestInterceptor: RequestInterceptor, Sendable {
         self.refreshRequestProvider = refreshRequestProvider
     }
 
-    func adapt(_ urlRequest: URLRequest, for session: Session) async throws -> URLRequest {
+    public func adapt(_ urlRequest: URLRequest, for session: Session) async throws -> URLRequest {
         var request = urlRequest
         if let token = await tokenStorage.getToken() {
             request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
@@ -32,7 +32,7 @@ final class AuthRequestInterceptor: RequestInterceptor, Sendable {
         return request
     }
 
-    func retry(_ request: Request, for session: Session, dueTo error: Error) async -> RetryResult {
+    public func retry(_ request: Request, for session: Session, dueTo error: Error) async -> RetryResult {
         guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
             return .doNotRetry
         }
@@ -43,7 +43,7 @@ final class AuthRequestInterceptor: RequestInterceptor, Sendable {
                     await refreshState.completeAll(.doNotRetry)
                     return .doNotRetry
                 }
-                let response = try await authRepository.login(refreshRequest)
+                let response = try await authRepository.refresh(refreshRequest)
                 await tokenStorage.setToken(response.jwt)
                 await refreshState.completeAll(.retry)
                 return .retry

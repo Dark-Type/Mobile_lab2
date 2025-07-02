@@ -5,25 +5,25 @@
 //  Created by dark type on 03.07.2025.
 //
 
-internal import Alamofire
+import Alamofire
 import Foundation
 
-protocol FavoriteServiceProtocol: Sendable {
+public protocol FavoriteServiceProtocol: Sendable {
     func getFavorites() async throws -> Favorites
     func addToFavorites(_ request: AddFavoriteRequest) async throws -> Favorite
     func removeFromFavorites(favoriteId: String) async throws
 }
 
-final class FavoriteService: FavoriteServiceProtocol {
+public final class FavoriteService: FavoriteServiceProtocol {
     private let session: Session
     private let baseURL: String
 
-    init(session: Session = .shared, baseURL: String) {
+    public init(session: Session = .default, baseURL: String) {
         self.session = session
         self.baseURL = baseURL
     }
 
-    func getFavorites() async throws -> Favorites {
+    public func getFavorites() async throws -> Favorites {
         let url = "\(baseURL)\(FavoriteRouter.getFavorites.path)"
         return try await session.request(
             url,
@@ -34,7 +34,7 @@ final class FavoriteService: FavoriteServiceProtocol {
         .value
     }
 
-    func addToFavorites(_ request: AddFavoriteRequest) async throws -> Favorite {
+    public func addToFavorites(_ request: AddFavoriteRequest) async throws -> Favorite {
         let url = "\(baseURL)\(FavoriteRouter.addToFavorites.path)"
         return try await session.request(
             url,
@@ -47,7 +47,7 @@ final class FavoriteService: FavoriteServiceProtocol {
         .value
     }
 
-    func removeFromFavorites(favoriteId: String) async throws {
+    public func removeFromFavorites(favoriteId: String) async throws {
         let url = "\(baseURL)\(FavoriteRouter.removeFromFavorites(favoriteId: favoriteId).path)"
         _ = try await session.request(
             url,

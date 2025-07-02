@@ -5,23 +5,23 @@
 //  Created by dark type on 02.07.2025.
 //
 
-protocol QuoteRepositoryProtocol: Sendable {
+public protocol QuoteRepositoryProtocol: Sendable {
     func getQuotes() async throws -> Quotes
     func createQuote(_ quote: ShortQuote) async throws -> Quote
 }
 
-final class QuoteRepository: QuoteRepositoryProtocol {
+public final class QuoteRepository: QuoteRepositoryProtocol {
     private let service: QuoteServiceProtocol
 
-    init(service: QuoteServiceProtocol) {
+    public init(service: QuoteServiceProtocol) {
         self.service = service
     }
 
-    func getQuotes() async throws -> Quotes {
+    public func getQuotes() async throws -> Quotes {
         try await service.getQuotes()
     }
 
-    func createQuote(_ quote: ShortQuote) async throws -> Quote {
+    public func createQuote(_ quote: ShortQuote) async throws -> Quote {
         try await service.createQuote(quote)
     }
 }

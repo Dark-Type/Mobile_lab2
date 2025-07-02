@@ -5,24 +5,24 @@
 //  Created by dark type on 02.07.2025.
 //
 
-internal import Alamofire
+import Alamofire
 import Foundation
 
-protocol ReferenceDataServiceProtocol: Sendable {
+public protocol ReferenceDataServiceProtocol: Sendable {
     func getAuthors() async throws -> Authors
     func getGenres() async throws -> Genres
 }
 
-final class ReferenceDataService: ReferenceDataServiceProtocol {
+public final class ReferenceDataService: ReferenceDataServiceProtocol {
     private let session: Session
     private let baseURL: String
 
-    init(session: Session = .shared, baseURL: String) {
+    public init(session: Session = .default, baseURL: String) {
         self.session = session
         self.baseURL = baseURL
     }
 
-    func getAuthors() async throws -> Authors {
+    public func getAuthors() async throws -> Authors {
         let url = "\(baseURL)\(ReferenceDataRouter.getAuthors.path)"
         return try await session.request(
             url,
@@ -33,7 +33,7 @@ final class ReferenceDataService: ReferenceDataServiceProtocol {
         .value
     }
 
-    func getGenres() async throws -> Genres {
+    public func getGenres() async throws -> Genres {
         let url = "\(baseURL)\(ReferenceDataRouter.getGenres.path)"
         return try await session.request(
             url,

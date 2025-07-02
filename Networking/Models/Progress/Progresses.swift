@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct Progresses: Codable {
+public struct Progresses: Codable {
     let data: [Progress]
     let meta: Meta
 }

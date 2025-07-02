@@ -15,6 +15,10 @@
 		A543C64B2E15804B00B85236 /* Config.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = A543C64A2E15804B00B85236 /* Config.xcconfig */; };
 		A543C67D2E15A92C00B85236 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A543C67C2E15A92C00B85236 /* Kingfisher */; };
 		A543C6822E15ACDD00B85236 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A543C6812E15ACDD00B85236 /* Kingfisher */; };
+		A543C6AB2E15D6A200B85236 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A543C6AA2E15D6A200B85236 /* Alamofire */; };
+		A543C6AD2E15D71300B85236 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A543C6AC2E15D71300B85236 /* Alamofire */; };
+		A543C6AF2E15D71900B85236 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A543C6AE2E15D71900B85236 /* Alamofire */; };
+		A543C6B12E15D71F00B85236 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = A543C6B02E15D71F00B85236 /* Alamofire */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +83,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		A543C6A62E15D08D00B85236 /* Exceptions for "Networking" folder in "Networking" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Networking.swift,
+			);
+			target = A543C5C92E154A9D00B85236 /* Networking */;
+		};
 		A57ECF4B2D91DF290016FDFA /* Exceptions for "Mobile_lab2" folder in "Mobile_lab2UITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -88,9 +99,23 @@
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		A543C6A72E15D08D00B85236 /* Exceptions for "Networking" folder in "Copy Bundle Resources" phase from "Networking" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = A543C5C82E154A9D00B85236 /* Resources */;
+			membershipExceptions = (
+				Networking.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		A543C5CB2E154A9D00B85236 /* Networking */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				A543C6A62E15D08D00B85236 /* Exceptions for "Networking" folder in "Networking" target */,
+				A543C6A72E15D08D00B85236 /* Exceptions for "Networking" folder in "Copy Bundle Resources" phase from "Networking" target */,
+			);
 			path = Networking;
 			sourceTree = "<group>";
 		};
@@ -134,6 +159,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A543C5D52E154A9D00B85236 /* Networking.framework in Frameworks */,
+				A543C6B12E15D71F00B85236 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +168,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A543C6822E15ACDD00B85236 /* Kingfisher in Frameworks */,
+				A543C6AB2E15D6A200B85236 /* Alamofire in Frameworks */,
 				A543C5DF2E154A9D00B85236 /* Networking.framework in Frameworks */,
 				A52EB2862E0D94A100823ACD /* ComposableArchitecture in Frameworks */,
 			);
@@ -151,6 +178,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A543C6AD2E15D71300B85236 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -158,6 +186,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A543C6AF2E15D71900B85236 /* Alamofire in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,6 +283,7 @@
 			);
 			name = NetworkingTests;
 			packageProductDependencies = (
+				A543C6B02E15D71F00B85236 /* Alamofire */,
 			);
 			productName = NetworkingTests;
 			productReference = A543C5D42E154A9D00B85236 /* NetworkingTests.xctest */;
@@ -281,6 +311,7 @@
 			packageProductDependencies = (
 				A52EB2852E0D94A100823ACD /* ComposableArchitecture */,
 				A543C6812E15ACDD00B85236 /* Kingfisher */,
+				A543C6AA2E15D6A200B85236 /* Alamofire */,
 			);
 			productName = Mobile_lab2;
 			productReference = A58666CF2D8925910010486C /* Mobile_lab2.app */;
@@ -304,6 +335,7 @@
 			);
 			name = Mobile_lab2Tests;
 			packageProductDependencies = (
+				A543C6AC2E15D71300B85236 /* Alamofire */,
 			);
 			productName = Mobile_lab2Tests;
 			productReference = A58666DF2D8925920010486C /* Mobile_lab2Tests.xctest */;
@@ -327,6 +359,7 @@
 			);
 			name = Mobile_lab2UITests;
 			packageProductDependencies = (
+				A543C6AE2E15D71900B85236 /* Alamofire */,
 			);
 			productName = Mobile_lab2UITests;
 			productReference = A58666E92D8925920010486C /* Mobile_lab2UITests.xctest */;
@@ -522,7 +555,7 @@
 		A543C5E22E154A9D00B85236 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -532,7 +565,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -557,7 +590,7 @@
 		A543C5E32E154A9D00B85236 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUILD_LIBRARY_FOR_DISTRIBUTION = YES;
+				BUILD_LIBRARY_FOR_DISTRIBUTION = NO;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -567,7 +600,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 18.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -992,6 +1025,26 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A543C67B2E15A92C00B85236 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		A543C6AA2E15D6A200B85236 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		A543C6AC2E15D71300B85236 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		A543C6AE2E15D71900B85236 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
+		};
+		A543C6B02E15D71F00B85236 /* Alamofire */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A543C5E82E154C1B00B85236 /* XCRemoteSwiftPackageReference "Alamofire" */;
+			productName = Alamofire;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

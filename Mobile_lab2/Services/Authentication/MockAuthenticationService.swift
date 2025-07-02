@@ -9,22 +9,22 @@ import Dependencies
 import Foundation
 
 struct MockAuthenticationService: AuthenticationServiceProtocol {
-    func login(credentials: LoginCredentials) async throws -> User {
+    func login(credentials: LoginCredentials) async throws -> UserUI {
         try await Task.sleep(nanoseconds: 1_000_000_000)
 
         guard credentials.isValid else {
             throw AuthenticationError.invalidCredentials
         }
 
-        return User(email: credentials.email, name: "Mock User")
+        return UserUI(email: credentials.email, name: "Mock User")
     }
 
     func logout() async throws {
         try await Task.sleep(nanoseconds: 500_000_000)
     }
 
-    func getCurrentUser() async -> User? {
-        return User(email: "mock@example.com", name: "Mock User")
+    func getCurrentUser() async -> UserUI? {
+        return UserUI(email: "mock@example.com", name: "Mock User")
     }
 }
 

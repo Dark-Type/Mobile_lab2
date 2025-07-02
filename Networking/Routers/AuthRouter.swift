@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-internal import Alamofire
+import Alamofire
 
 enum AuthRouter {
     case register(username: String, email: String, password: String)

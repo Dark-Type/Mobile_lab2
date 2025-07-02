@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct BookWithShortAuthors: Codable {
+public struct BookWithShortAuthors: Codable {
     let id: Int
     let documentId: String
     let title: String

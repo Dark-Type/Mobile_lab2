@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct UserFullName: Codable {
+public struct UserFullName: Codable {
     let name: String
     let surname: String
     let patronymic: String?

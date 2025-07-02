@@ -5,6 +5,6 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct AddFavoriteRequest: Codable {
+public struct AddFavoriteRequest: Codable {
     let data: BookId
 }

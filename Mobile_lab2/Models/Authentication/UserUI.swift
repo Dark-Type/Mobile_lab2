@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct User: Equatable, Codable {
+struct UserUI: Equatable, Codable {
     let id: String
     let email: String
     let name: String?
@@ -18,5 +18,5 @@ struct User: Equatable, Codable {
         self.name = name
     }
 
-    static let mockUser = User(email: "mock@example.com", name: "Mock User")
+    static let mockUser = UserUI(email: "mock@example.com", name: "Mock User")
 }

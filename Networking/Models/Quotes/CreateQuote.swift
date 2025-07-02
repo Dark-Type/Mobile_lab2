@@ -5,6 +5,6 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct CreateQuote: Codable {
+public struct CreateQuote: Codable {
     let data: ShortQuote
 }

@@ -8,19 +8,23 @@
 internal import Kingfisher
 import SwiftUI
 
-struct LoadedImage {
+public struct LoadedImage {
     let url: URL
     let image: Image?
 }
 
-final class ImageBatchLoader {
+public protocol ImageBatchLoaderProtocol: Sendable {
+    func loadImages(urls: [URL]) -> AsyncStream<LoadedImage>
+}
+
+public final class ImageBatchLoader: ImageBatchLoaderProtocol {
     private let maxConcurrentLoads: Int
 
-    init(maxConcurrentLoads: Int = 5) {
+    public init(maxConcurrentLoads: Int = 5) {
         self.maxConcurrentLoads = maxConcurrentLoads
     }
 
-    func loadImages(urls: [URL]) -> AsyncStream<LoadedImage> {
+    public func loadImages(urls: [URL]) -> AsyncStream<LoadedImage> {
         AsyncStream { continuation in
             Task {
                 var urlIterator = urls.makeIterator()

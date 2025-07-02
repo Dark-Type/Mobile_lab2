@@ -52,7 +52,7 @@ struct LoginFeature {
         case carouselIndexChanged(Int)
         case keyboardHeightChanged(CGFloat)
 
-        case loginResponse(Result<User, AuthenticationError>)
+        case loginResponse(Result<UserUI, AuthenticationError>)
         case clearError
     }
 

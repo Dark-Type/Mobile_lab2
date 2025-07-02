@@ -5,21 +5,21 @@
 //  Created by dark type on 03.07.2025.
 //
 
-protocol ChapterRepositoryProtocol: Sendable {
+public protocol ChapterRepositoryProtocol: Sendable {
     func getBookByChapterId(_ chapterId: Int) async throws -> ChaptersWithBookAndAuthor
     func getChapterByBookId(_ bookId: Int) async throws -> ChaptersWithBookAndAuthor
 }
 
-final class ChapterRepository: ChapterRepositoryProtocol, @unchecked Sendable {
+public final class ChapterRepository: ChapterRepositoryProtocol, @unchecked Sendable {
     private let service: ChapterServiceProtocol
     private let chapterByIdCache = TimedMemoryCache<Int, ChaptersWithBookAndAuthor>(lifetime: 3600)
     private let chapterByBookIdCache = TimedMemoryCache<Int, ChaptersWithBookAndAuthor>(lifetime: 3600)
 
-    init(service: ChapterServiceProtocol) {
+    public init(service: ChapterServiceProtocol) {
         self.service = service
     }
 
-    func getBookByChapterId(_ chapterId: Int) async throws -> ChaptersWithBookAndAuthor {
+    public func getBookByChapterId(_ chapterId: Int) async throws -> ChaptersWithBookAndAuthor {
         if let cached = await chapterByIdCache.value(for: chapterId) {
             return cached
         }
@@ -28,7 +28,7 @@ final class ChapterRepository: ChapterRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getChapterByBookId(_ bookId: Int) async throws -> ChaptersWithBookAndAuthor {
+    public func getChapterByBookId(_ bookId: Int) async throws -> ChaptersWithBookAndAuthor {
         if let cached = await chapterByBookIdCache.value(for: bookId) {
             return cached
         }

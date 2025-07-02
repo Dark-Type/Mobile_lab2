@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct Quotes: Codable {
+public struct Quotes: Codable {
     let data: [Quote]
     let meta: Meta?
 }

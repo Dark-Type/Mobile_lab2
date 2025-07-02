@@ -5,8 +5,8 @@
 //  Created by dark type on 02.07.2025.
 //
 
+import Alamofire
 import Foundation
-internal import Alamofire
 
 extension Session {
     static let shared: Session = {

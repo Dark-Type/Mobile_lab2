@@ -21,7 +21,7 @@ struct AppFeature {
 
         init() {
             let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
-            self.authenticationState = isLoggedIn ? .loggedIn(User.mockUser) : .loggedOut
+            self.authenticationState = isLoggedIn ? .loggedIn(UserUI.mockUser) : .loggedOut
         }
     }
 
@@ -29,7 +29,7 @@ struct AppFeature {
 
     enum AuthenticationState: Equatable {
         case loggedOut
-        case loggedIn(User)
+        case loggedIn(UserUI)
 
         var isLoggedIn: Bool {
             if case .loggedIn = self {
@@ -38,7 +38,7 @@ struct AppFeature {
             return false
         }
 
-        var currentUser: User? {
+        var currentUser: UserUI? {
             if case let .loggedIn(user) = self {
                 return user
             }

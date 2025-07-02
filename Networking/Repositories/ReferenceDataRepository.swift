@@ -7,21 +7,21 @@
 
 import Foundation
 
-protocol ReferenceDataRepositoryProtocol: Sendable {
+public protocol ReferenceDataRepositoryProtocol: Sendable {
     func getAuthors() async throws -> Authors
     func getGenres() async throws -> Genres
 }
 
-final class ReferenceDataRepository: ReferenceDataRepositoryProtocol, Sendable {
+public final class ReferenceDataRepository: ReferenceDataRepositoryProtocol, @unchecked Sendable {
     private let service: ReferenceDataServiceProtocol
     private let authorsCache = TimedMemoryCache<String, Authors>(lifetime: .infinity)
     private let genresCache = TimedMemoryCache<String, Genres>(lifetime: .infinity)
 
-    init(service: ReferenceDataServiceProtocol) {
+    public init(service: ReferenceDataServiceProtocol) {
         self.service = service
     }
 
-    func getAuthors() async throws -> Authors {
+    public func getAuthors() async throws -> Authors {
         if let cached = await authorsCache.value(for: "authors") {
             return cached
         }
@@ -30,7 +30,7 @@ final class ReferenceDataRepository: ReferenceDataRepositoryProtocol, Sendable {
         return loaded
     }
 
-    func getGenres() async throws -> Genres {
+    public func getGenres() async throws -> Genres {
         if let cached = await genresCache.value(for: "genres") {
             return cached
         }

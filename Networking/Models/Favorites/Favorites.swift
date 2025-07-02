@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct Favorites: Codable {
+public struct Favorites: Codable {
     let data: [Favorite]
     let meta: Meta
 }

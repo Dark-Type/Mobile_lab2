@@ -5,6 +5,6 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct Meta: Codable {
+public struct Meta: Codable {
     let pagination: Pagination
 }

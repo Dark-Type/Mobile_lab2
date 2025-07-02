@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-struct ShortProgress: Codable {
+public struct ShortProgress: Codable {
     let value: Int
     let chapterId: Int
 }

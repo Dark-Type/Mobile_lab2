@@ -6,7 +6,7 @@
 //
 
 protocol AuthenticationServiceProtocol: Sendable {
-    func login(credentials: LoginCredentials) async throws -> User
+    func login(credentials: LoginCredentials) async throws -> UserUI
     func logout() async throws
-    func getCurrentUser() async -> User?
+    func getCurrentUser() async -> UserUI?
 }

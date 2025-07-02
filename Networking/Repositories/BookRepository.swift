@@ -5,7 +5,7 @@
 //  Created by dark type on 03.07.2025.
 //
 
-protocol BookRepositoryProtocol: Sendable {
+public protocol BookRepositoryProtocol: Sendable {
     func getBooks(page: Int, pageSize: Int) async throws -> Books
     func getBooksById(id: Int) async throws -> Books
     func getBooksByName(name: String) async throws -> Books
@@ -15,7 +15,7 @@ protocol BookRepositoryProtocol: Sendable {
     func getBooksWithAuthors(page: Int, pageSize: Int) async throws -> [BookWithShortAuthors]
 }
 
-final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
+public final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
     private let service: BookServiceProtocol
     private let booksByPageCache = TimedMemoryCache<String, Books>(lifetime: 3600)
     private let booksByIdCache = TimedMemoryCache<Int, Books>(lifetime: 3600)
@@ -25,11 +25,11 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
     private let newBooksCache = TimedMemoryCache<Bool, Books>(lifetime: 3600)
     private let booksWithAuthorsCache = TimedMemoryCache<String, [BookWithShortAuthors]>(lifetime: 3600)
 
-    init(service: BookServiceProtocol) {
+    public init(service: BookServiceProtocol) {
         self.service = service
     }
 
-    func getBooks(page: Int, pageSize: Int) async throws -> Books {
+    public func getBooks(page: Int, pageSize: Int) async throws -> Books {
         let key = "\(page)-\(pageSize)"
         if let cached = await booksByPageCache.value(for: key) {
             return cached
@@ -39,7 +39,7 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getBooksById(id: Int) async throws -> Books {
+    public func getBooksById(id: Int) async throws -> Books {
         if let cached = await booksByIdCache.value(for: id) {
             return cached
         }
@@ -48,7 +48,7 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getBooksByName(name: String) async throws -> Books {
+    public func getBooksByName(name: String) async throws -> Books {
         if let cached = await booksByNameCache.value(for: name) {
             return cached
         }
@@ -57,7 +57,7 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getBooksByGenre(genreId: Int) async throws -> Books {
+    public func getBooksByGenre(genreId: Int) async throws -> Books {
         if let cached = await booksByGenreCache.value(for: genreId) {
             return cached
         }
@@ -66,7 +66,7 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getBooksByAuthor(authorId: Int) async throws -> Books {
+    public func getBooksByAuthor(authorId: Int) async throws -> Books {
         if let cached = await booksByAuthorCache.value(for: authorId) {
             return cached
         }
@@ -75,7 +75,7 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getNewBooks(isNew: Bool) async throws -> Books {
+    public func getNewBooks(isNew: Bool) async throws -> Books {
         if let cached = await newBooksCache.value(for: isNew) {
             return cached
         }
@@ -84,7 +84,7 @@ final class BookRepository: BookRepositoryProtocol, @unchecked Sendable {
         return loaded
     }
 
-    func getBooksWithAuthors(page: Int, pageSize: Int) async throws -> [BookWithShortAuthors] {
+    public func getBooksWithAuthors(page: Int, pageSize: Int) async throws -> [BookWithShortAuthors] {
         let key = "\(page)-\(pageSize)"
         if let cached = await booksWithAuthorsCache.value(for: key) {
             return cached

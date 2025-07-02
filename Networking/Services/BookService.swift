@@ -5,10 +5,10 @@
 //  Created by dark type on 03.07.2025.
 //
 
-internal import Alamofire
+import Alamofire
 import Foundation
 
-protocol BookServiceProtocol: Sendable {
+public protocol BookServiceProtocol: Sendable {
     func getBooks(page: Int, pageSize: Int) async throws -> Books
     func getBooksById(id: Int) async throws -> Books
     func getBooksByName(name: String) async throws -> Books
@@ -18,16 +18,16 @@ protocol BookServiceProtocol: Sendable {
     func getBooksWithAuthors(page: Int, pageSize: Int) async throws -> [BookWithShortAuthors]
 }
 
-final class BookService: BookServiceProtocol {
+public final class BookService: BookServiceProtocol {
     private let session: Session
     private let baseURL: String
 
-    init(session: Session = .shared, baseURL: String) {
+    public init(session: Session = .default, baseURL: String) {
         self.session = session
         self.baseURL = baseURL
     }
 
-    func getBooks(page: Int, pageSize: Int) async throws -> Books {
+    public func getBooks(page: Int, pageSize: Int) async throws -> Books {
         let router = BookRouter.getBooks(page: page, pageSize: pageSize)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
@@ -41,7 +41,7 @@ final class BookService: BookServiceProtocol {
         .value
     }
 
-    func getBooksById(id: Int) async throws -> Books {
+    public func getBooksById(id: Int) async throws -> Books {
         let router = BookRouter.getBooksById(id: id)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
@@ -55,7 +55,7 @@ final class BookService: BookServiceProtocol {
         .value
     }
 
-    func getBooksByName(name: String) async throws -> Books {
+    public func getBooksByName(name: String) async throws -> Books {
         let router = BookRouter.getBooksByName(name: name)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
@@ -69,7 +69,7 @@ final class BookService: BookServiceProtocol {
         .value
     }
 
-    func getBooksByGenre(genreId: Int) async throws -> Books {
+    public func getBooksByGenre(genreId: Int) async throws -> Books {
         let router = BookRouter.getBooksByGenre(genreId: genreId)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
@@ -83,7 +83,7 @@ final class BookService: BookServiceProtocol {
         .value
     }
 
-    func getBooksByAuthor(authorId: Int) async throws -> Books {
+    public func getBooksByAuthor(authorId: Int) async throws -> Books {
         let router = BookRouter.getBooksByAuthor(authorId: authorId)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
@@ -97,7 +97,7 @@ final class BookService: BookServiceProtocol {
         .value
     }
 
-    func getNewBooks(isNew: Bool) async throws -> Books {
+    public func getNewBooks(isNew: Bool) async throws -> Books {
         let router = BookRouter.getNewBooks(isNew: isNew)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
@@ -111,7 +111,7 @@ final class BookService: BookServiceProtocol {
         .value
     }
 
-    func getBooksWithAuthors(page: Int, pageSize: Int) async throws -> [BookWithShortAuthors] {
+    public func getBooksWithAuthors(page: Int, pageSize: Int) async throws -> [BookWithShortAuthors] {
         let router = BookRouter.getBooksWithAuthors(page: page, pageSize: pageSize)
         let url = "\(baseURL)\(router.path)"
         return try await session.request(
