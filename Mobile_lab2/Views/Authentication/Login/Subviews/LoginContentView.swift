@@ -14,17 +14,14 @@ struct LoginContentView: View {
     var body: some View {
         WithPerceptionTracking {
             GeometryReader { geometry in
-                WithPerceptionTracking {
-                    let config = LoginLayoutConfig(
-                        screenSize: geometry.size,
-                        safeAreaInsets: geometry.safeAreaInsets
-                    )
-
-                    ScrollView(showsIndicators: false) {
-                        LoginScrollContent(viewStore: viewStore, config: config)
-                    }
-                    .background(AppColors.accentDark.color.ignoresSafeArea())
+                let config = LoginLayoutConfig(
+                    screenSize: geometry.size,
+                    safeAreaInsets: geometry.safeAreaInsets
+                )
+                ScrollView(showsIndicators: false) {
+                    LoginScrollContent(viewStore: viewStore, config: config)
                 }
+                .background(AppColors.accentDark.color.ignoresSafeArea())
             }
         }
     }
@@ -37,8 +34,11 @@ struct LoginScrollContent: View {
     var body: some View {
         WithPerceptionTracking {
             ZStack(alignment: .top) {
-                LoginCarouselView(selectedIndex: viewStore.selectedCarouselIndex)
-                    .carouselFrame(height: config.carouselHeight)
+                LoginCarouselView(
+                    selectedIndex: viewStore.selectedCarouselIndex,
+                    isPaused: viewStore.keyboardIsVisible
+                )
+                .carouselFrame(height: config.carouselHeight)
 
                 VStack(spacing: 0) {
                     Spacer()

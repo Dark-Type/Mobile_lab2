@@ -5,16 +5,18 @@
 //  Created by dark type on 02.07.2025.
 //
 
+internal import Alamofire
+
 enum ProgressRouter {
     case getProgresses
     case saveProgress
     case updateProgress(progressId: String)
 
-    var method: String {
+    var method: HTTPMethod {
         switch self {
-        case .getProgresses: return "GET"
-        case .saveProgress: return "POST"
-        case .updateProgress: return "PUT"
+        case .getProgresses: return .get
+        case .saveProgress: return .post
+        case .updateProgress: return .put
         }
     }
 

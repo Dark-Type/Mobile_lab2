@@ -14,14 +14,22 @@ struct AppView: View {
     var body: some View {
         WithPerceptionTracking {
             WithViewStore(store, observe: { $0 }, content: { viewStore in
-                WithPerceptionTracking {
+                VStack(spacing: 0) {
+                    if viewStore.networkStatus == .disconnected {
+                        Text("Нет Интернет соединения 🚫🛜")
+                            .frame(maxWidth: .infinity)
+                            .padding(8)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .transition(.move(edge: .top).combined(with: .opacity))
+                            .zIndex(1)
+                    }
                     Group {
                         switch viewStore.authenticationState {
                         case .loggedOut:
                             LoginView(store: store.scope(state: \.login, action: \.login))
                                 .loginScreenStyle()
                                 .transition(.opacity)
-
                         case .loggedIn:
                             MainView(store: store.scope(state: \.main, action: \.main))
                                 .transition(.opacity)

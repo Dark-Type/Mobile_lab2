@@ -5,13 +5,15 @@
 //  Created by dark type on 02.07.2025.
 //
 
+internal import Alamofire
+
 enum AuthRouter {
     case register(username: String, email: String, password: String)
     case login(identifier: String, password: String)
 
-    var method: String {
+    var method: HTTPMethod {
         switch self {
-        case .register, .login: return "POST"
+        case .register, .login: return .post
         }
     }
 

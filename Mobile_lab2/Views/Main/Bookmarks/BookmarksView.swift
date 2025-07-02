@@ -49,7 +49,7 @@ private struct BookmarksContentView: View {
             }
             .scrollContentBackground(.hidden)
             .background(AppColors.background.color)
-            .setupFullScreenCovers(viewStore: self.viewStore, isFavorite: self.isFavorite)
+            .setupFullScreenCovers(viewStore: viewStore, isFavorite: isFavorite)
             .onAppear {
                 viewStore.send(.viewAppeared)
             }

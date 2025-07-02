@@ -8,21 +8,51 @@
 internal import Alamofire
 import Foundation
 
-final class AuthRequestInterceptor: RequestInterceptor {
+final class AuthRequestInterceptor: RequestInterceptor, Sendable {
     private let tokenStorage: TokenStorage
+    private let authRepository: AuthRepositoryProtocol
+    private let refreshRequestProvider: @Sendable () async -> RefreshRequest?
+    private let refreshState = RefreshState()
 
-    init(tokenStorage: TokenStorage) {
+    init(
+        tokenStorage: TokenStorage,
+        authRepository: AuthRepositoryProtocol,
+        refreshRequestProvider: @escaping @Sendable () async -> RefreshRequest?
+    ) {
         self.tokenStorage = tokenStorage
+        self.authRepository = authRepository
+        self.refreshRequestProvider = refreshRequestProvider
     }
 
-    func adapt(_ urlRequest: URLRequest, for session: Session, completion: @escaping (Result<URLRequest, Error>) -> Void) {
+    func adapt(_ urlRequest: URLRequest, for session: Session) async throws -> URLRequest {
+        var request = urlRequest
+        if let token = await tokenStorage.getToken() {
+            request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        }
+        return request
+    }
 
-        Task {
-            var request = urlRequest
-            if let token = await tokenStorage.getToken() {
-                request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+    func retry(_ request: Request, for session: Session, dueTo error: Error) async -> RetryResult {
+        guard let response = request.task?.response as? HTTPURLResponse, response.statusCode == 401 else {
+            return .doNotRetry
+        }
+
+        if await refreshState.shouldStartRefresh() {
+            do {
+                guard let refreshRequest = await refreshRequestProvider() else {
+                    await refreshState.completeAll(.doNotRetry)
+                    return .doNotRetry
+                }
+                let response = try await authRepository.login(refreshRequest)
+                await tokenStorage.setToken(response.jwt)
+                await refreshState.completeAll(.retry)
+                return .retry
+            } catch {
+                await refreshState.completeAll(.doNotRetry)
+                return .doNotRetry
             }
-            completion(.success(request))
+        } else {
+            return await refreshState.waitForRefresh()
         }
     }
 }

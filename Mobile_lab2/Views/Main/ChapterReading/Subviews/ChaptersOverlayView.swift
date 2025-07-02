@@ -5,8 +5,9 @@
 //  Created by dark type on 25.03.2025.
 //
 
-import SwiftUI
 import Perception
+import SwiftUI
+
 struct ChaptersOverlayView: View {
     let book: Book
     @Binding var currentChapter: Chapter

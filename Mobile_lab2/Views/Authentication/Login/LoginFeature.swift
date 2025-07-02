@@ -22,6 +22,7 @@ struct LoginFeature {
 
         var selectedCarouselIndex: Int = 0
         var keyboardHeight: CGFloat = 0
+        var keyboardIsVisible: Bool { keyboardHeight > 0 }
 
         var credentials: LoginCredentials {
             LoginCredentials(email: email, password: password)

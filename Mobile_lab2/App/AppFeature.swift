@@ -17,6 +17,7 @@ struct AppFeature {
         var authenticationState: AuthenticationState
         var login: LoginFeature.State = .init()
         var main: MainFeature.State = .init()
+        var networkStatus: NetworkStatus = .connected
 
         init() {
             let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
@@ -51,6 +52,7 @@ struct AppFeature {
         case appLaunched
         case login(LoginFeature.Action)
         case main(MainFeature.Action)
+        case networkStatusChanged(NetworkStatus)
         case logout
         case authenticationStateChanged(AuthenticationState)
     }
@@ -59,6 +61,7 @@ struct AppFeature {
 
     @Dependency(\.authenticationService) var authenticationService
     @Dependency(\.userDefaultsService) var userDefaultsService
+    @Dependency(\.networkStatus) var networkStatus
 
     // MARK: - Reducer
 
@@ -74,10 +77,11 @@ struct AppFeature {
         Reduce { state, action in
             switch action {
             case .appLaunched:
-                if state.authenticationState.isLoggedIn {
-                    return .send(.main(.viewAppeared))
+                return .run { send in
+                    for await status in networkStatus.observe() {
+                        await send(.networkStatusChanged(status))
+                    }
                 }
-                return .none
 
             case let .login(.loginResponse(.success(user))):
                 state.authenticationState = .loggedIn(user)
@@ -101,6 +105,11 @@ struct AppFeature {
 
             case let .authenticationStateChanged(newState):
                 state.authenticationState = newState
+                return .none
+
+            case let .networkStatusChanged(status):
+                print("[AppFeature] Received network status: \(status)")
+                state.networkStatus = status
                 return .none
 
             case .main(.delegate(.logout)):

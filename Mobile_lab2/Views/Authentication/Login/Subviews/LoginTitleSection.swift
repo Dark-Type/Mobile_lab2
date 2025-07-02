@@ -22,19 +22,16 @@ struct LoginTitleSection: View {
 
 struct FirstTitleLine: View {
     var body: some View {
-        WithPerceptionTracking {
-            GeometryReader { geometry in
-
-                CustomTextLabel()
-                    .text(L10n.Login.Title.first.uppercased())
-                    .appFont(AppFont.header1)
-                    .foregroundColor(AppColors.accentLight.color)
-                    .lineHeightMultiple(1.0)
-                    .lineLimit(1)
-                    .maxWidth(geometry.size.width)
-                    .truncationMode(.byTruncatingTail)
-                    .accessibilityIdentifier(AccessibilityIdentifiers.titleFirstLine.rawValue)
-            }
+        GeometryReader { geometry in
+            CustomTextLabel()
+                .text(L10n.Login.Title.first.uppercased())
+                .appFont(AppFont.header1)
+                .foregroundColor(AppColors.accentLight.color)
+                .lineHeightMultiple(1.0)
+                .lineLimit(1)
+                .maxWidth(geometry.size.width)
+                .truncationMode(.byTruncatingTail)
+                .accessibilityIdentifier(AccessibilityIdentifiers.titleFirstLine.rawValue)
         }
         .frame(height: AppFont.header1.size * 1.2)
     }
@@ -42,18 +39,16 @@ struct FirstTitleLine: View {
 
 struct SecondTitleLine: View {
     var body: some View {
-        WithPerceptionTracking {
-            GeometryReader { geometry in
-                CustomTextLabel()
-                    .text(L10n.Login.Title.second.uppercased())
-                    .appFont(AppFont.title)
-                    .foregroundColor(AppColors.secondary.color)
-                    .lineHeightMultiple(0.7)
-                    .lineLimit(2)
-                    .maxWidth(geometry.size.width)
-                    .truncationMode(.byTruncatingTail)
-                    .accessibilityIdentifier(AccessibilityIdentifiers.titleSecondLine.rawValue)
-            }
+        GeometryReader { geometry in
+            CustomTextLabel()
+                .text(L10n.Login.Title.second.uppercased())
+                .appFont(AppFont.title)
+                .foregroundColor(AppColors.secondary.color)
+                .lineHeightMultiple(0.7)
+                .lineLimit(2)
+                .maxWidth(geometry.size.width)
+                .truncationMode(.byTruncatingTail)
+                .accessibilityIdentifier(AccessibilityIdentifiers.titleSecondLine.rawValue)
         }
         .frame(height: AppFont.title.size * 2)
     }

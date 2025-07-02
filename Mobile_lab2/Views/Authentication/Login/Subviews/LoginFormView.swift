@@ -25,7 +25,6 @@ struct LoginFormView: View {
                     clearAction: { viewStore.send(.clearEmail) },
                     fieldHeight: config.fieldHeight
                 )
-
                 LoginSecureField(
                     placeholder: L10n.Login.password,
                     text: viewStore.binding(

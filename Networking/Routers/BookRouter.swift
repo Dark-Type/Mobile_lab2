@@ -5,6 +5,8 @@
 //  Created by dark type on 02.07.2025.
 //
 
+internal import Alamofire
+
 enum BookRouter {
     case getBooks(page: Int, pageSize: Int)
     case getBooksById(id: Int)
@@ -14,7 +16,7 @@ enum BookRouter {
     case getNewBooks(isNew: Bool)
     case getBooksWithAuthors(page: Int, pageSize: Int)
 
-    var method: String { "GET" }
+    var method: HTTPMethod { .get }
     var path: String { "/api/books" }
 
     var query: [String: Any] {

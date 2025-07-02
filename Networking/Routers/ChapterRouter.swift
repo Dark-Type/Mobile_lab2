@@ -5,11 +5,13 @@
 //  Created by dark type on 02.07.2025.
 //
 
+internal import Alamofire
+
 enum ChapterRouter {
     case getBookByChapterId(chapterId: Int)
     case getChapterByBookId(bookId: Int)
 
-    var method: String { "GET" }
+    var method: HTTPMethod { .get }
     var path: String { "/api/chapters" }
 
     var query: [String: Any] {

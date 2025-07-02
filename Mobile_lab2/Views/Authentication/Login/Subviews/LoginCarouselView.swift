@@ -10,39 +10,45 @@ import SwiftUI
 
 struct LoginCarouselView: View {
     let selectedIndex: Int
+    let isPaused: Bool
 
     var body: some View {
-        WithPerceptionTracking {
-            GeometryReader { geometry in
+        GeometryReader { geometry in
+            let images = [MockBooks.book1.image, MockBooks.book2.image, MockBooks.book3.image]
+            let itemWidth = geometry.size.width / 2.2
+            let spacing: CGFloat = 5
+            let totalWidth = CGFloat(images.count) * (itemWidth + spacing)
 
-                let images = [MockBooks.book1.image, MockBooks.book2.image, MockBooks.book3.image]
-                let itemWidth = geometry.size.width / 2.2
-                let spacing: CGFloat = 5
-                let totalWidth = CGFloat(images.count) * (itemWidth + spacing)
-
+            if !isPaused {
                 TimelineView(.animation) { timeline in
-                    WithPerceptionTracking {
-                        let time = timeline.date.timeIntervalSinceReferenceDate
-                        let duration: Double = 10
-                        let phase = time.truncatingRemainder(dividingBy: duration) / duration
-                        let offset = totalWidth * phase
-
-                        HStack(spacing: spacing) {
-                            ForEach(0..<3) { _ in
-                                ForEach(0..<images.count, id: \.self) { index in
-                                    CarouselImageView(
-                                        image: images[index],
-                                        width: itemWidth,
-                                        height: geometry.size.height,
-                                        index: index
-                                    )
-                                }
+                    let time = timeline.date.timeIntervalSinceReferenceDate
+                    let duration: Double = 10
+                    let phase = time.truncatingRemainder(dividingBy: duration) / duration
+                    let offset = totalWidth * phase
+                    HStack(spacing: spacing) {
+                        ForEach(0..<3) { _ in
+                            ForEach(0..<images.count, id: \.self) { index in
+                                CarouselImageView(
+                                    image: images[index],
+                                    width: itemWidth,
+                                    height: geometry.size.height,
+                                    index: index
+                                )
                             }
                         }
-                        .offset(x: -offset)
                     }
+                    .offset(x: -offset)
                 }
                 .frame(width: geometry.size.width)
+                .clipped()
+            } else {
+                CarouselImageView(
+                    image: images[selectedIndex % images.count],
+                    width: itemWidth,
+                    height: geometry.size.height,
+                    index: selectedIndex % images.count
+                )
+                .frame(width: geometry.size.width, height: geometry.size.height)
                 .clipped()
             }
         }

@@ -5,14 +5,16 @@
 //  Created by dark type on 02.07.2025.
 //
 
+internal import Alamofire
+
 enum QuoteRouter {
     case getQuotes
     case createQuote
 
-    var method: String {
+    var method: HTTPMethod {
         switch self {
-        case .getQuotes: return "GET"
-        case .createQuote: return "POST"
+        case .getQuotes: return .get
+        case .createQuote: return .post
         }
     }
 

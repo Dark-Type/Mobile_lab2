@@ -5,16 +5,18 @@
 //  Created by dark type on 02.07.2025.
 //
 
+internal import Alamofire
+
 enum FavoriteRouter {
     case getFavorites
     case addToFavorites
     case removeFromFavorites(favoriteId: String)
 
-    var method: String {
+    var method: HTTPMethod {
         switch self {
-        case .getFavorites: return "GET"
-        case .addToFavorites: return "POST"
-        case .removeFromFavorites: return "DELETE"
+        case .getFavorites: return .get
+        case .addToFavorites: return .post
+        case .removeFromFavorites: return .delete
         }
     }
 
