@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-public struct User: Codable {
+public struct User: Codable, Equatable {
     let id: Int
     let documentId: String
     let username: String

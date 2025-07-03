@@ -59,6 +59,11 @@ extension AuthRepository: @retroactive DependencyKey {
     public static let liveValue: any AuthRepositoryProtocol = authRepository
 }
 
+extension UserDefaultsTokenStorage: @retroactive DependencyKey {
+    public typealias Value = any TokenStorage
+    public static let liveValue: any TokenStorage = tokenStorage
+}
+
 extension BookRepository: @retroactive TestDependencyKey {}
 extension BookRepository: @retroactive DependencyKey {
     public typealias Value = any BookRepositoryProtocol
@@ -139,5 +144,10 @@ public extension DependencyValues {
     var imageBatchLoader: ImageBatchLoaderProtocol {
         get { self[ImageBatchLoader.self] }
         set { self[ImageBatchLoader.self] = newValue }
+    }
+
+    var tokenStorage: TokenStorage {
+        get { self[UserDefaultsTokenStorage.self] }
+        set { self[UserDefaultsTokenStorage.self] = newValue }
     }
 }

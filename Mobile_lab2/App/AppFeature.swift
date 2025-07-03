@@ -7,7 +7,7 @@
 
 import ComposableArchitecture
 import Foundation
-
+import Networking
 @Reducer
 struct AppFeature {
     // MARK: - State
@@ -29,7 +29,7 @@ struct AppFeature {
 
     enum AuthenticationState: Equatable {
         case loggedOut
-        case loggedIn(UserUI)
+        case loggedIn(TokenResponse)
 
         var isLoggedIn: Bool {
             if case .loggedIn = self {
@@ -39,8 +39,8 @@ struct AppFeature {
         }
 
         var currentUser: UserUI? {
-            if case let .loggedIn(user) = self {
-                return user
+            if case let .loggedIn(token) = self {
+                return token.user
             }
             return nil
         }
@@ -59,10 +59,11 @@ struct AppFeature {
 
     // MARK: - Dependencies
 
-    @Dependency(\.authenticationService) var authenticationService
+    @Dependency(\.authRepository) var authReportository
     @Dependency(\.userDefaultsService) var userDefaultsService
     @Dependency(\.networkStatus) var networkStatus
-
+    @Dependency(\.tokenStorage) var tokenStorage
+    
     // MARK: - Reducer
 
     var body: some ReducerOf<Self> {
@@ -97,10 +98,11 @@ struct AppFeature {
                 state.authenticationState = .loggedOut
                 state.login = LoginFeature.State()
                 state.main = MainFeature.State()
+                
 
                 return .run { _ in
-                    try await authenticationService.logout()
                     await userDefaultsService.setLoggedIn(false)
+                    await tokenStorage.removeToken()
                 }
 
             case let .authenticationStateChanged(newState):

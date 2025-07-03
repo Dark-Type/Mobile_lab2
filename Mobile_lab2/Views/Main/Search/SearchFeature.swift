@@ -91,8 +91,10 @@ struct SearchFeature {
 
     // MARK: - Dependencies
 
-    @Dependency(\.bookService) var bookService
+    @Dependency(\.bookRepository) var bookRepository
     @Dependency(\.continuousClock) var clock
+    @Dependency(\.userDefaultsService) var userDefaultsService
+    @Dependency(\.referenceDataRepository) var referenceDataRepository
 
     // MARK: - Cancellation IDs
 
@@ -127,9 +129,9 @@ struct SearchFeature {
                 state.errorMessage = nil
 
                 return .run { send in
-                        async let recentSearches = bookService.getRecentSearches()
-                        async let genres = bookService.getGenres()
-                        async let authors = bookService.getAuthors()
+                        async let recentSearches = userDefaultsService.getSearchRequests()
+                        async let genres = referenceDataRepository.getGenres()
+                        async let authors = referenceDataRepository.getAuthors()
 
                         let (loadedSearches, loadedGenres, loadedAuthors) =  await (recentSearches, genres, authors)
 

@@ -8,8 +8,8 @@
 protocol UserDefaultsServiceProtocol: Sendable {
     func setCurrentBookID(_ bookID: String) async
     func getCurrentBookID() async -> String
-    func setFavoriteBookIDs(_ bookIDs: [String]) async
-    func getFavoriteBookIDs() async -> [String]
     func setLoggedIn(_ isLoggedIn: Bool) async
     func getLoggedIn() async -> Bool
+    func addSearchRequest(_ request: String) async
+    func getSearchRequests() async -> [String]
 }

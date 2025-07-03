@@ -40,7 +40,7 @@ struct MainFeature {
         }
 
         func isFavorite(_ book: Book) -> Bool {
-            favoriteBookIDs.contains(book.id.uuidString)
+            favoriteBookIDs.contains(book.id)
         }
     }
 
@@ -84,8 +84,8 @@ struct MainFeature {
 
     // MARK: - Dependencies
 
-    @Dependency(\.bookService) var bookService
-    @Dependency(\.favoritesService) var favoritesService
+    @Dependency(\.bookRepository) var bookRepository
+    @Dependency(\.favoriteRepository) var favoriteRepository
     @Dependency(\.userDefaultsService) var userDefaultsService
 
     // MARK: - Reducer
@@ -136,8 +136,6 @@ struct MainFeature {
                 state.currentBooks.insert(book, at: 0)
 
                 return .run { _ in
-                    await bookService.addToCurrentBooks(book)
-                    await bookService.moveBookToTop(book)
                     await userDefaultsService.setCurrentBookID(book.id.uuidString)
                 }
 
@@ -146,8 +144,7 @@ struct MainFeature {
                 state.currentBooks.insert(book, at: 0)
 
                 return .run { _ in
-                    await bookService.addToCurrentBooks(book)
-                    await bookService.moveBookToTop(book)
+
                     await userDefaultsService.setCurrentBookID(book.id.uuidString)
                 }
 
@@ -156,7 +153,6 @@ struct MainFeature {
                     state.currentBooks.insert(book, at: 0)
 
                     return .run { _ in
-                        await bookService.addToCurrentBooks(book)
                     }
                 }
                 return .none
@@ -175,9 +171,9 @@ struct MainFeature {
 
                 return .run { send in
                     if isFavorite {
-                        await favoritesService.removeFromFavorites(book)
+                        await favoriteRepository.removeFromFavorites(book.id)
                     } else {
-                        await favoritesService.addToFavorites(book)
+                        await favoriteRepository.addToFavorites(book)
                     }
                     await send(.favoriteToggled(book, !isFavorite))
                 }
@@ -210,7 +206,7 @@ struct MainFeature {
             case .viewAppeared:
                 return .run { send in
                     async let currentBooks = bookService.getCurrentBooks()
-                    async let favoriteBooks = favoritesService.getFavoriteBooks()
+                    async let favoriteBooks = favoriteRepository.getFavoriteBooks()
                     async let favoriteBookIDs = userDefaultsService.getFavoriteBookIDs()
 
                     await send(.library(.viewAppeared))

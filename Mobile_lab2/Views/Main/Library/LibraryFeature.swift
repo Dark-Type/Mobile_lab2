@@ -60,7 +60,7 @@ struct LibraryFeature {
 
     // MARK: - Dependencies
 
-    @Dependency(\.bookService) var bookService
+    @Dependency(\.bookRepository) var bookRepository
 
     // MARK: - Cancellation IDs
 
@@ -94,8 +94,8 @@ struct LibraryFeature {
 
                 return .run { send in
                     do {
-                        async let featuredTask = bookService.getFeaturedBooks()
-                        async let popularTask = bookService.getPopularBooks()
+                        async let featuredTask = bookService.getNewBooks(isNew: true)
+                        async let popularTask = bookService.getBooks(page: 1, pageSize: 9)
 
                         let featuredBooks = try await featuredTask
                         await send(.featuredBooksLoaded(featuredBooks))

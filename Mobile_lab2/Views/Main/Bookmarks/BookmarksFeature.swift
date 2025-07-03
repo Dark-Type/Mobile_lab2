@@ -83,8 +83,8 @@ struct BookmarksFeature {
 
     // MARK: - Dependencies
 
-    @Dependency(\.bookService) var bookService
-    @Dependency(\.favoritesService) var favoritesService
+    @Dependency(\.bookRepository) var bookRepository
+    @Dependency(\.favoriteRepository) var favoriteRepository
 
     // MARK: - Cancellation IDs
 
@@ -121,14 +121,13 @@ struct BookmarksFeature {
                     async let favoriteBooks = favoritesService.getFavoriteBooks()
                     async let quotes = favoritesService.getQuotes()
 
-                    let (loadedCurrentBooks, loadedFavoriteBooks, loadedQuotes) =  await (currentBooks, favoriteBooks, quotes)
+                    let (loadedCurrentBooks, loadedFavoriteBooks, loadedQuotes) = await (currentBooks, favoriteBooks, quotes)
 
                     await send(.initialDataLoaded(
                         currentBooks: loadedCurrentBooks,
                         favoriteBooks: loadedFavoriteBooks,
                         quotes: loadedQuotes
                     ))
-
                 }
                 .cancellable(id: CancelID.loadInitialData, cancelInFlight: true)
 

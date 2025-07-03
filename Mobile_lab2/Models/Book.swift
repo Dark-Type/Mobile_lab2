@@ -12,7 +12,7 @@ struct Book: Identifiable, Equatable {
         return lhs.id == rhs.id
     }
 
-    let id: UUID
+    let id: String
     let title: String
     let author: [Author]
     let description: String
@@ -23,7 +23,7 @@ struct Book: Identifiable, Equatable {
     var userProgress: ReadingProgress
     var isFavorite: Bool = false
 
-    init(id: UUID = UUID(), title: String, author: [Author],
+    init(id: String = UUID().uuidString, title: String, author: [Author],
          description: String, coverImage: Image, posterImage: Image, genres: [String],
          chapters: [Chapter], userProgress: ReadingProgress? = nil, isFavorite: Bool = false) {
         self.id = id

@@ -7,6 +7,7 @@
 
 import ComposableArchitecture
 import Foundation
+@preconcurrency import Networking
 
 @Reducer
 struct LoginFeature {
@@ -24,8 +25,8 @@ struct LoginFeature {
         var keyboardHeight: CGFloat = 0
         var keyboardIsVisible: Bool { keyboardHeight > 0 }
 
-        var credentials: LoginCredentials {
-            LoginCredentials(email: email, password: password)
+        var credentials: RegisterRequest {
+            RegisterRequest(email: email, password: password, username: "hits")
         }
 
         var isFormValid: Bool {
@@ -52,13 +53,14 @@ struct LoginFeature {
         case carouselIndexChanged(Int)
         case keyboardHeightChanged(CGFloat)
 
-        case loginResponse(Result<UserUI, AuthenticationError>)
+        case loginResponse(Result<TokenResponse, AuthenticationError>)
         case clearError
     }
 
     // MARK: - Dependencies
 
-    @Dependency(\.authenticationService) var authenticationService
+    @Dependency(\.authRepository) var authRepository
+   
 
     // MARK: - Reducer
 
@@ -103,7 +105,7 @@ struct LoginFeature {
                 return .run { [credentials = state.credentials] send in
                     await send(.loginResponse(
                         Result {
-                            try await authenticationService.login(credentials: credentials)
+                            try await authRepository.register(credentials)
                         }
                         .mapError { error in
                             if let authError = error as? AuthenticationError {

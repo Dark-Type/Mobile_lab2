@@ -16,22 +16,23 @@ struct UserDefaultsService: UserDefaultsServiceProtocol {
         UserDefaults.standard.string(forKey: "currentBookID") ?? ""
     }
 
-    func setFavoriteBookIDs(_ bookIDs: [String]) async {
-        let favoriteString = bookIDs.joined(separator: ",")
-        UserDefaults.standard.set(favoriteString, forKey: "favoriteBookIDs")
-    }
-
-    func getFavoriteBookIDs() async -> [String] {
-        let favoriteString = UserDefaults.standard.string(forKey: "favoriteBookIDs") ?? ""
-        return favoriteString.isEmpty ? [] : favoriteString.split(separator: ",").map(String.init)
-    }
-
     func setLoggedIn(_ isLoggedIn: Bool) async {
         UserDefaults.standard.set(isLoggedIn, forKey: "isLoggedIn")
     }
 
     func getLoggedIn() async -> Bool {
         UserDefaults.standard.bool(forKey: "isLoggedIn")
+    }
+    func addSearchRequest(_ request: String) async {
+        var requests: [String] = []
+        if let savedRequests = UserDefaults.standard.array(forKey: "searchRequests") as? [String] {
+            requests = savedRequests
+        }
+        requests.append(request)
+        UserDefaults.standard.set(requests, forKey: "searchRequests")
+    }
+    func getSearchRequests() async -> [String] {
+        (UserDefaults.standard.array(forKey: "searchRequests") as? [String]) ?? []
     }
 }
 
