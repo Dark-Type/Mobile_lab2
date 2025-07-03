@@ -6,5 +6,5 @@
 //
 
 public struct Meta: Codable {
-    let pagination: Pagination
+    public let pagination: Pagination
 }

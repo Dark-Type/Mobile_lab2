@@ -6,6 +6,6 @@
 //
 
 public struct ChaptersWithBookAndAuthor: Codable {
-    let data: [ChapterWithBookAndAuthor]
-    let meta: Meta
+    public let data: [ChapterWithBookAndAuthor]
+    public let meta: Meta
 }

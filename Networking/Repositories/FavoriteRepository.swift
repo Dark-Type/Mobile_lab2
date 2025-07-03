@@ -6,8 +6,8 @@
 //
 
 public protocol FavoriteRepositoryProtocol: Sendable {
-    func getFavorites() async throws -> Favorites
-    func addToFavorites(_ request: AddFavoriteRequest) async throws -> Favorite
+    func getFavorites() async throws -> DomainFavorites
+    func addToFavorites(_ request: DomainAddFavoriteRequest) async throws -> DomainFavorite
     func removeFromFavorites(favoriteId: String) async throws
 }
 
@@ -18,12 +18,15 @@ public final class FavoriteRepository: FavoriteRepositoryProtocol {
         self.service = service
     }
 
-    public func getFavorites() async throws -> Favorites {
-        try await service.getFavorites()
+    public func getFavorites() async throws -> DomainFavorites {
+        let networkData = try await service.getFavorites()
+        return networkData.toDomainFavorites()
     }
 
-    public func addToFavorites(_ request: AddFavoriteRequest) async throws -> Favorite {
-        try await service.addToFavorites(request)
+    public func addToFavorites(_ request: DomainAddFavoriteRequest) async throws -> DomainFavorite {
+        let networkRequest = request.toAddFavoriteRequest()
+        let networkData = try await service.addToFavorites(networkRequest)
+        return networkData.toDomainFavorite()
     }
 
     public func removeFromFavorites(favoriteId: String) async throws {

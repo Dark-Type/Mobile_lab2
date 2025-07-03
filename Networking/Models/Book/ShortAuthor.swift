@@ -6,8 +6,8 @@
 //
 
 public struct ShortAuthor: Codable {
-    let id: Int
-    let documentId: String
-    let name: String
-    let avatarURL: String
+    public let id: Int
+    public let documentId: String
+    public let name: String
+    public let avatarURL: String
 }

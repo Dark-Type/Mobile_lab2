@@ -6,40 +6,75 @@
 //
 
 import SwiftUI
+import Networking
 
-struct BookUI: Identifiable, Equatable {
-    static func == (lhs: BookUI, rhs: BookUI) -> Bool {
+public struct BookUI: Identifiable, Equatable, Sendable {
+    public static func == (lhs: BookUI, rhs: BookUI) -> Bool {
         return lhs.id == rhs.id
     }
 
-    let id: String
+    public let id: String
     let title: String
     let author: [Author]
     let description: String
-    let coverImage: Image
-    let posterImage: Image
+    let coverImageURL: String
+    let posterImageURL: String?
     let genres: [String]
     var chapters: [Chapter]
-    var userProgress: ReadingProgress
+    var chapterProgresses: [UUID: ReadingProgress] = [:] 
     var isFavorite: Bool = false
+    var isNew: Bool = false
 
-    init(id: String = UUID().uuidString, title: String, author: [Author],
-         description: String, coverImage: Image, posterImage: Image, genres: [String],
-         chapters: [Chapter], userProgress: ReadingProgress? = nil, isFavorite: Bool = false) {
+    public init(
+        id: String = UUID().uuidString,
+        title: String,
+        author: [Author],
+        description: String,
+        coverImageURL: String,
+        posterImageURL: String? = nil,
+        genres: [String],
+        chapters: [Chapter],
+        chapterProgresses: [UUID: ReadingProgress] = [:],
+        isFavorite: Bool = false,
+        isNew: Bool = false
+    ) {
         self.id = id
         self.title = title
         self.author = author
         self.description = description
-        self.coverImage = coverImage
-        self.posterImage = posterImage
+        self.coverImageURL = coverImageURL
+        self.posterImageURL = posterImageURL
         self.genres = genres
         self.chapters = chapters
-        self.userProgress = userProgress ?? ReadingProgress(
-            bookId: id,
-            totalChapters: chapters.count,
-            currentChapter: 0,
-            currentPosition: 0.0
-        )
         self.isFavorite = isFavorite
+        self.isNew = isNew
+
+        var progresses = chapterProgresses
+        for chapter in chapters {
+            if progresses[chapter.id] == nil {
+                progresses[chapter.id] = ReadingProgress(chapterId: chapter.id)
+            }
+        }
+        self.chapterProgresses = progresses
+    }
+
+    var overallProgress: Double {
+        guard !self.chapters.isEmpty else { return 0.0 }
+        let totalProgress = self.chapterProgresses.values.reduce(0.0) { $0 + $1.progressPercentage }
+        return totalProgress / Double(self.chapters.count)
+    }
+
+    var currentChapterIndex: Int {
+        for (index, chapter) in self.chapters.enumerated() {
+            if let progress = chapterProgresses[chapter.id], !progress.isCompleted {
+                return index
+            }
+        }
+        return self.chapters.count - 1
+    }
+
+    mutating func updateChapterProgress(chapterId: UUID, percentage: Double) {
+        self.chapterProgresses[chapterId]?.updateProgress(percentage)
     }
 }
+

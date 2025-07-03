@@ -6,5 +6,5 @@
 //
 
 public struct AddFavoriteRequest: Codable {
-    let data: BookId
+    public let data: BookId
 }

@@ -6,9 +6,9 @@
 //
 
 public protocol ProgressRepositoryProtocol: Sendable {
-    func getProgresses() async throws -> Progresses
-    func saveProgress(_ progress: ShortProgress) async throws -> Progress
-    func updateProgress(progressId: String, progress: ShortProgress) async throws -> Progress
+    func getProgresses() async throws -> DomainProgresses
+    func saveProgress(_ progress: DomainShortProgress) async throws -> DomainProgress
+    func updateProgress(progressId: String, progress: DomainShortProgress) async throws -> DomainProgress
 }
 
 public final class ProgressRepository: ProgressRepositoryProtocol {
@@ -18,15 +18,20 @@ public final class ProgressRepository: ProgressRepositoryProtocol {
         self.service = service
     }
 
-    public func getProgresses() async throws -> Progresses {
-        try await service.getProgresses()
+    public func getProgresses() async throws -> DomainProgresses {
+        let networkData = try await service.getProgresses()
+        return networkData.toDomainProgresses()
     }
 
-    public func saveProgress(_ progress: ShortProgress) async throws -> Progress {
-        try await service.saveProgress(progress)
+    public func saveProgress(_ progress: DomainShortProgress) async throws -> DomainProgress {
+        let networkProgress = progress.toShortProgress()
+        let networkData = try await service.saveProgress(networkProgress)
+        return networkData.toDomainProgress()
     }
 
-    public func updateProgress(progressId: String, progress: ShortProgress) async throws -> Progress {
-        try await service.updateProgress(progressId: progressId, progress: progress)
+    public func updateProgress(progressId: String, progress: DomainShortProgress) async throws -> DomainProgress {
+        let networkProgress = progress.toShortProgress()
+        let networkData = try await service.updateProgress(progressId: progressId, progress: networkProgress)
+        return networkData.toDomainProgress()
     }
 }

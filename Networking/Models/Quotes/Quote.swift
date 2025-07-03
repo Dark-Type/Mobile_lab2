@@ -5,12 +5,12 @@
 //  Created by dark type on 02.07.2025.
 //
 
-public struct Quote: Codable {
-    let id: Int
-    let documentId: String
-    let text: String
-    let createdAt: String
-    let updatedAt: String
-    let publishedAt: String
-    let bookId: Int
+public struct NetworkQuote: Codable {
+    public let id: Int
+    public let documentId: String
+    public  let text: String
+    public let createdAt: String
+    public let updatedAt: String
+    public let publishedAt: String
+    public let bookId: Int
 }

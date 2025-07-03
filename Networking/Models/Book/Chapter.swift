@@ -6,12 +6,12 @@
 //
 
 public struct ChapterDTO: Codable {
-    let id: Int
-    let documentId: String
-    let text: String
-    let title: String
-    let order: Int
-    let createdAt: String
-    let updatedAt: String
-    let publishedAt: String
+    public  let id: Int
+    public let documentId: String
+    public let text: String
+    public  let title: String
+    public  let order: Int
+    public  let createdAt: String
+    public  let updatedAt: String
+    public  let publishedAt: String
 }

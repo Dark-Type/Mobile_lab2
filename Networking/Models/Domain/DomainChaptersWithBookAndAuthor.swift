@@ -1,6 +1,13 @@
+//
+//  DomainChaptersWithBookAndAuthor.swift
+//  Mobile_lab2
+//
+//  Created by dark type on 03.07.2025.
+//
+
 public struct DomainChaptersWithBookAndAuthor: Codable {
     public let chapters: [DomainChapterWithBook]
-    
+
     public init(chapters: [DomainChapterWithBook]) {
         self.chapters = chapters
     }
@@ -12,7 +19,7 @@ public struct DomainChapterWithBook: Identifiable, Codable {
     public let number: Int
     public let content: String
     public let book: DomainBook
-    
+
     public init(id: String, title: String, number: Int, content: String, book: DomainBook) {
         self.id = id
         self.title = title

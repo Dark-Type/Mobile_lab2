@@ -6,10 +6,19 @@
 //
 
 public struct AuthorDTO: Codable {
-    let id: Int
-    let documentId: String
-    let name: String
-    let createdAt: String
-    let updatedAt: String
-    let publishedAt: String
+    public init(id: Int, documentId: String, name: String, createdAt: String, updatedAt: String, publishedAt: String) {
+        self.id = id
+        self.documentId = documentId
+        self.name = name
+        self.createdAt = createdAt
+        self.updatedAt = updatedAt
+        self.publishedAt = publishedAt
+    }
+
+    public let id: Int
+    public let documentId: String
+    public let name: String
+    public let createdAt: String
+    public let updatedAt: String
+    public let publishedAt: String
 }

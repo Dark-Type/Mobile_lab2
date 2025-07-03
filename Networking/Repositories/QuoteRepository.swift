@@ -7,7 +7,7 @@
 
 public protocol QuoteRepositoryProtocol: Sendable {
     func getQuotes() async throws -> Quotes
-    func createQuote(_ quote: ShortQuote) async throws -> Quote
+    func createQuote(_ quote: ShortQuote) async throws -> NetworkQuote
 }
 
 public final class QuoteRepository: QuoteRepositoryProtocol {
@@ -21,7 +21,7 @@ public final class QuoteRepository: QuoteRepositoryProtocol {
         try await service.getQuotes()
     }
 
-    public func createQuote(_ quote: ShortQuote) async throws -> Quote {
+    public func createQuote(_ quote: ShortQuote) async throws -> NetworkQuote {
         try await service.createQuote(quote)
     }
 }

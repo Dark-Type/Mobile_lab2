@@ -7,43 +7,24 @@
 
 import Foundation
 
-struct ReadingProgress: Equatable {
-    let bookId: String
-    var currentChapter: Int = 0
-    var paragraphIndex: Int = 0
-    var sentenceIndex: Int = 0
-    var progressPercentage: Double = 0.0
-    var currentPosition: Double = 0.0
-    var overallProgress: Double = 0.0
-    let totalChapters: Int
+public struct ReadingProgress: Equatable {
     let chapterId: UUID
-
-    init(bookId: String, totalChapters: Int, currentChapter: Int = 0, currentPosition: Double = 0.0, progressPercentage: Double = 0.0, paragraphIndex: Int = 0, sentenceIndex: Int = 0, chapterId: UUID = UUID()) {
-        self.bookId = bookId
-        self.totalChapters = totalChapters
-        self.currentChapter = currentChapter
-        self.currentPosition = currentPosition
-        self.paragraphIndex = paragraphIndex
-        self.sentenceIndex = sentenceIndex
-        self.progressPercentage = progressPercentage
+    var progressPercentage: Double = 0.0
+    
+    init(chapterId: UUID, progressPercentage: Double = 0.0) {
         self.chapterId = chapterId
-        self.overallProgress = calculateOverallProgress()
+        self.progressPercentage = min(max(progressPercentage, 0.0), 1.0)
     }
-
-    private func calculateOverallProgress() -> Double {
-        if totalChapters == 0 {
-            return 0.0
-        }
-        let chapterWeight = 1.0 / Double(totalChapters)
-        let completedChaptersProgress = Double(currentChapter) * chapterWeight
-        let currentChapterProgress = currentPosition * chapterWeight
-
-        return completedChaptersProgress + currentChapterProgress
+    
+    mutating func updateProgress(_ percentage: Double) {
+        self.progressPercentage = min(max(percentage, 0.0), 1.0)
     }
-
-    mutating func updateProgress(chapter: Int, position: Double) {
-        currentChapter = chapter
-        currentPosition = position
-        overallProgress = calculateOverallProgress()
+    
+    var isCompleted: Bool {
+        progressPercentage >= 1.0
+    }
+    
+    var isStarted: Bool {
+        progressPercentage > 0.0
     }
 }

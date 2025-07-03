@@ -6,5 +6,5 @@
 //
 
 public struct CreateQuote: Codable {
-    let data: ShortQuote
+    public let data: ShortQuote
 }

@@ -6,6 +6,6 @@
 //
 
 public struct Quotes: Codable {
-    let data: [Quote]
-    let meta: Meta?
+    public let data: [NetworkQuote]
+    public let meta: Meta?
 }

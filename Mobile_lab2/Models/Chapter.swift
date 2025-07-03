@@ -7,22 +7,26 @@
 
 import Foundation
 
-struct Chapter: Identifiable, Equatable {
-    let id: UUID
+public struct Chapter: Identifiable, Equatable, Sendable {
+    public let id: UUID
     let title: String
     let number: Int
     let content: String
     let paragraphs: [String]
-    var isStarted: Bool
-    var isFinished: Bool
 
-    init(id: UUID = UUID(), title: String, number: Int, content: String, isStarted: Bool = false, isFinished: Bool = false) {
+    init(id: UUID = UUID(), title: String, number: Int, content: String) {
         self.id = id
         self.title = title
         self.number = number
         self.content = content
         self.paragraphs = content.components(separatedBy: "\n").filter { !$0.isEmpty }
-        self.isStarted = isStarted
-        self.isFinished = isFinished
+    }
+    
+    func isStarted(progress: ReadingProgress?) -> Bool {
+        progress?.isStarted ?? false
+    }
+    
+    func isFinished(progress: ReadingProgress?) -> Bool {
+        progress?.isCompleted ?? false
     }
 }

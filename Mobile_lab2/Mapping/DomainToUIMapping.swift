@@ -145,3 +145,65 @@ extension ReadingProgress {
         )
     }
 }
+
+extension DomainChaptersWithBookAndAuthor {
+    func toChaptersUI() -> [Chapter] {
+        return chapters.map { $0.toChapterUI() }
+    }
+    
+    func toBooksUI() -> [BookUI] {
+        return chapters.map { $0.book.toBookUI() }
+    }
+}
+
+extension DomainChapterWithBook {
+    func toChapterUI() -> Chapter {
+        let chapterUUID = UUID(uuidString: self.id) ?? UUID()
+        
+        return Chapter(
+            id: chapterUUID,
+            title: self.title,
+            number: self.number,
+            content: self.content
+        )
+    }
+    
+    func toBookUI() -> BookUI {
+        return book.toBookUI()
+    }
+}
+
+extension DomainFavorites {
+    func toFavoriteBookIds() -> Set<String> {
+        return Set(favorites.map { $0.bookId })
+    }
+}
+
+extension DomainProgresses {
+    func toChapterProgressMap() -> [String: Double] {
+        return Dictionary(uniqueKeysWithValues: progresses.map { ($0.chapterId, $0.value) })
+    }
+}
+
+extension DomainGenres {
+    func toGenreNames() -> [String] {
+        return genres.map { $0.name }
+    }
+}
+
+// MARK: - UI to Domain mappings for sending data back
+
+extension BookUI {
+    func toAddFavoriteRequest() -> DomainAddFavoriteRequest {
+        return DomainAddFavoriteRequest(bookId: self.id)
+    }
+}
+
+extension ReadingProgress {
+    func toDomainShortProgress() -> DomainShortProgress {
+        return DomainShortProgress(
+            value: self.progressPercentage,
+            chapterId: self.chapterId.uuidString
+        )
+    }
+}

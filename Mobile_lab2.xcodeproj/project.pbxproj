@@ -90,6 +90,13 @@
 			);
 			target = A543C5C92E154A9D00B85236 /* Networking */;
 		};
+		A543C6BE2E16684C00B85236 /* Exceptions for "Mobile_lab2" folder in "Mobile_lab2" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Mapping/DomainToUIMapping.swift,
+			);
+			target = A58666CE2D8925910010486C /* Mobile_lab2 */;
+		};
 		A57ECF4B2D91DF290016FDFA /* Exceptions for "Mobile_lab2" folder in "Mobile_lab2UITests" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -105,6 +112,13 @@
 			buildPhase = A543C5C82E154A9D00B85236 /* Resources */;
 			membershipExceptions = (
 				Networking.swift,
+			);
+		};
+		A543C6BF2E16684C00B85236 /* Exceptions for "Mobile_lab2" folder in "Copy Bundle Resources" phase from "Mobile_lab2" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = A58666CD2D8925910010486C /* Resources */;
+			membershipExceptions = (
+				Mapping/DomainToUIMapping.swift,
 			);
 		};
 /* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
@@ -127,6 +141,8 @@
 		A58666D12D8925910010486C /* Mobile_lab2 */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
+				A543C6BE2E16684C00B85236 /* Exceptions for "Mobile_lab2" folder in "Mobile_lab2" target */,
+				A543C6BF2E16684C00B85236 /* Exceptions for "Mobile_lab2" folder in "Copy Bundle Resources" phase from "Mobile_lab2" target */,
 				A57ECF4B2D91DF290016FDFA /* Exceptions for "Mobile_lab2" folder in "Mobile_lab2UITests" target */,
 			);
 			path = Mobile_lab2;

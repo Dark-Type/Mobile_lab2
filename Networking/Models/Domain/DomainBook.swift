@@ -1,3 +1,10 @@
+//
+//  DomainBook.swift
+//  Mobile_lab2
+//
+//  Created by dark type on 03.07.2025.
+//
+
 import Foundation
 
 public struct DomainBook: Identifiable, Equatable, Codable {
@@ -9,7 +16,7 @@ public struct DomainBook: Identifiable, Equatable, Codable {
     public let posterImageURL: String?
     public let genres: [String]
     public var chapters: [DomainChapter]
-    public var chapterProgresses: [String: DomainReadingProgress] = [:] // Using String ID for Codable
+    public var chapterProgresses: [String: DomainReadingProgress] = [:] 
     public var isFavorite: Bool = false
     public var isNew: Bool = false
 
@@ -38,13 +45,13 @@ public struct DomainBook: Identifiable, Equatable, Codable {
         self.isFavorite = isFavorite
         self.isNew = isNew
     }
-    
+
     public var overallProgress: Double {
         guard !chapters.isEmpty else { return 0.0 }
         let totalProgress = chapterProgresses.values.reduce(0.0) { $0 + $1.progressPercentage }
         return totalProgress / Double(chapters.count)
     }
-    
+
     public var currentChapterIndex: Int {
         for (index, chapter) in chapters.enumerated() {
             if let progress = chapterProgresses[chapter.id], !progress.isCompleted {

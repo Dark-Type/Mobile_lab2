@@ -6,6 +6,6 @@
 //
 
 public struct ShortProgress: Codable {
-    let value: Int
-    let chapterId: Int
+    public let value: Int
+    public let chapterId: Int
 }

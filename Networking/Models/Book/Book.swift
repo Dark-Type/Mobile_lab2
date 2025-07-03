@@ -6,15 +6,15 @@
 //
 
 public struct Book: Codable {
-    let id: Int
-    let documentId: String
-    let title: String
-    let coverURL: String
-    let createdAt: String
-    let updatedAt: String
-    let publishedAt: String
-    let isNew: Bool
-    let illustrationURL: String?
-    let description: String
-    let author: [AuthorDTO]
+    public let id: Int
+    public let documentId: String
+    public let title: String
+    public let coverURL: String
+    public let createdAt: String
+    public let updatedAt: String
+    public let publishedAt: String
+    public let isNew: Bool
+    public let illustrationURL: String?
+    public let description: String
+    public let author: [AuthorDTO]
 }

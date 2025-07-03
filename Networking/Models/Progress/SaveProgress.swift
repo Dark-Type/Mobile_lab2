@@ -6,5 +6,5 @@
 //
 
 public struct SaveProgress: Codable {
-    let data: ShortProgress
+    public let data: ShortProgress
 }

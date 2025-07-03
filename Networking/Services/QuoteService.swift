@@ -10,7 +10,7 @@ import Foundation
 
 public protocol QuoteServiceProtocol: Sendable {
     func getQuotes() async throws -> Quotes
-    func createQuote(_ quote: ShortQuote) async throws -> Quote
+    func createQuote(_ quote: ShortQuote) async throws -> NetworkQuote
 }
 
 public final class QuoteService: QuoteServiceProtocol {
@@ -33,7 +33,7 @@ public final class QuoteService: QuoteServiceProtocol {
         .value
     }
 
-    public func createQuote(_ quote: ShortQuote) async throws -> Quote {
+    public func createQuote(_ quote: ShortQuote) async throws -> NetworkQuote {
         let url = "\(baseURL)\(QuoteRouter.createQuote.path)"
         let createQuote = CreateQuote(data: quote)
         return try await session.request(
@@ -43,7 +43,7 @@ public final class QuoteService: QuoteServiceProtocol {
             encoder: JSONParameterEncoder.default
         )
         .validate()
-        .serializingDecodable(Quote.self)
+        .serializingDecodable(NetworkQuote.self)
         .value
     }
 }

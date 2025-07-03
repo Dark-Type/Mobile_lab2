@@ -6,5 +6,5 @@
 //
 
 public struct BookId: Codable {
-    let bookId: Int
+    public let bookId: Int
 }

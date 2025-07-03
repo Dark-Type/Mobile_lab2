@@ -6,6 +6,6 @@
 //
 
 public struct Genres: Codable {
-    let data: [Genre]
-    let meta: Meta
+    public let data: [Genre]
+    public let meta: Meta
 }

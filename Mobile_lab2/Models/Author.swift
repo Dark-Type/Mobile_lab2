@@ -5,15 +5,18 @@
 //  Created by dark type on 19.03.2025.
 //
 
+import Networking
 import SwiftUI
 
-struct Author: Identifiable, Equatable {
-    let name: String
-    let image: Image
-    let id: String = UUID().uuidString
-
-    init(_ name: String, _ image: Image) {
+public struct Author: Identifiable, Equatable {
+    public let id: String
+    public let name: String
+    public let avatarURL: String
+    
+    public init(id: String = UUID().uuidString, name: String, avatarURL: String = "") {
+        self.id = id
         self.name = name
-        self.image = image
+        self.avatarURL = avatarURL
     }
 }
+

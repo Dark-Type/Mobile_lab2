@@ -6,6 +6,6 @@
 //
 
 public struct ShortQuote: Codable {
-    let text: String
-    let bookId: Int
+    public let text: String
+    public let bookId: Int
 }

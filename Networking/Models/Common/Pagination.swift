@@ -6,8 +6,8 @@
 //
 
 public struct Pagination: Codable {
-    let page: Int
-    let pageSize: Int
-    let pageCount: Int
-    let total: Int
+    public let page: Int
+    public let pageSize: Int
+    public let pageCount: Int
+    public  let total: Int
 }

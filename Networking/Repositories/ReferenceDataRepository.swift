@@ -8,34 +8,36 @@
 import Foundation
 
 public protocol ReferenceDataRepositoryProtocol: Sendable {
-    func getAuthors() async throws -> Authors
-    func getGenres() async throws -> Genres
+    func getAuthors() async throws -> DomainAuthors
+    func getGenres() async throws -> DomainGenres
 }
 
 public final class ReferenceDataRepository: ReferenceDataRepositoryProtocol, @unchecked Sendable {
     private let service: ReferenceDataServiceProtocol
-    private let authorsCache = TimedMemoryCache<String, Authors>(lifetime: .infinity)
-    private let genresCache = TimedMemoryCache<String, Genres>(lifetime: .infinity)
+    private let authorsCache = TimedMemoryCache<String, DomainAuthors>(lifetime: .infinity)
+    private let genresCache = TimedMemoryCache<String, DomainGenres>(lifetime: .infinity)
 
     public init(service: ReferenceDataServiceProtocol) {
         self.service = service
     }
 
-    public func getAuthors() async throws -> Authors {
+    public func getAuthors() async throws -> DomainAuthors {
         if let cached = await authorsCache.value(for: "authors") {
             return cached
         }
-        let loaded = try await service.getAuthors()
-        await authorsCache.set(loaded, for: "authors")
-        return loaded
+        let networkData = try await service.getAuthors()
+        let mapped = networkData.toDomainAuthors()
+        await authorsCache.set(mapped, for: "authors")
+        return mapped
     }
 
-    public func getGenres() async throws -> Genres {
+    public func getGenres() async throws -> DomainGenres {
         if let cached = await genresCache.value(for: "genres") {
             return cached
         }
-        let loaded = try await service.getGenres()
-        await genresCache.set(loaded, for: "genres")
-        return loaded
+        let networkData = try await service.getGenres()
+        let mapped = networkData.toDomainGenres()
+        await genresCache.set(mapped, for: "genres")
+        return mapped
     }
 }
