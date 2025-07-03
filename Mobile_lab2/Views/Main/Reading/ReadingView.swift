@@ -10,8 +10,8 @@ import SwiftUI
 
 struct ReadingView: View {
     let store: StoreOf<ReadingFeature>
-    var onSetCurrentBook: ((Book) -> Void)? = nil
-    var onToggleFavorite: ((Book) -> Void)? = nil
+    var onSetCurrentBook: ((BookUI) -> Void)? = nil
+    var onToggleFavorite: ((BookUI) -> Void)? = nil
 
     var body: some View {
         WithPerceptionTracking {
@@ -32,8 +32,8 @@ struct ReadingView: View {
 private struct ReadingContentView: View {
     let viewStore: ViewStore<ReadingFeature.State, ReadingFeature.Action>
     let store: StoreOf<ReadingFeature>
-    let onSetCurrentBook: ((Book) -> Void)?
-    let onToggleFavorite: ((Book) -> Void)?
+    let onSetCurrentBook: ((BookUI) -> Void)?
+    let onToggleFavorite: ((BookUI) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
 
@@ -252,7 +252,7 @@ private struct ReadingContentView: View {
 private extension View {
     func setupFullScreenCovers(
         viewStore: ViewStore<ReadingFeature.State, ReadingFeature.Action>,
-        onSetCurrentBook: ((Book) -> Void)?
+        onSetCurrentBook: ((BookUI) -> Void)?
     ) -> some View {
         self.fullScreenCover(item: .init(
             get: { viewStore.selectedChapter },

@@ -11,7 +11,7 @@ import Foundation
 import Networking
 
 let tokenStorage: TokenStorage = UserDefaultsTokenStorage()
-
+let userDefaultsService = UserDefaultsService()
 let baseURL = Bundle.main.object(forInfoDictionaryKey: "API_BASE_URL") as! String
 
 let authSession = Session(configuration: {
@@ -23,13 +23,21 @@ let authSession = Session(configuration: {
 
 let authService = AuthService(session: authSession, baseURL: baseURL)
 let authRepository = AuthRepository(service: authService, tokenStorage: tokenStorage)
+let refreshRequestProvider: @Sendable () async -> RefreshRequest? = {
+    let userDefaultsService = UserDefaultsService()
+
+    guard let credentials = await userDefaultsService.getCredentials() else {
+        return nil
+    }
+
+    return RefreshRequest(credentials.email, credentials.password)
+}
 
 let authRequestInterceptor = AuthRequestInterceptor(
     tokenStorage: tokenStorage,
     authRepository: authRepository,
-    refreshRequestProvider: { nil }
+    refreshRequestProvider: refreshRequestProvider
 )
-
 let authenticatedSession = Session(configuration: {
     let config = URLSessionConfiguration.default
     config.timeoutIntervalForRequest = 70
@@ -103,6 +111,17 @@ extension ReferenceDataRepository: @retroactive DependencyKey {
 extension ImageBatchLoader: @retroactive DependencyKey {
     public typealias Value = any ImageBatchLoaderProtocol
     public static let liveValue: any ImageBatchLoaderProtocol = imageBatchLoader
+}
+
+extension UserDefaultsService: DependencyKey {
+    static let liveValue: UserDefaultsServiceProtocol = userDefaultsService
+}
+
+extension DependencyValues {
+    var userDefaultsService: UserDefaultsServiceProtocol {
+        get { self[UserDefaultsService.self] }
+        set { self[UserDefaultsService.self] = newValue }
+    }
 }
 
 public extension DependencyValues {

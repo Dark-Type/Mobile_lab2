@@ -10,7 +10,7 @@ import SwiftUI
 
 struct BookmarksView: View {
     let store: StoreOf<BookmarksFeature>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     var body: some View {
         WithPerceptionTracking {
@@ -28,7 +28,7 @@ struct BookmarksView: View {
 
 private struct BookmarksContentView: View {
     let viewStore: ViewStore<BookmarksFeature.State, BookmarksFeature.Action>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     var body: some View {
         WithPerceptionTracking {
@@ -296,7 +296,7 @@ extension BookmarksContentView {
 private extension View {
     func setupFullScreenCovers(
         viewStore: ViewStore<BookmarksFeature.State, BookmarksFeature.Action>,
-        isFavorite: @escaping (Book) -> Bool
+        isFavorite: @escaping (BookUI) -> Bool
     ) -> some View {
         self.fullScreenCover(item: .init(
             get: { viewStore.selectedBookForReading },
@@ -323,7 +323,7 @@ private extension View {
 
 private struct ChapterSelection: Identifiable, Equatable {
     let id = UUID()
-    let book: Book
+    let book: BookUI
     let chapter: Chapter
 }
 

@@ -8,6 +8,7 @@
 import ComposableArchitecture
 import Foundation
 import Networking
+
 @Reducer
 struct AppFeature {
     // MARK: - State
@@ -20,8 +21,7 @@ struct AppFeature {
         var networkStatus: NetworkStatus = .connected
 
         init() {
-            let isLoggedIn = UserDefaults.standard.bool(forKey: "isLoggedIn")
-            self.authenticationState = isLoggedIn ? .loggedIn(UserUI.mockUser) : .loggedOut
+            self.authenticationState = .loggedOut
         }
     }
 
@@ -38,7 +38,7 @@ struct AppFeature {
             return false
         }
 
-        var currentUser: UserUI? {
+        var currentUser: User? {
             if case let .loggedIn(token) = self {
                 return token.user
             }
@@ -55,11 +55,12 @@ struct AppFeature {
         case networkStatusChanged(NetworkStatus)
         case logout
         case authenticationStateChanged(AuthenticationState)
+        case tryAutoLogin
     }
 
     // MARK: - Dependencies
 
-    @Dependency(\.authRepository) var authReportository
+    @Dependency(\.authRepository) var authRepository
     @Dependency(\.userDefaultsService) var userDefaultsService
     @Dependency(\.networkStatus) var networkStatus
     @Dependency(\.tokenStorage) var tokenStorage
@@ -79,13 +80,41 @@ struct AppFeature {
             switch action {
             case .appLaunched:
                 return .run { send in
-                    for await status in networkStatus.observe() {
-                        await send(.networkStatusChanged(status))
+                    async let networkTask: () = {
+                        for await status in networkStatus.observe() {
+                            await send(.networkStatusChanged(status))
+                        }
+                    }()
+                    
+                    if await userDefaultsService.getLoggedIn() {
+                        await send(.tryAutoLogin)
+                    }
+                    
+                    await networkTask
+                }
+
+            case .tryAutoLogin:
+                return .run { send in
+                    guard let credentials = await userDefaultsService.getCredentials(),
+                          await tokenStorage.getToken() != nil else {
+                        await userDefaultsService.setLoggedIn(false)
+                        return
+                    }
+                    
+                    do {
+                        let refreshRequest = RefreshRequest(identifier: credentials.email, password: credentials.password)
+                        let response = try await authRepository.refresh(refreshRequest)
+                        await send(.authenticationStateChanged(.loggedIn(response)))
+                        await userDefaultsService.setLoggedIn(true)
+                    } catch {
+                        await userDefaultsService.setLoggedIn(false)
+                        await userDefaultsService.removeCredentials()
+                        await tokenStorage.removeToken()
                     }
                 }
 
-            case let .login(.loginResponse(.success(user))):
-                state.authenticationState = .loggedIn(user)
+            case let .login(.loginResponse(.success(tokenResponse))):
+                state.authenticationState = .loggedIn(tokenResponse)
                 return .run { send in
                     await userDefaultsService.setLoggedIn(true)
                     await send(.main(.viewAppeared))
@@ -99,9 +128,9 @@ struct AppFeature {
                 state.login = LoginFeature.State()
                 state.main = MainFeature.State()
                 
-
                 return .run { _ in
                     await userDefaultsService.setLoggedIn(false)
+                    await userDefaultsService.removeCredentials()
                     await tokenStorage.removeToken()
                 }
 
@@ -110,7 +139,6 @@ struct AppFeature {
                 return .none
 
             case let .networkStatusChanged(status):
-                print("[AppFeature] Received network status: \(status)")
                 state.networkStatus = status
                 return .none
 

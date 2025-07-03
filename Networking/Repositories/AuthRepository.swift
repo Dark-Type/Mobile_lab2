@@ -9,6 +9,7 @@ import Alamofire
 
 public protocol AuthRepositoryProtocol: Sendable {
     func register(_ request: RegisterRequest) async throws -> TokenResponse
+    func login(_ request: RefreshRequest) async throws -> TokenResponse
     func refresh(_ request: RefreshRequest) async throws -> TokenResponse
     func saveToken(_ token: String) async
     func getToken() async -> String?
@@ -29,7 +30,13 @@ public final class AuthRepository: AuthRepositoryProtocol {
         await tokenStorage.setToken(response.jwt)
         return response
     }
-
+    
+    public func login(_ request: RefreshRequest) async throws -> TokenResponse {
+        let response = try await service.login(request)
+        await tokenStorage.setToken(response.jwt)
+        return response
+    }
+    
     public func refresh(_ request: RefreshRequest) async throws -> TokenResponse {
         let response = try await service.login(request)
         await tokenStorage.setToken(response.jwt)

@@ -6,6 +6,6 @@
 //
 
 struct BookChapterSelection: Equatable {
-    let book: Book
+    let book: BookUI
     let chapter: Chapter
 }

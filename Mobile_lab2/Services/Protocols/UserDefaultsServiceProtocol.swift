@@ -12,4 +12,7 @@ protocol UserDefaultsServiceProtocol: Sendable {
     func getLoggedIn() async -> Bool
     func addSearchRequest(_ request: String) async
     func getSearchRequests() async -> [String]
+    func setCredentials(email: String, password: String) async
+    func getCredentials() async -> (email: String, password: String)?
+    func removeCredentials() async 
 }

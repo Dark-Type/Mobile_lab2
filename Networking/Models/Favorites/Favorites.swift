@@ -6,6 +6,6 @@
 //
 
 public struct Favorites: Codable {
-    let data: [Favorite]
+    let data: [FavoriteDTO]
     let meta: Meta
 }

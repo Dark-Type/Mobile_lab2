@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ChapterReadingView: View {
     let store: StoreOf<ChapterReadingFeature>
-    let onSetCurrentBook: ((Book) -> Void)?
+    let onSetCurrentBook: ((BookUI) -> Void)?
 
     @Environment(\.dismiss) private var dismiss
 
@@ -39,7 +39,7 @@ struct ChapterReadingView: View {
 private struct ChapterReadingContentView: View {
     let viewStore: ViewStore<ChapterReadingFeature.State, ChapterReadingFeature.Action>
     let store: StoreOf<ChapterReadingFeature>
-    let onSetCurrentBook: ((Book) -> Void)?
+    let onSetCurrentBook: ((BookUI) -> Void)?
 
     var body: some View {
         WithPerceptionTracking {

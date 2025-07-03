@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-public struct Progress: Codable {
+public struct ProgressDTO: Codable {
     let id: Int
     let documentId: String
     let value: Int

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BookCardContent: View {
-    let book: Book
+    let book: BookUI
     let width: CGFloat
     let height: CGFloat
 

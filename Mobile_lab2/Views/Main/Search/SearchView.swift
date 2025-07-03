@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SearchView: View {
     let store: StoreOf<SearchFeature>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     var body: some View {
         WithPerceptionTracking {
@@ -30,7 +30,7 @@ struct SearchView: View {
 private struct SearchContentView: View {
     let viewStore: ViewStore<SearchFeature.State, SearchFeature.Action>
     let store: StoreOf<SearchFeature>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     var body: some View {
         WithPerceptionTracking {
@@ -57,7 +57,7 @@ private struct SearchContentView: View {
 
 private struct SearchContentStateView: View {
     let viewStore: ViewStore<SearchFeature.State, SearchFeature.Action>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     var body: some View {
         WithPerceptionTracking {
@@ -80,7 +80,7 @@ private extension View {
     func setupFullScreenCovers(
         viewStore: ViewStore<SearchFeature.State, SearchFeature.Action>,
         store: StoreOf<SearchFeature>,
-        isFavorite: @escaping (Book) -> Bool
+        isFavorite: @escaping (BookUI) -> Bool
     ) -> some View {
         self.fullScreenCover(item: .init(
             get: { viewStore.selectedBookForReading },

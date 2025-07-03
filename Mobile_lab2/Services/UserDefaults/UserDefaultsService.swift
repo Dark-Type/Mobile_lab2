@@ -23,6 +23,26 @@ struct UserDefaultsService: UserDefaultsServiceProtocol {
     func getLoggedIn() async -> Bool {
         UserDefaults.standard.bool(forKey: "isLoggedIn")
     }
+
+    func setCredentials(email: String, password: String) async {
+        UserDefaults.standard.set(email, forKey: "userEmail")
+        UserDefaults.standard.set(password, forKey: "userPassword")
+    }
+
+    func getCredentials() async -> (email: String, password: String)? {
+        guard let email = UserDefaults.standard.string(forKey: "userEmail"),
+              let password = UserDefaults.standard.string(forKey: "userPassword")
+        else {
+            return nil
+        }
+        return (email, password)
+    }
+
+    func removeCredentials() async {
+        UserDefaults.standard.removeObject(forKey: "userEmail")
+        UserDefaults.standard.removeObject(forKey: "userPassword")
+    }
+
     func addSearchRequest(_ request: String) async {
         var requests: [String] = []
         if let savedRequests = UserDefaults.standard.array(forKey: "searchRequests") as? [String] {
@@ -31,21 +51,10 @@ struct UserDefaultsService: UserDefaultsServiceProtocol {
         requests.append(request)
         UserDefaults.standard.set(requests, forKey: "searchRequests")
     }
+
     func getSearchRequests() async -> [String] {
         (UserDefaults.standard.array(forKey: "searchRequests") as? [String]) ?? []
     }
 }
 
-// MARK: - Dependency Registration
 
-extension UserDefaultsService: DependencyKey {
-    static let liveValue: UserDefaultsServiceProtocol = UserDefaultsService()
-    static let testValue: UserDefaultsServiceProtocol = UserDefaultsService()
-}
-
-extension DependencyValues {
-    var userDefaultsService: UserDefaultsServiceProtocol {
-        get { self[UserDefaultsService.self] }
-        set { self[UserDefaultsService.self] = newValue }
-    }
-}

@@ -15,12 +15,12 @@ struct SearchFeature {
     @ObservableState
     struct State: Equatable {
         var searchText: String = ""
-        var searchResults: [Book] = []
+        var searchResults: [BookUI] = []
         var recentSearches: [String] = []
         var genres: [String] = []
         var authors: [Author] = []
 
-        var selectedBookForReading: Book? = nil
+        var selectedBookForReading: BookUI? = nil
         var isReadingScreenPresented: Bool = false
 
         var isSearching: Bool = false
@@ -63,7 +63,7 @@ struct SearchFeature {
         case searchTextChanged(String)
         case searchTextDebounced(String)
         case searchBooks(String)
-        case searchResultsLoaded([Book])
+        case searchResultsLoaded([BookUI])
         case searchFailed(String)
         case clearSearchText
 
@@ -74,18 +74,18 @@ struct SearchFeature {
         case genreTapped(String)
         case authorTapped(Author)
 
-        case bookSelectedForReading(Book?)
+        case bookSelectedForReading(BookUI?)
         case readingScreenDismissed
-        case setCurrentBook(Book)
-        case toggleFavorite(Book)
+        case setCurrentBook(BookUI)
+        case toggleFavorite(BookUI)
 
         case clearError
 
         case delegate(Delegate)
 
         enum Delegate: Equatable {
-            case setCurrentBook(Book)
-            case toggleFavorite(Book)
+            case setCurrentBook(BookUI)
+            case toggleFavorite(BookUI)
         }
     }
 

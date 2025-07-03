@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-struct Book: Identifiable, Equatable {
-    static func == (lhs: Book, rhs: Book) -> Bool {
+struct BookUI: Identifiable, Equatable {
+    static func == (lhs: BookUI, rhs: BookUI) -> Bool {
         return lhs.id == rhs.id
     }
 

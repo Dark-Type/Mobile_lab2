@@ -10,7 +10,7 @@ import SwiftUI
 struct BookmarkListItem: View {
     // MARK: - Properties
 
-    let book: Book
+    let book: BookUI
     let isCurrent: Bool
     let startReadingAction: () -> Void
     let openBookDetailsAction: () -> Void

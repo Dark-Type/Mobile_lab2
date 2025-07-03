@@ -14,12 +14,12 @@ struct ReadingFeature {
 
     @ObservableState
     struct State: Equatable {
-        var book: Book
+        var book: BookUI
         var isFavorite: Bool
         var selectedChapter: Chapter? = nil
         var isChapterReadingPresented: Bool = false
 
-        init(book: Book, isFavorite: Bool = false) {
+        init(book: BookUI, isFavorite: Bool = false) {
             self.book = book
             self.isFavorite = isFavorite
         }
@@ -37,8 +37,8 @@ struct ReadingFeature {
         case delegate(Delegate)
 
         enum Delegate: Equatable {
-            case setCurrentBook(Book)
-            case toggleFavorite(Book)
+            case setCurrentBook(BookUI)
+            case toggleFavorite(BookUI)
         }
     }
 
@@ -57,7 +57,7 @@ struct ReadingFeature {
                 state.isChapterReadingPresented = true
 
                 return .run { [book = state.book] send in
-                    await userDefaultsService.setCurrentBookID(book.id.uuidString)
+                    await userDefaultsService.setCurrentBookID(book.id)
                     await send(.currentBookIDStored)
                     await send(.delegate(.setCurrentBook(book)))
                 }
@@ -70,7 +70,7 @@ struct ReadingFeature {
                 state.isChapterReadingPresented = true
 
                 return .run { [book = state.book] send in
-                    await userDefaultsService.setCurrentBookID(book.id.uuidString)
+                    await userDefaultsService.setCurrentBookID(book.id)
                     await send(.currentBookIDStored)
                     await send(.delegate(.setCurrentBook(book)))
                 }

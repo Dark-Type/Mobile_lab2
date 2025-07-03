@@ -14,7 +14,7 @@ struct ChapterReadingFeature {
 
     @ObservableState
     struct State: Equatable {
-        var book: Book
+        var book: BookUI
         var currentChapter: Chapter
 
         var showChapters: Bool = false
@@ -51,7 +51,7 @@ struct ChapterReadingFeature {
             highlightedTextCache
         }
 
-        init(book: Book, chapter: Chapter, shouldAutoStartReading: Bool = false) {
+        init(book: BookUI, chapter: Chapter, shouldAutoStartReading: Bool = false) {
             self.book = book
             self.currentChapter = chapter
             self.shouldAutoStartReading = shouldAutoStartReading

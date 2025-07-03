@@ -16,5 +16,5 @@ public struct Book: Codable {
     let isNew: Bool
     let illustrationURL: String?
     let description: String
-    let author: [Author]
+    let author: [AuthorDTO]
 }

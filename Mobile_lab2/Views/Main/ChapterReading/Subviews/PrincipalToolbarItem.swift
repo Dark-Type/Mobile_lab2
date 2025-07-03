@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PrincipalToolbarItem: ToolbarContent {
-    let book: Book
+    let book: BookUI
     let currentChapter: Chapter
 
     var body: some ToolbarContent {

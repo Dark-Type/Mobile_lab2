@@ -14,11 +14,11 @@ struct BookmarksFeature {
 
     @ObservableState
     struct State: Equatable {
-        var currentlyReadingBooks: [Book] = []
-        var favoriteBooks: [Book] = []
+        var currentlyReadingBooks: [BookUI] = []
+        var favoriteBooks: [BookUI] = []
         var quotes: [Quote] = []
 
-        var selectedBookForReading: Book? = nil
+        var selectedBookForReading: BookUI? = nil
         var selectedChapterForReading: BookChapterSelection? = nil
         var isReadingScreenPresented: Bool = false
         var isChapterReadingPresented: Bool = false
@@ -39,7 +39,7 @@ struct BookmarksFeature {
             !quotes.isEmpty
         }
 
-        var topCurrentBook: Book? {
+        var topCurrentBook: BookUI? {
             currentlyReadingBooks.first
         }
     }
@@ -51,21 +51,21 @@ struct BookmarksFeature {
 
         case viewAppeared
         case loadInitialData
-        case initialDataLoaded(currentBooks: [Book], favoriteBooks: [Book], quotes: [Quote])
+        case initialDataLoaded(currentBooks: [BookUI], favoriteBooks: [BookUI], quotes: [Quote])
         case initialDataLoadingFailed(String)
 
-        case continueReading(Book)
-        case continueReadingWithChapter(Book, Chapter)
-        case removeFromCurrentlyReading(Book)
-        case currentBookRemoved(Book)
+        case continueReading(BookUI)
+        case continueReadingWithChapter(BookUI, Chapter)
+        case removeFromCurrentlyReading(BookUI)
+        case currentBookRemoved(BookUI)
 
-        case bookSelectedForReading(Book?)
-        case chapterSelectedForReading(Book, Chapter)
+        case bookSelectedForReading(BookUI?)
+        case chapterSelectedForReading(BookUI, Chapter)
         case readingScreenDismissed
         case chapterReadingScreenDismissed
 
-        case removeFromFavorites(Book)
-        case favoriteBookRemoved(Book)
+        case removeFromFavorites(BookUI)
+        case favoriteBookRemoved(BookUI)
 
         case removeQuote(Quote)
         case quoteRemoved(Quote)
@@ -75,9 +75,9 @@ struct BookmarksFeature {
         case delegate(Delegate)
 
         enum Delegate: Equatable {
-            case setCurrentBook(Book)
-            case setCurrentBookAndChapter(Book, Chapter)
-            case toggleFavorite(Book)
+            case setCurrentBook(BookUI)
+            case setCurrentBookAndChapter(BookUI, Chapter)
+            case toggleFavorite(BookUI)
         }
     }
 
@@ -85,6 +85,7 @@ struct BookmarksFeature {
 
     @Dependency(\.bookRepository) var bookRepository
     @Dependency(\.favoriteRepository) var favoriteRepository
+    @Dependency(\.quoteRepository) var quoteRepository
 
     // MARK: - Cancellation IDs
 
@@ -117,9 +118,9 @@ struct BookmarksFeature {
 
                 return .run { send in
 
-                    async let currentBooks = bookService.getCurrentBooks()
-                    async let favoriteBooks = favoritesService.getFavoriteBooks()
-                    async let quotes = favoritesService.getQuotes()
+                    async let currentBooks = bookRepository.getCurrentBooks()
+                    async let favoriteBooks = favoriteRepository.getFavoriteBooks()
+                    async let quotes = quoteRepository.getQuotes()
 
                     let (loadedCurrentBooks, loadedFavoriteBooks, loadedQuotes) = await (currentBooks, favoriteBooks, quotes)
 
@@ -194,7 +195,7 @@ struct BookmarksFeature {
 
             case let .removeFromFavorites(book):
                 return .run { send in
-                    await favoritesService.removeFromFavorites(book)
+                    await favoriteRepository.removeFromFavorites(book)
                     await send(.favoriteBookRemoved(book))
                     await send(.delegate(.toggleFavorite(book)))
                 }
@@ -206,7 +207,7 @@ struct BookmarksFeature {
 
             case let .removeQuote(quote):
                 return .run { send in
-                    await favoritesService.removeQuote(quote)
+                    await quoteRepository.removeQuote(quote)
                     await send(.quoteRemoved(quote))
                 }
                 .cancellable(id: CancelID.removeQuote, cancelInFlight: true)

@@ -52,8 +52,8 @@ enum MockData {
         return chapters
     }
 
-    static let books: [Book] = isEmptyStateTest ? [] : [
-        Book(
+    static let books: [BookUI] = isEmptyStateTest ? [] : [
+        BookUI(
             title: "Код да Винчи",
             author: [Author("Дэн Браун", MockBooks.book1.image)],
             description: "Секретный код скрыт в работах Леонардо да Винчи...\nТолько он поможет найти христианские святыни, дающие немыслимые власть и могущество...\nКлюч к величайшей тайне, над которой человечество билось веками, наконец может быть найден...",
@@ -62,14 +62,14 @@ enum MockData {
             genres: ["Mystery", "Thriller"],
             chapters: createSampleChapters(count: 15),
             userProgress: ReadingProgress(
-                bookId: UUID(),
+                bookId: UUID().uuidString,
                 totalChapters: 15,
                 currentChapter: 0,
                 currentPosition: 0.3
             ),
             isFavorite: false
         ),
-        Book(
+        BookUI(
             title: "Stellar Horizons",
             author: [Author("Marcus Webb", MockBooks.book1.image)],
             description: "An epic space adventure following the crew of the starship Horizon as they venture into uncharted territories of the galaxy.",
@@ -78,7 +78,7 @@ enum MockData {
             genres: ["Science Fiction", "Adventure"],
             chapters: createSampleChapters(count: 12)
         ),
-        Book(
+        BookUI(
             title: "The Hidden Garden",
             author: [Author("Eleanor Hughes", MockBooks.book1.image)],
             description: "A magical tale about a young girl who discovers a garden with mysterious powers that change with the seasons.",
@@ -88,7 +88,7 @@ enum MockData {
             chapters: createSampleChapters(count: 18),
             isFavorite: false
         ),
-        Book(
+        BookUI(
             title: "Swift. Карманный справочник: программирование в среде iOS и ОS X",
             author: [Author("Jonathan Blake", MockBooks.book1.image)],
             description: "Dark fantasy epic set in a world where night lasts for months and dangerous creatures roam the shadows.",
@@ -97,7 +97,7 @@ enum MockData {
             genres: ["Fantasy", "Horror"],
             chapters: createSampleChapters(count: 20)
         ),
-        Book(
+        BookUI(
             title: "The Last Summer",
             author: [Author("Sarah Chen", MockBooks.book1.image)],
             description: "A touching coming-of-age story about friendship, love, and saying goodbye set during one unforgettable summer.",
@@ -106,7 +106,7 @@ enum MockData {
             genres: ["Contemporary", "Romance"],
             chapters: createSampleChapters(count: 14)
         ),
-        Book(
+        BookUI(
             title: "Whispers of the Past",
             author: [Author("Thomas Wilson", MockBooks.book1.image)],
             description: "Historical fiction following multiple generations of a family through pivotal moments in history.",
@@ -136,14 +136,14 @@ enum MockData {
             author: books[2].author
         )
     ]
-    static var testCurrentBook: Book? {
+    static var testCurrentBook: BookUI? {
         if isTestMode, !isEmptyStateTest {
             return books.first
         }
         return nil
     }
 
-    static var testFavoriteBooks: [Book]? {
+    static var testFavoriteBooks: [BookUI]? {
         if isTestMode, !isEmptyStateTest {
             return [books[1], books[2]]
         }

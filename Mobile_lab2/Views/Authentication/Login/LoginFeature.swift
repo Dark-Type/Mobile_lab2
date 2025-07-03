@@ -20,17 +20,22 @@ struct LoginFeature {
         var isPasswordVisible: Bool = false
         var isLoading: Bool = false
         var errorMessage: String?
+        var isRegisterMode: Bool = false 
 
         var selectedCarouselIndex: Int = 0
         var keyboardHeight: CGFloat = 0
         var keyboardIsVisible: Bool { keyboardHeight > 0 }
 
-        var credentials: RegisterRequest {
-            RegisterRequest(email: email, password: password, username: "hits")
+        var loginCredentials: RefreshRequest {
+            RefreshRequest(identifier: email, password: password)
+        }
+        
+        var registerCredentials: RegisterRequest {
+            RegisterRequest(email: email, password: password, username: email.components(separatedBy: "@").first ?? "user")
         }
 
         var isFormValid: Bool {
-            credentials.isValid
+            !email.isEmpty && !password.isEmpty && email.contains("@")
         }
 
         var isLoginEnabled: Bool {
@@ -46,6 +51,7 @@ struct LoginFeature {
         case emailChanged(String)
         case passwordChanged(String)
         case togglePasswordVisibility
+        case toggleMode
         case clearEmail
         case clearPassword
         case loginButtonTapped
@@ -60,6 +66,7 @@ struct LoginFeature {
     // MARK: - Dependencies
 
     @Dependency(\.authRepository) var authRepository
+    @Dependency(\.userDefaultsService) var userDefaultsService
    
 
     // MARK: - Reducer
@@ -85,6 +92,11 @@ struct LoginFeature {
             case .togglePasswordVisibility:
                 state.isPasswordVisible.toggle()
                 return .none
+                
+            case .toggleMode:
+                state.isRegisterMode.toggle()
+                state.errorMessage = nil
+                return .none
 
             case .clearEmail:
                 state.email = ""
@@ -102,18 +114,38 @@ struct LoginFeature {
                 state.isLoading = true
                 state.errorMessage = nil
 
-                return .run { [credentials = state.credentials] send in
-                    await send(.loginResponse(
-                        Result {
-                            try await authRepository.register(credentials)
-                        }
-                        .mapError { error in
-                            if let authError = error as? AuthenticationError {
-                                return authError
+                if state.isRegisterMode {
+                    return .run { [credentials = state.registerCredentials, email = state.email, password = state.password] send in
+                        await send(.loginResponse(
+                            Result {
+                                let response = try await authRepository.register(credentials)
+                                await userDefaultsService.setCredentials(email: email, password: password)
+                                return response
                             }
-                            return AuthenticationError.networkError
-                        }
-                    ))
+                            .mapError { error in
+                                if let authError = error as? AuthenticationError {
+                                    return authError
+                                }
+                                return AuthenticationError.networkError
+                            }
+                        ))
+                    }
+                } else {
+                    return .run { [credentials = state.loginCredentials, email = state.email, password = state.password] send in
+                        await send(.loginResponse(
+                            Result {
+                                let response = try await authRepository.login(credentials)
+                                await userDefaultsService.setCredentials(email: email, password: password)
+                                return response
+                            }
+                            .mapError { error in
+                                if let authError = error as? AuthenticationError {
+                                    return authError
+                                }
+                                return AuthenticationError.networkError
+                            }
+                        ))
+                    }
                 }
 
             case let .carouselIndexChanged(index):
@@ -124,7 +156,7 @@ struct LoginFeature {
                 state.keyboardHeight = height
                 return .none
 
-            case let .loginResponse(.success(user)):
+            case let .loginResponse(.success(tokenResponse)):
                 state.isLoading = false
                 return .none
 

@@ -14,9 +14,9 @@ struct LibraryFeature {
 
     @ObservableState
     struct State: Equatable {
-        var featuredBooks: [Book] = []
-        var popularBooks: [Book] = []
-        var selectedBookForReading: Book? = nil
+        var featuredBooks: [BookUI] = []
+        var popularBooks: [BookUI] = []
+        var selectedBookForReading: BookUI? = nil
         var isReadingScreenPresented: Bool = false
         var isLoading: Bool = false
         var hasLoadedInitialData: Bool = false
@@ -39,22 +39,22 @@ struct LibraryFeature {
 
         case viewAppeared
         case loadBooks
-        case featuredBooksLoaded([Book])
-        case popularBooksLoaded([Book])
+        case featuredBooksLoaded([BookUI])
+        case popularBooksLoaded([BookUI])
         case booksLoadingFailed(String)
 
-        case bookSelectedForReading(Book?)
+        case bookSelectedForReading(BookUI?)
         case readingScreenDismissed
-        case setCurrentBook(Book)
-        case toggleFavorite(Book)
+        case setCurrentBook(BookUI)
+        case toggleFavorite(BookUI)
 
         case carouselIndexChanged(Int)
 
         case delegate(Delegate)
 
         enum Delegate: Equatable {
-            case setCurrentBook(Book)
-            case toggleFavorite(Book)
+            case setCurrentBook(BookUI)
+            case toggleFavorite(BookUI)
         }
     }
 

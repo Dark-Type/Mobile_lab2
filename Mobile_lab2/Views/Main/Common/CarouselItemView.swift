@@ -10,7 +10,7 @@ import SwiftUI
 struct CarouselItemView: View {
     // MARK: - Properties
 
-    let book: Book
+    let book: BookUI
     let action: () -> Void
 
     // MARK: - Constants

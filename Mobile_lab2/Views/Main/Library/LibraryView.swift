@@ -10,7 +10,7 @@ import SwiftUI
 
 struct LibraryView: View {
     let store: StoreOf<LibraryFeature>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     var body: some View {
         WithPerceptionTracking {
@@ -28,7 +28,7 @@ struct LibraryView: View {
 
 private struct LibraryContentView: View {
     let viewStore: ViewStore<LibraryFeature.State, LibraryFeature.Action>
-    let isFavorite: (Book) -> Bool
+    let isFavorite: (BookUI) -> Bool
 
     // MARK: - Constants
 
@@ -144,7 +144,7 @@ private struct LibraryContentView: View {
         .padding(.bottom, ViewMetrics.bottomPadding)
     }
 
-    private func carouselView(books: [Book], screenHeight: CGFloat) -> some View {
+    private func carouselView(books: [BookUI], screenHeight: CGFloat) -> some View {
         let itemWidth = UIScreen.main.bounds.width * ViewMetrics.carouselItemScale
         let itemHeight = itemWidth
         let sideItemWidth = UIScreen.main.bounds.width * ViewMetrics.carouselSideItemScale
@@ -181,7 +181,7 @@ private struct LibraryContentView: View {
         }
     }
 
-    private func booksGridView(books: [Book], screenWidth: CGFloat) -> some View {
+    private func booksGridView(books: [BookUI], screenWidth: CGFloat) -> some View {
         let columns = Array(
             repeating: GridItem(.flexible(), spacing: ViewMetrics.gridItemSpacing),
             count: ViewMetrics.gridColumnsCount

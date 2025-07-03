@@ -9,7 +9,7 @@ import ComposableArchitecture
 import SwiftUI
 
 struct ChapterTabBar: View {
-    let book: Book
+    let book: BookUI
     @Binding var currentChapter: Chapter
     @Binding var showChapters: Bool
     @Binding var showSettings: Bool

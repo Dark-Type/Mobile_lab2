@@ -16,11 +16,11 @@ struct MainFeature {
     struct State: Equatable {
         var selectedTab: Int = 0
         var isReadingScreenPresented: Bool = false
-        var selectedBookForReading: Book? = nil
+        var selectedBookForReading: BookUI? = nil
         var showNoBookAlert: Bool = false
 
-        var currentBooks: [Book] = []
-        var favoriteBooks: [Book] = []
+        var currentBooks: [BookUI] = []
+        var favoriteBooks: [BookUI] = []
         var favoriteBookIDs: [String] = []
 
         var library = LibraryFeature.State()
@@ -35,11 +35,11 @@ struct MainFeature {
             !currentBooks.isEmpty
         }
 
-        var topCurrentBook: Book? {
+        var topCurrentBook: BookUI? {
             currentBooks.first
         }
 
-        func isFavorite(_ book: Book) -> Bool {
+        func isFavorite(_ book: BookUI) -> Bool {
             favoriteBookIDs.contains(book.id)
         }
     }
@@ -51,11 +51,11 @@ struct MainFeature {
 
         case tabSelected(Int)
 
-        case setCurrentBook(Book)
-        case setCurrentBookAndChapter(Book, Chapter)
-        case addToCurrentBooks(Book)
-        case bookSelectedForReading(Book?)
-        case toggleFavorite(Book)
+        case setCurrentBook(BookUI)
+        case setCurrentBookAndChapter(BookUI, Chapter)
+        case addToCurrentBooks(BookUI)
+        case bookSelectedForReading(BookUI?)
+        case toggleFavorite(BookUI)
 
         case readingButtonTapped
         case readingScreenDismissed
@@ -66,10 +66,10 @@ struct MainFeature {
         case logoutButtonTapped
 
         case viewAppeared
-        case currentBooksLoaded([Book])
-        case favoriteBooksLoaded([Book])
+        case currentBooksLoaded([BookUI])
+        case favoriteBooksLoaded([BookUI])
         case favoriteBookIDsLoaded([String])
-        case favoriteToggled(Book, Bool)
+        case favoriteToggled(BookUI, Bool)
 
         case library(LibraryFeature.Action)
         case search(SearchFeature.Action)

@@ -6,6 +6,6 @@
 //
 
 public struct Progresses: Codable {
-    let data: [Progress]
+    let data: [ProgressDTO]
     let meta: Meta
 }

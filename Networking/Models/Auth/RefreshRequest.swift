@@ -6,6 +6,10 @@
 //
 
 public struct RefreshRequest: Codable {
+    public init (_ identifier: String, _ password: String){
+        self.identifier = identifier
+        self.password = password
+    }
     let identifier: String
     let password: String
 }

@@ -9,7 +9,7 @@ import Perception
 import SwiftUI
 
 struct ChaptersOverlayView: View {
-    let book: Book
+    let book: BookUI
     @Binding var currentChapter: Chapter
     @Binding var showChapters: Bool
     let onChapterSelected: (Chapter) -> Void

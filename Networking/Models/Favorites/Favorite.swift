@@ -5,7 +5,7 @@
 //  Created by dark type on 02.07.2025.
 //
 
-public struct Favorite: Codable {
+public struct FavoriteDTO: Codable {
     let id: Int
     let documentId: String
     let createdAt: String

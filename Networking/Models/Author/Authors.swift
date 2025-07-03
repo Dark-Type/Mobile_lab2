@@ -6,6 +6,6 @@
 //
 
 public struct Authors: Codable {
-    let data: [Author]
+    let data: [AuthorDTO]
     let meta: Meta
 }
